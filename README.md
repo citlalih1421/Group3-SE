@@ -14,30 +14,32 @@ While ShoeBae currently specializes in footwear sales, its adaptable infrastruct
 
 
 
+ShoeBae employs HTML, CSS, and JavaScript for its front-end development, complemented by Python Django for backend operations. The database utilized is SQLite. Hosting for ShoeBae will be facilitated through GitHub.
+
 
 Name
 netID
 Github ID
 Role
 
-Gage Fulwood
-gtf53
-gagefulwood
+Gage Fulwood    
+gtf53    
+gagefulwood    
 back-end, team leader
 
-Citlali Hernandez Lopez
-ch3270
-citlalih1421
+Citlali Hernandez Lopez    
+ch3270    
+citlalih1421    
 front-end (main), github owner
 
-John Taylor
-jmt880
-jmt880
+John Taylor    
+jmt880    
+jmt880    
 Back-end, classes
 
-Yusuf Sarigul
-yas27 
-yas27s
+Yusuf Sarigul    
+yas27     
+yas27s    
 back-end, security
 
 Easton Greenwood 
