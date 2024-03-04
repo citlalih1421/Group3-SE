@@ -11,6 +11,7 @@ from django.db import models
     Admin Model (implementing built-in superuser model, save this for last)
     '''
 
+
 class PaymentInfo(models.Model): #INCOMPLETE: missing fields and methods
     user = models.OneToOneField(AbstractUser, on_delete=models.CASCADE)
     cardholder_name = models.CharField(max_length=255)
@@ -37,7 +38,7 @@ class ShoeCategory(models.Model): #INCOMPLETE: missing fields and methods
 
 class Shoe(models.Model): #INCOMPLETE: missing fields and methods
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(max_length=750)
     price = models.DecimalField(max_digits=10,decimal_places=2)
     inventory = models.ForeignKey(Inventory, on_delete=models.CASCADE)
     categories = models.ManyToManyField(ShoeCategory, symmetrical=False) #TO-DO
@@ -63,12 +64,52 @@ class Order(models.Model): #INCOMPLETE: missing fields and methods
         return f"Order for {self.buyer.user.username} on {self.order_date}"
     #end of Order Model
 
+class Ticket(models.Model):
+    user = models.OneToOneField(AbstractUser, on_delete=models.CASCADE)
+    class Issues(models.TextChoices):
+        TECHNICAL = 'TE', 'Technical Issues'
+        ACCOUNT = 'AC','Account Issues'
+        BILLING = 'BI','Billing Issues'
+        OTHER = 'OT','Other'
+
+    class Statuses(models.TextChoices):
+        OPEN = 'OP', 'Open'
+        CLOSED = 'CL', 'Closed'
+
+    title = models.CharField(max_length=255)
+    description = models.TextField(mex_length=750)
+    issue_type = models.CharField(
+        max_length = 2,
+        choices = Issues.choices,
+        default = Issues.OTHER
+    )
+    ticket_status = models.CharField(
+        max_length = 2,
+        choices = Statuses.choices,
+        default = Statuses.OPEN
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+    #end of Ticket Model
 
 class Buyer(models.Model): #INCOMPLETE: missing methods
-    user = models.OneToOneField(AbstractUser, on_delete=models.CASCASE)
+    user = models.OneToOneField(AbstractUser, on_delete=models.CASCADE)
     payment_info = models.OneToOneField(PaymentInfo, on_delete=models.SET_NULL, null=True, blank=True)
     shipping_info = models.OneToOneField(ShippingInfo, on_delete=models.SET_NULL, null=True, blank=True)
     shopping_cart = models.OneToOneField(ShoppingCart, on_delete=models.CASCADE)
     orders = models.ManyToManyField(Order)
     reviews = models.ManyToManyField(Review)
     #end of Buyer Model
+
+class Seller(models.Model):
+    user = models.OneToOneField(AbstractUser, on_delete=models.CASCADE)
+    inventory = models.OneToOneField(Inventory, on_delete=models.CASCADE)
+    shoes = models.ManyToManyField(Shoe)
+    orders = models.ManyToManyField(Order)
+
+    #end of Seller Model
+
