@@ -1,0 +1,167 @@
+/* Common styles */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Desktop styling */
+@media screen and (min-width: 768px) {
+    /* Sidebar Styling */
+    .sidenav {
+        height: 100%;
+        width: 15%;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        background-image: linear-gradient(to bottom right,#5e72eb , #120c6e);
+        overflow-x: hidden;
+        padding-top: 1.5%;
+        padding-left: 1.0%;
+        float: left;
+    }
+
+    .sidenav a {
+        padding: 6px 6px 6px 6px;
+        text-decoration: none;
+        font-size: 25px;
+        color: black;
+        display: block;
+    }
+
+    .sidenav a:hover {
+        color: white;
+    }
+
+    .main {
+        width: 80%;
+        margin-left: 20%;
+        font-size: 20px;
+        padding: 0px;
+    }
+
+    /* Accordion Styling */
+    .accordion {
+        background-color: #eee;
+        color: black;
+        text-align: left;
+        cursor: pointer;
+        padding: 1.5%;
+        width: 75%;
+        border: solid white;
+        outline: none;
+        font-size: 20px;
+        transition: 0.3s;
+    }
+
+    .active,
+    .accordion:hover {
+        background-color: #ccc;
+    }
+
+    .accordion:after {
+        content: '\002B';
+        color: #0b0742;
+        font-weight: bold;
+        float: right;
+        margin-left: 5px;
+    }
+
+    .active:after {
+        content: "\2212";
+    }
+
+    .panel {
+        padding: 0 18px;
+        background-color: white;
+        width: 70%;
+        border: none;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+    }
+
+    button {
+        padding: 1.5%; 
+        color: Black;
+        font-family: Verdana;
+        font-size: 25px;  
+    }
+}
+
+
+/* Mobile styling */
+@media screen and (max-width: 767px) {
+    /* Sidebar Styling */
+    .sidenav {
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: -100%;
+        background-color: #006866;
+        overflow-x: hidden;
+        transition: left 0.3s ease;
+        padding-top: 1.5%;
+        padding-left: 1.0%;
+    }
+
+    .sidenav.open {
+        left: 0;
+    }
+
+    .sidenav a {
+        padding: 6px 8px 6px 16px;
+        text-decoration: none;
+        font-size: 25px;
+        color: black;
+        display: block;
+    }
+
+    .sidenav a:hover {
+        color: #f1f1f1;
+    }
+
+    /* Main content */
+    .main {
+        width: 100%;
+        margin-left: 0;
+        font-size: 20px;
+        padding: 0px 5%;
+        transition: left 0.3s ease;
+    }
+
+    /* Accordion Styling */
+    .accordion {
+        background-color: #eee;
+        color: black;
+        text-align: left;
+        cursor: pointer;
+        padding: 1.5%;
+        width: 93%;
+        border: none;
+        outline: none;
+        font-size: 20px;
+        transition: 0.4s;
+    }
+    .active,
+    .accordion:hover {
+        background-color: #ccc;
+    }
+
+    .accordion:after {
+        content: '\002B';
+        color: #777;
+        font-weight: bold;
+        float: right;
+        margin-left: 5px;
+    }
+
+    .active:after {
+        content: "\2212";
+    }
+
+    .panel{
+        width: 89%; 
+    }
+}
