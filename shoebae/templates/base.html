@@ -1,0 +1,51 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Shoebase - {% block title %}{% endblock %}</title>
+    <script src="{% static 'js/base.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+
+<body>
+    <header>
+        <h1>
+            <a href="home.html"><h1> ShoeBae</a>
+        </h1>
+    </header>
+
+    {% block content %}
+    {% endblock %}
+
+    <footer>
+        <h3> ShoeBae. Affordability and quality at your fingertips. </h3>
+        <div class="centered-sections">
+            <div class="footer-section">
+                <h3 class="important"> About </h3>
+                <p> Website Navigation </p>
+                <p> How ShoeBae Works </p>
+                <p> <a href="FAQ-es.html">FAQs</a></p>
+         
+            </div>
+            <div class="footer-section">
+                <h3 class="important"> Help</h3>
+                <p> Help Center </p>
+                <p> Contact Us </p>
+                <p> Size Guide </p>
+            </div>
+            <div class="footer-section">
+                <h3 class="important"> Languages </h3>
+                <p> English</p>
+                <p> Español </p>
+                <p> Türkçe </p>
+            </div>
+        </div>
+    
+        <p style="text-align: left;">&copy; 2024 Online Shoe Store. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
