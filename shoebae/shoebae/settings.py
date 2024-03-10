@@ -32,6 +32,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'core.apps.CoreConfig',
+    'accounts.apps.AccountsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -80,7 +82,8 @@ DATABASES = {
         'NAME': 'shoebae_db',
         'USER': 'postgres',
         'PASSWORD': 'password',
-        'HOST': 'localhost'
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
 
