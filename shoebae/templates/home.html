@@ -16,10 +16,15 @@
         <div class="sidebar" id="sidebar">
             <h2>Menu</h2>
             <ul>
-                <li><a href="#">Login</a></li>
-                <li><a href="accounts/register">Register</a></li>
+                {% if user.is_authenticated %}
+                <li> Hello, {{user.first_name}}</li>
                 <li><a href="#">Your Account</a></li>
-                <li><a href="#">Lists</a></li>
+                <li><a href="accounts/logout">Logout</a></li>
+                <li><a href="#">Lists</a></li></li>
+                {% else %}
+                <li><a href="accounts/login">Login</a></li>
+                <li><a href="accounts/register">Register</a></li>
+                {% endif %}
                 <li><a href="#">Help</a></li>
                 <li><a href="#">Services</a></li>
             </ul>

@@ -1,57 +1,29 @@
-{% extends 'base.html' %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Login & Sign Up{% endblock %}</title>
-    <script src="{% static 'js/login.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
 </head>
 <body>
-    
-    {% block pagecontent %}
-    <div class="login-signup-container">
-        <div class="login-container">
-            <h1>Log In</h1>
-            <form action="login.php" method="POST">
-                <input type="text" placeholder="Email Address" name="email" required="">
-                <input type="password" placeholder="Password" name="password" required="">
-                <a href="forgot_password.php">Forgot Password?</a>
-                <div class="social-login"> 
-                    <button type="submit">Log In</button>
-                </div>
-            </form>
-
-            <h2>OR</h2>
-
-            <div class="action-option">
-                <button onclick="toggleForm('signup-container')">Sign Up</button>
-            </div>
-        </div>
-
-
-        <div class="signup-container" style="display: none;">
-            <h1>Sign Up</h1>
-            <form action="create_account.php" method="POST">
-                <input type="text" placeholder="First Name" name="name-first" required="">
-                <input type="text" placeholder="Last Name" name="name-last" required="">
-                <input type="text" placeholder="Email Address" name="email" required="">
-                <input type="password" placeholder="Enter Password" name="psw" required="">
-        <input type="password" placeholder="Repeat Password" name="psw-repeat" required="">
-                <div class="social-login"> 
-                    <button type="submit">Sign Up</button>
-                </div>
-            </form>
-
-            <h2>OR</h2>
-            
-            <div class="action-option">
-                <button onclick="toggleForm('login-container')">Login</button>
-            </div>
-        </div>
+    <h2>Login</h2>
+    <form action='login' method='post'>
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Username">
+        <input type="password" name="password" placeholder="Password">
+        <input type="submit" value="Login">
+    </form>
+    <div>
+        {% if messages %}
+            <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
     </div>
-    {% endblock %}
 </body>
 </html>
