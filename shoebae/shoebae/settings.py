@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_mptt_admin',
     'store.apps.StoreConfig',
     'accounts.apps.AccountsConfig'
 ]
@@ -128,6 +129,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+MEDIA_URL = '/staticfiles/'
+MEDIA_ROOT = os.path.join(BASE_DIR,'staticfiles/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

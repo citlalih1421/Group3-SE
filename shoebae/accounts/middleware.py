@@ -9,7 +9,11 @@ class GroupPermissionsMiddleware:
         if hasattr(request,'user') and (request.user.is_authenticated):
             if (request.user.groups.filter(name="Buyer").exists() and not request.user.has_perm('accounts.can_view_buyer')):
                 raise PermissionDenied('You do not have permission to view Buyer content')
+            elif (request.user.groups.filter(name="Buyer").exists() and not request.user.has_perm('accounts.can_edit_buyer')):
+                raise PermissionDenied('You dont have permission to edit Buyer content')
             elif (request.user.groups.filter(name="Seller").exists() and not request.user.has_perm('accounts.can_view_seller')):
                 raise PermissionDenied('You do not have permission to view Seller content')
+            elif (request.user.groups.filter(name="Seller").exists() and not request.user.has_perm('accounts.can_edit_buyer')):
+                raise PermissionDenied('You do not have permission to edit Seller content')
         response = self.get_response(request)
         return response
