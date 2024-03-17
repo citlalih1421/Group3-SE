@@ -1,20 +1,69 @@
 from django.db import models
-from django.contrib.auth.models import Group as BaseGroup
+from django.contrib.auth.models import AbstractUser
+#from store.models import Shoe
+
+#To-Do, implement the encryption methods with the database in views. Encrypted information is stored in binary.
+#To-DO, Favorites, Ticket, Tickets models
 
 # Create your models here.
+class PaymentInfo(models.Model):
+    card_holder = models.CharField(blank=True, null=True) #does not need to be encrypted
+    card_number = models.BinaryField(blank=True, null=True) #not sure how to show just last 4/5 numbers of card
+    card_expiration = models.BinaryField(blank=True, null=True) #not sure how MM/YYYY is going to be encrypted exactly
+    card_cvv = models.BinaryField(blank=True, null=True)
 
-class UserType(BaseGroup):
-    description = models.TextField(max_length=100, blank=True, null=True)
+class PaymentMethods(models.Model):
+    payment_info = models.ManyToManyField(PaymentInfo)
+    is_default_payment = models.BooleanField(default=False)
 
+class ShippingInfo(models.Model):
+    street = models.BinaryField(blank=True, null=True)
+    city = models.BinaryField(blank=True, null=True)
+    zipcode = models.BinaryField(blank=True, null=True)
+    state = models.BinaryField(blank=True, null=True)
+    country = models.BinaryField(blank=True, null=True)
+
+class ShippingMethods(models.Model):
+    shipping_info = models.ManyToManyField(ShippingInfo)
+    is_default_shipping = models.BooleanField(default=False)
+
+#class Order(models.Model):
+
+#class OrderHistory(models.Model):
+
+#class Favorites(models.Model):
+
+#class Ticket(models.Model):
+
+#class Tickets(models.Model):
+class Customer(AbstractUser):
+    is_buyer = models.BooleanField(default=True)
+    is_seller = models.BooleanField(default=True)
+    payment_methods = models.OneToOneField(PaymentMethods, on_delete=models.CASCADE)
+    shipping_methods = models.OneToOneField(ShippingMethods, on_delete=models.CASCADE)
+    #order_history = models.OneToOneField(OrderHistory, on_delete=models.CASCADE)
+    #favorites = models.OneToOneField(Favorites, on_delete=models.CASCADE)
+    #tickets = models.OneToOneField(Tickets, on_delete=models.CASCADE)
     class Meta:
-        verbose_name = 'User Type'
-        verbose_name_plural = 'User Types'
-
-    def __str__(self):
-        return self.name
+        app_label = "accounts"
+    
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='customer_set',
+        blank=True,
+        verbose_name='groups',
+        help_text='The groups this customer belongs to. A customer will get all permissions granted to each of their groups'
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='customer_set',
+        blank=True,
+        verbose_name='user permissions',
+        help_text='Specific permissions for this customer'
+    )
     
 class Buyer(models.Model):
-    
+
     class Meta:
         permissions = [('can_view_buyer', 'Can view buyer'),
                        ('can_edit_buyer', 'Can edit buyer')]
