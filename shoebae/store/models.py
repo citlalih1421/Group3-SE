@@ -1,6 +1,8 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils import timezone
+from decimal import Decimal 
 
 # Create your models here.
 
@@ -52,25 +54,35 @@ class Shoe(models.Model):
     shoe_conditions = models.CharField(#changes to increment drop down thing
         max_length=100,
         choices=condition_choices,
-        blank=True, #remove blank and null later
-        null=True
+        blank=False, #remove blank and null later
+        null=False
     )
     brand_choices = [(brand.brand_name, str(brand.brand_name)) for brand in Brand.objects.all()]
     shoe_brand = models.CharField(#changes to increment drop down thing
         max_length=100,
         choices=brand_choices,
-        blank=True, #remove blank and null later
-        null=True
+        blank=False, #remove blank and null later
+        null=False
     )
     category_choices = [(category.category_name, (str(category.parent)+" "+str(category.category_name))) for category in Category.objects.all()]
     shoe_category = models.CharField(#changes to increment drop down thing
         max_length=255,
-        choices=brand_choices,
-        blank=True, #remove blank and null later
-        null=True
+        choices=category_choices,
+        default= "other"
     )
-    shoe_reviews = models.OneToOneField(Review, on_delete=models.CASCADE)
+    shoe_reviews = models.ManyToManyField(Review, blank=True)
+    
     date_posted = models.DateTimeField(default=timezone.now)
 
+    def clean(self):
+       def clean(self):
+        if self.shoe_quantity < 0:
+            raise ValidationError("Shoe quantity cannot be negative.")
+        if self.shoe_price < 0:
+            raise ValidationError("Shoe price cannot be negative.")
+        if self.shoe_size is not None:
+            if self.shoe_size < 0 or (self.shoe_size % Decimal('0.5') != 0):
+                raise ValidationError("Shoe size must be a positive multiple of 0.5.")
     def __str__(self):
         return self.shoe_name #tweak this to be more specific
+    
