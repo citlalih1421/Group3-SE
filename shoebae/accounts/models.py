@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-#from store.models import Shoe
+from store.models import Shoe
+from django.utils import timezone
 
 #To-Do, implement the encryption methods with the database in views. Encrypted information is stored in binary.
 #To-DO, Favorites, Ticket, Tickets models
@@ -27,12 +28,6 @@ class ShippingMethods(models.Model):
     shipping_info = models.ManyToManyField(ShippingInfo)
     is_default_shipping = models.BooleanField(default=False)
 
-#class Order(models.Model):
-
-#class OrderHistory(models.Model):
-
-#class Favorites(models.Model):
-
 #class Ticket(models.Model):
 
 #class Tickets(models.Model):
@@ -41,8 +36,8 @@ class Customer(AbstractUser):
     is_seller = models.BooleanField(default=True)
     payment_methods = models.OneToOneField(PaymentMethods, on_delete=models.CASCADE)
     shipping_methods = models.OneToOneField(ShippingMethods, on_delete=models.CASCADE)
-    #order_history = models.OneToOneField(OrderHistory, on_delete=models.CASCADE)
-    #favorites = models.OneToOneField(Favorites, on_delete=models.CASCADE)
+    order_history = models.ManyToManyField('Order')
+    favorites = models.ManyToManyField(Shoe)
     #tickets = models.OneToOneField(Tickets, on_delete=models.CASCADE)
     class Meta:
         app_label = "accounts"
@@ -61,7 +56,13 @@ class Customer(AbstractUser):
         verbose_name='user permissions',
         help_text='Specific permissions for this customer'
     )
-    
+
+class Order(models.Model): #add transaction id
+    order_customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
+    order_shoe = models.ForeignKey(Shoe, on_delete=models.PROTECT)
+    order_quantity = models.IntegerField(default=1,null=True,blank=True)
+    date_ordered = models.DateTimeField(default=timezone.now)
+
 class Buyer(models.Model):
 
     class Meta:
