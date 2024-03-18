@@ -66,34 +66,57 @@ h1,h2,h3,h4,h5,h6{
 
 .cart-row{
 	display: flex;
-    align-items: flex-stretch;
+	flex-direction: row;
+    align-items: center;
     padding-bottom: 10px;
     margin-bottom: 10px;
     border-bottom: 1px solid #ececec;
 
 }
 
-.quantity{
-	display: inline-block;
-	font-weight: 700;
-	padding-right:10px;
-	
-
+.cart-row.header {
+	font-weight: bold;
+	padding-bottom: 0;
 }
 
-.chg-quantity{
-	width: 12px;
-	cursor: pointer;
-	display: block;
-	margin-top: 5px;
-	transition:.1s;
+.cell {
+	flex: 1;
+	padding: 10px;
+	text-align: center;
 }
 
-.chg-quantity:hover{
-	opacity: .6;
+.quantity {
+    display: flex;
+    align-items: center;
 }
 
+.quantity-number {
+    font-weight: 700;
+    margin-right: 10px;
+}
+
+.quantity-arrows {
+    display: flex;
+    flex-direction: column;
+	margin-left: 30px;
+	margin-bottom: 20px;
+}
+
+.chg-quantity {
+    width: 12px;
+    cursor: pointer;
+    transition: 0.1s;
+    margin-top: 5px;
+}
+
+.chg-quantity:hover {
+    opacity: 0.6;
+}
 
 .hidden{
 	display: none!important;
+}
+
+.center-text {
+	text-align: center;
 }

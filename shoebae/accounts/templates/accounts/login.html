@@ -1,0 +1,98 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .center-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start; /* Align items to the top */
+        height: 100vh; /* Set the height to fill the viewport */
+        padding-top: 50px; /* Add top padding for vertical alignment */
+    }
+
+    .form-wrapper {
+        width: 80%; /* Set the width of the container */
+        max-width: 800px; /* Set the maximum width of the form */
+        padding: 30px; /* Increase padding for spacing */
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        margin: 0 auto; /* Center the container horizontally */
+    }
+
+    .center-text {
+        text-align: center;
+    }
+
+    .form-field {
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly; /* Add space between items */
+        margin: 10px auto;
+        margin-bottom: 20px; /* Add more margin between form fields */
+    }
+
+    .form-field h6 {
+        margin: 0; /* Remove default margin */
+        width: 30%; /* Set a percentage width for the h6 elements */
+        text-align: right; /* Align the label text to the right */
+    }
+
+    .form-field input[type="text"],
+    .form-field input[type="password"] {
+        flex: 1;
+        margin-left: 20px; /* Add margin between h6 and input */
+        padding: 8px; /* Add padding to input fields */
+        border: 1px solid #ccc; /* Add border for input fields */
+        border-radius: 5px; /* Add border-radius for input fields */
+    }
+
+    /* Media queries for responsive design */
+    @media (max-width: 768px) {
+        .form-field {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .form-field h6 {
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+            margin-bottom: 5px;
+            text-align: left; /* Align the label text to the left */
+        }
+
+        .form-field input[type="text"],
+        .form-field input[type="password"] {
+            margin-left: 0;
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="center-container">
+    <div class="col-lg-8">
+        <div class="box-element form-wrapper" id="form-wrapper">
+            <form id="form" method="post">
+                {% csrf_token %}
+                <h2 class="center-text">Login</h2>
+                <hr>
+                <div id="username" class="form-field">
+                    <h6>Username:</h6>
+                    <input type="text" name="username_or_email" placeholder="email/username">
+                </div>
+                <div id="password" class="form-field">
+                    <h6>Password:</h6>
+                    <input type="password" name="password" placeholder="password">
+                </div>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div>{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+                <input id="form-button" class="btn btn-success btn-block" type="submit" value="Login">
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator, DecimalValidator
 from django.db import models
-from django.db import models
+from django.contrib.auth.models import User
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils import timezone
 from decimal import Decimal 
@@ -12,15 +12,16 @@ def increment_by_half_validator(value):
         raise ValidationError('Value must be incrementable by 0.5.')
 
 class Shoe(models.Model):
-    shoe_name = models.CharField(max_length=255)
-    shoe_image = models.ImageField(upload_to='images/shoes/')
-    shoe_quantity = models.IntegerField(
+    seller = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='images/shoes/')
+    quantity = models.IntegerField(
         validators=[
             MinValueValidator(1),
             MaxValueValidator(10)
         ]
     )
-    shoe_price = models.DecimalField(
+    price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         validators=[
@@ -29,7 +30,7 @@ class Shoe(models.Model):
             DecimalValidator(max_digits=10, decimal_places=2)
         ]
     )
-    shoe_size = models.DecimalField(
+    size = models.DecimalField(
         max_digits=3,
         decimal_places=1,
         validators=[
@@ -37,52 +38,52 @@ class Shoe(models.Model):
             DecimalValidator(max_digits=3, decimal_places=1)
         ]
     )
-    shoe_conditions = models.CharField(
+    conditions = models.CharField(
         max_length=100,
         default='other'
     )
-    shoe_brand = models.CharField(
+    brand = models.CharField(
         max_length=100,
         default='other'
     )
-    shoe_category = models.CharField(
+    category = models.CharField(
         max_length=255,
         default='other'
     )
     date_posted = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.shoe_name
+        return self.name
 
 class Condition(models.Model):
-    condition_name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
-        return self.condition_name
+        return self.name
 
 class Brand(models.Model):
-    brand_name = models.CharField(max_length=100, unique=True)
-    brand_logo = models.ImageField(upload_to='images/brands/', blank=True, null=True)
+    name = models.CharField(max_length=100, unique=True)
+    logo = models.ImageField(upload_to='images/brands/', blank=True, null=True)
 
     def __str__(self):
-        return self.brand_name
+        return self.name
 
 class Category(MPTTModel):
-    category_name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
     parent = TreeForeignKey('self',on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'Categories'
     class MPTTMeta:
-        order_insertion_by = ['category_name','parent']
+        order_insertion_by = ['name','parent']
 
     def __str__(self):
-        return self.category_name
+        return self.name
     
 class Review(models.Model):
     shoe = models.ForeignKey(Shoe, on_delete=models.CASCADE)
-    review_title = models.CharField(max_length=255)
-    review_rating = models.DecimalField(
+    title = models.CharField(max_length=255)
+    rating = models.DecimalField(
         max_digits=2,
         decimal_places=1,
         validators= [
@@ -95,4 +96,14 @@ class Review(models.Model):
     date_posted = models.DateTimeField(default=timezone.now)
     
     def __str__(self):
-        return self.review_title
+        return self.title
+    
+class Order(models.Model): #add transaction id
+    customer = models.ForeignKey(User, on_delete=models.PROTECT)
+    shoe = models.ForeignKey(Shoe, on_delete=models.PROTECT)
+    quantity = models.IntegerField(default=1,null=True,blank=True)
+    date_ordered = models.DateTimeField(default=timezone.now)
+
+class Favorite(models.Model):
+    customer = models.ForeignKey(User, on_delete=models.CASCADE)
+    shoe = models.ForeignKey(Shoe, on_delete=models.CASCADE)

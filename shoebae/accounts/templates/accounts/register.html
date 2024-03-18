@@ -1,0 +1,121 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .center-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start; /* Align items to the top */
+        height: 100vh; /* Set the height to fill the viewport */
+        padding-top: 50px; /* Add top padding for vertical alignment */
+    }
+
+    .form-wrapper {
+        width: 80%; /* Set the width of the container */
+        max-width: 800px; /* Set the maximum width of the form */
+        padding: 30px; /* Increase padding for spacing */
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        margin: 0 auto; /* Center the container horizontally */
+    }
+
+    .center-text {
+        text-align: center;
+    }
+
+    .form-field {
+        margin-bottom: 20px; /* Add more margin between form fields */
+    }
+
+    .form-field label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .form-field input[type="text"],
+    .form-field input[type="password"] {
+        width: 100%;
+        padding: 8px; /* Add padding to input fields */
+        border: 1px solid #ccc; /* Add border for input fields */
+        border-radius: 5px; /* Add border-radius for input fields */
+    }
+
+    /* Adjust padding for password input */
+    #password input[type="password"] {
+        padding: 8px 10px; /* Adjust padding as needed */
+    }
+
+    .form-field .form-control {
+        margin-bottom: 10px;
+    }
+    /* Additional styles for checkbox alignment */
+    #is_buyer, #is_seller {
+        display: inline-block; /* Display checkboxes inline */
+        justify-content: center;
+        margin-right: 20px; /* Add margin between checkboxes */
+    }
+    
+</style>
+
+<script> 
+    /* if this is not there then one of the boxes will remain unchecked for some reason
+    even if the checked is included in the tag of the checkboxes */
+        document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('is_buyer_checkbox').checked = true;
+        document.getElementById('is_seller_checkbox').checked = true;
+    });
+</script>
+
+<div class="center-container">
+    <div class="col-lg-8">
+        <div class="box-element form-wrapper" id="form-wrapper">
+            <form id="form" method="post">
+                {% csrf_token %}
+                <h2 class="center-text">Register</h2>
+                <hr>
+                <div id="username" class="form-field">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Username">
+                </div>
+                <div id="email" class="form-field">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Email">
+                </div>
+                <div id="first_name" class="form-field">
+                    <label for="first_name">First Name:</label>
+                    <input type="text" id="first_name" name="first_name" class="form-control" placeholder="First Name">
+                </div>
+                <div id="last_name" class="form-field">
+                    <label for="last_name">Last Name:</label>
+                    <input type="text" id="last_name" name="last_name" class="form-control" placeholder="Last Name">
+                </div>
+                <div id="password1" class="form-field">
+                    <label for="password1">Password:</label>
+                    <input type="password" id="password1" name="password1" class="form-control" placeholder="Password">
+                </div>
+                <div id="password2" class="form-field">
+                    <label for="password2">Confirm Password:</label>
+                    <input type="password" id="password2" name="password2" class="form-control" placeholder="Confirm Password">
+                </div>
+                <div id="is_buyer">
+                    <label for="is_buyer_checkbox">
+                        <input type="checkbox" id="is_buyer_checkbox" name="is_buyer">Buyer</label>
+                </div>
+                <div id="is_seller">
+                    <label for="is_seller_checkbox">
+                        <input type="checkbox" id="is_seller_checkbox" name="is_seller">Seller
+                    </label>
+                </div>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div>{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+                <button id="form-button" class="btn btn-success btn-block" type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
