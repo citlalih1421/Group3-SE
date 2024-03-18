@@ -4,7 +4,7 @@ from .models import Condition, Brand, Category, Shoe
 
 # Register your models here.
 class CategoryAdmin(DjangoMpttAdmin):
-    list_display = ['category_name','parent']
+    list_display = ['name','parent']
     search_fields = ['name','parent']
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Condition)
