@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
 from django.shortcuts import render, redirect
@@ -7,6 +7,11 @@ from django.shortcuts import render, redirect
 
 def register(request):
     if (request.method == 'POST'):
+        #this is temporary and just to create them if they are not already created in the database
+        # Check if Buyer group exists
+        group_buyer, created = Group.objects.get_or_create(name='Buyer')
+        group_seller, created = Group.objects.get_or_create(name='Seller')
+        
         username = request.POST.get('username')
         email = request.POST.get('email')
         first_name = request.POST.get('first_name')
@@ -39,24 +44,12 @@ def register(request):
             first_name=first_name, 
             last_name=last_name
             )
-        #this is temporary and just to create them if they are not already created in the database
-        # Check if Buyer group exists
-        if not Group.objects.filter(name='Buyer').exists():
-            buyer_group = Group(name='Buyer')
-            buyer_group.save()
-
-        # Check if Seller group exists
-        if not Group.objects.filter(name='Seller').exists():
-            seller_group = Group(name='Seller')
-            seller_group.save()
         
         if (is_buyer):
-            group = Group.objects.get(name='Buyer')
-            user.groups.add(group)
+            user.groups.add(group_buyer)
 
-        elif (is_seller):
-            group = Group.objects.get(name='Seller')
-            user.groups.add(group)
+        if (is_seller):
+            user.groups.add(group_seller)
 
         user.save()
         messages.success(request, 'Account created successfully')
@@ -64,7 +57,7 @@ def register(request):
         
     return render(request, 'accounts/register.html')
 
-def login(request):
+def login_view(request):
     if (request.method == 'POST'):
         username_or_email = request.POST.get('username_or_email')
         password = request.POST.get('password')
@@ -75,9 +68,14 @@ def login(request):
             user = authenticate(username=username_or_email,password=password)
 
         if (user is not None):
+            login(request,user=user)
             return redirect('store')
         else:
             messages.error(request, 'Invalid username or email')
             return render(request,'accounts/login.html')
         
     return render(request, 'accounts/login.html')
+
+def logout_view(request):
+    logout(request)
+    return redirect('store')
