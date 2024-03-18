@@ -25,7 +25,7 @@ Role
 Gage Fulwood    
 gtf53    
 gagefulwood    
-back-end, team leader
+FULL STACK, team leader
 
 Citlali Hernandez Lopez    
 ch3270    
@@ -35,14 +35,14 @@ front-end (main), github owner
 John Taylor    
 jmt880    
 jmt880    
-Back-end, classes
+FULL STACK
 
 Yusuf Sarigul    
 yas27     
 yas27s    
-back-end, security
+security
 
 Easton Greenwood 
 ekg144
 Blacksmith822
-back-end
+security
