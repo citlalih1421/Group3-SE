@@ -1,7 +1,9 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
 from django.shortcuts import render, redirect
+from django.contrib.contenttypes.models import ContentType
+
 
 # Create your views here.
 
@@ -11,7 +13,33 @@ def register(request):
         # Check if Buyer group exists
         group_buyer, created = Group.objects.get_or_create(name='Buyer')
         group_seller, created = Group.objects.get_or_create(name='Seller')
+
+        content_type = ContentType.objects.get_for_model(User)
+        Permission.objects.create(
+            codename = 'can_view_buyer',
+            name = 'can view buyer',
+            content_type = content_type
+
+        )
+        if not group_buyer.permissions.filter(name='can_view_buyer').exists():
+            CAN_VIEW_BUYER = Permission.objects.get(name='can_view_buyer')
+            group_buyer.permissions.add(CAN_VIEW_BUYER)
+        if not group_buyer.permissions.filter(name='can_edit_buyer').exists():
+            CAN_EDIT_BUYER = Permission.objects.get(name='can_edit_buyer')
+            group_buyer.permissions.add(CAN_EDIT_BUYER)
         
+
+        if not group_seller.permissions.filter(name='can_view_seller').exists():
+            CAN_VIEW_SELLER = Permission.objects.get(name='can_view_seller')
+            group_seller.permissions.add(CAN_VIEW_SELLER)
+        if not group_seller.permissions.filter(name='can_edit_seller').exists():
+            CAN_EDIT_SELLER = Permission.objects.get(name='can_edit_SELLER')
+            group_seller.permissions.add(CAN_EDIT_SELLER)
+        
+
+        
+
+
         username = request.POST.get('username')
         email = request.POST.get('email')
         first_name = request.POST.get('first_name')
