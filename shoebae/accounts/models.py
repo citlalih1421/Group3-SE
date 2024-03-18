@@ -12,10 +12,12 @@ class PaymentInfo(models.Model):
     card_number = models.BinaryField(blank=True, null=True) #not sure how to show just last 4/5 numbers of card
     card_expiration = models.BinaryField(blank=True, null=True) #not sure how MM/YYYY is going to be encrypted exactly
     card_cvv = models.BinaryField(blank=True, null=True)
+    
 
 class PaymentMethods(models.Model):
     payment_info = models.ManyToManyField(PaymentInfo)
     is_default_payment = models.BooleanField(default=False)
+
 
 class ShippingInfo(models.Model):
     street = models.BinaryField(blank=True, null=True)
@@ -23,6 +25,7 @@ class ShippingInfo(models.Model):
     zipcode = models.BinaryField(blank=True, null=True)
     state = models.BinaryField(blank=True, null=True)
     country = models.BinaryField(blank=True, null=True)
+
 
 class ShippingMethods(models.Model):
     shipping_info = models.ManyToManyField(ShippingInfo)
@@ -57,21 +60,27 @@ class Customer(AbstractUser):
         help_text='Specific permissions for this customer'
     )
 
+
 class Order(models.Model): #add transaction id
     order_customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
     order_shoe = models.ForeignKey(Shoe, on_delete=models.PROTECT)
     order_quantity = models.IntegerField(default=1,null=True,blank=True)
     date_ordered = models.DateTimeField(default=timezone.now)
 
+
 class Buyer(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)  # ForeignKey to link to the Customer
+    order_history = models.ManyToManyField(Order)  # Field to hold the order history
 
     class Meta:
         permissions = [('can_view_buyer', 'Can view buyer'),
                        ('can_edit_buyer', 'Can edit buyer')]
 
+        
 class Seller(models.Model):
-    
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)  # ForeignKey to link to the Customer
+    listings = models.ManyToManyField(Shoe)  # Field to keep track of the shoe listings
+
     class Meta:
         permissions = [('can_view_seller', 'Can view seller'),
                        ('can_edit_seller', 'Can edit seller')]
-
