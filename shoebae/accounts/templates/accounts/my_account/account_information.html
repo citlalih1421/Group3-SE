@@ -1,5 +1,69 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-<p>Account Information</p>
+<style>
+    .outer-container {
+        background-color: #f9f9f9;
+        border: 2px solid #f0f0f0;
+        border-radius: 10px;
+        width: 80%;
+        margin: 5% auto;
+        padding: 30px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .center-container {
+        display: block;
+        justify-content: center;
+        flex-wrap: wrap; /* Allow columns to wrap */
+    }
+    h2, h3 {
+        text-align: center;
+    }
+    h5 {
+        word-wrap: break-word; /* Wrap long words to prevent overflow */
+        padding-top: 4px; /* Adjust padding for h5 */
+    }
+    .flex-container {
+        display: flex; /* Change display to block */
+        margin-bottom: 10px; /* Adjust gap between flex-container items */
+    }
+    .flex-container h5 {
+        margin-left: 20px; /* Add missing semicolon and adjust margin */
+    }
+    @media (max-width: 768px) {
+        .outer-container {
+            width: 95%; /* Adjust width for smaller screens */
+            padding: 10vw; /* Adjust padding for smaller screens */
+        }
+        .col-lg-8 {
+            flex-basis: 100%; /* Make columns full width on smaller screens */
+            max-width: 100%; /* Set max-width to 100% on smaller screens */
+        }
+    }
+</style>
+<div class="outer-container">
+    <a class="btn btn-outline-dark" href="{% url 'account' %}">&#x2190; Back</a>
+    <h2>My Account</h2>
+    <hr>
+    <h3>Account Information:</h3>
+    <hr>
+    <div class="center-container">
+        <div class="flex-container">
+            <h4>First Name:</h4>
+            <h5>{{user.first_name}}</h5>
+        </div>
+        <div class="flex-container">
+            <h4>Last Name:</h4>
+            <h5>{{user.last_name}}</h5>
+        </div>
+        <div class="flex-container">
+            <h4>Username:</h4>
+            <h5>{{user.username}}</h5>
+        </div>
+        <div class="flex-container">
+            <h4>Email:</h4>
+            <h5>{{user.email}}</h5>
+        </div>
+    </div>
+</div>
 {% endblock %}
