@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Listings</title>
+</head>
+<body>
+    <h2>My Listings</h2>
+    <ul>
+        {% for listing in seller_listings %}
+            <li>
+                <strong>{{ listing.title }}</strong> - ${{ listing.price }}
+                <!-- Display other listing information as needed -->
+            </li>
+        {% empty %}
+            <li>No listings found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
