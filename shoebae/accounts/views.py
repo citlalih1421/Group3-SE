@@ -2,6 +2,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User, Group, Permission
 from django.shortcuts import render, redirect
+from store.models import Shoe
+
+
 
 
 # Create your views here.
@@ -108,3 +111,10 @@ def order_history_view(request):
 def tickets_view(request):
     context = {}
     return render(request, 'accounts/my_account/tickets.html')
+
+
+def view_listings(request):
+    # Retrieve listings associated with the current seller
+    seller_listings = Shoe.objects.filter(seller=request.user)
+    return render(request, 'view_listings.html', {'seller_listings': seller_listings})
+    

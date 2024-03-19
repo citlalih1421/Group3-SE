@@ -87,6 +87,13 @@
             </div>
         </div>
         {% endif %}
+        {% if user|has_group: "Seller"%}
+        <div class="col-lg-8">
+            <div onclick="location.href='{% url 'view_listings' %}';" class="box-element">
+                <h3>My Listings</h3>
+            </div>
+        </div>
+        {% endif %}
         <div class="col-lg-8">
             <div onclick="location.href='{% url 'tickets' %}';" class="box-element">
                 <h3>Tickets</h3>
