@@ -1,0 +1,97 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+<style>
+    /* General styles */
+    .outer-container {
+        background-color: #f9f9f9;
+        border: 2px solid #f0f0f0;
+        border-radius: 10px;
+        margin-top: 20px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .center-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+        padding-top: 30px;
+        width: 95%;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+
+    .col-lg-8 {
+        flex: 0 0 calc(50% - 40px);
+        max-width: calc(50% - 40px);
+        margin: 15px;
+        box-sizing: border-box;
+    }
+
+    .box-element {
+        background-color: #f0f0f0;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        border: none;
+    }
+
+    .box-element:hover {
+        background-color: #e0e0e0;
+    }
+
+    /* Media queries for responsiveness */
+    @media only screen and (max-width: 768px) {
+        .col-lg-8 {
+            flex: 0 0 calc(100% - 40px);
+            max-width: calc(100% - 40px);
+        }
+    }
+</style>
+<div class="outer-container">
+    <h2>My Account</h2>
+    <hr>
+    <h4>Welcome, {{user.first_name}}</h4>
+    <div class="center-container">
+        <div class="col-lg-8">
+            <div onclick="location.href='{% url 'account_information' %}';" class="box-element">
+                <h3>Account Information</h3>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div onclick="location.href='{% url 'account_security' %}';" class="box-element">
+                <h3>Security</h3>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div onclick="location.href='{% url 'payment_methods' %}';" class="box-element">
+                <h3>Payment Methods</h3>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div onclick="location.href='{% url 'shipping_methods' %}';" class="box-element">
+                <h3>Shipping Methods</h3>
+            </div>
+        </div>
+        {% if user|has_group:"Buyer" %}
+        <div class="col-lg-8">
+            <div onclick="location.href='{% url 'order_history' %}';" class="box-element">
+                <h3>Order History</h3>
+            </div>
+        </div>
+        {% endif %}
+        <div class="col-lg-8">
+            <div onclick="location.href='{% url 'tickets' %}';" class="box-element">
+                <h3>Tickets</h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

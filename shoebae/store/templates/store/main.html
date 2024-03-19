@@ -39,6 +39,9 @@
                 </li>
                 {% else %}
                 <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'account' %}">My Account<span class="sr-only"></span></a>
+                </li>
+                <li class="nav-item active">
                     <a class="nav-link" href="{% url 'logout' %}">Logout<span class="sr-only"></span></a>
                 </li>
                 {% endif %}
