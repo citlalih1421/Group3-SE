@@ -107,3 +107,16 @@ class Order(models.Model): #add transaction id
 class Favorite(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE)
     shoe = models.ForeignKey(Shoe, on_delete=models.CASCADE)
+
+#represents a shopping cart belonging to the user
+class ShoppingCart(models.Model):                                                   
+    customer = models.OneToOneField(User, on_delete = models.CASCADE)  #OneToOne relationship because each user has one cart
+    items = models.ManyToManyField('Shoe', through='cartitem')         #ManyToMany relationship this allows a single shoe to be associated with many carts
+
+#represents an item in the shopping cart
+class CartItem(models.Model):
+    shoe = models.ForeignKey('Shoe', on_delete=models.CASCADE)        #defines a foreign key named shoe and says if the shoe is deleted so will the cart item be
+    shopping_cart = models.ForeignKey('ShoppingCart', on_delete=models.CASCADE)  #defines a foreign key named shopping cart and will delete the items if the shopping cart is deleted
+    quantity = models.IntegerField(default=1)                          #represents a quantity associated with the shopping cart and if the quntity is not given it will be 1
+    date_added = models.DateTimeField(default=timezone.now)            #represents the date the shopping cart was made and it will pull from the timezone.now
+    
