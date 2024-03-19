@@ -2,7 +2,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User, Group, Permission
 from django.shortcuts import render, redirect
-from django.contrib.contenttypes.models import ContentType
 
 
 # Create your views here.
@@ -77,3 +76,35 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('store')
+
+def account_view(request):
+    user_groups = Group.objects.filter(user=request.user)
+    context = {
+        'user' : request.user,
+        'user_groups': user_groups
+    }
+    return render(request, 'accounts/my_account/account.html', context)
+
+def account_information_view(request):
+    context = {}
+    return render(request, 'accounts/my_account/account_information.html')
+
+def security_view(request):
+    context = {}
+    return render(request, 'accounts/my_account/security.html')
+
+def payment_methods_view(request):
+    context = {}
+    return render(request, 'accounts/my_account/payment_methods.html')
+
+def shipping_methods_view(request):
+    context = {}
+    return render(request, 'accounts/my_account/shipping_methods.html')
+
+def order_history_view(request):
+    context = {}
+    return render(request, 'accounts/my_account/order_history.html')
+
+def tickets_view(request):
+    context = {}
+    return render(request, 'accounts/my_account/tickets.html')
