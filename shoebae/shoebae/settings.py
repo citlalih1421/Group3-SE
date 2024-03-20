@@ -39,8 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_mptt_admin',
+    'accounts.apps.AccountsConfig',
     'store.apps.StoreConfig',
-    'accounts.apps.AccountsConfig'
+    'payments.apps.PaymentsConfig',
+    'orders.apps.OrdersConfig',
+    'support.apps.SupportConfig'
 ]
 
 MIDDLEWARE = [
@@ -108,6 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'accounts.Customer'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
