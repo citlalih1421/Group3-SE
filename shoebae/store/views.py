@@ -12,3 +12,19 @@ def cart(request):
 def checkout(request):
     context = {}
     return render(request, 'store/checkout.html')
+
+def home(request):
+    context = {}
+    return render(request, 'store/home.html')
+
+def addLisiting(request):
+    context = {}
+    return render(request, 'store/addlisting.html')
+
+def productPage(request):
+    context = {}
+    return render(request, 'store/productpage.html')
+
+def seller(request):
+    context = {}
+    return render(request, 'store/seller.html')

@@ -1,0 +1,93 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Add Listing</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="top_image" class="form-label">Top of Shoes Image</label>
+            <input type="file" class="form-control" id="top_image" name="top_image">
+        </div>
+        <div class="mb-3">
+            <label for="right_image" class="form-label">Right of Shoes Image</label>
+            <input type="file" class="form-control" id="right_image" name="right_image">
+        </div>
+        <div class="mb-3">
+            <label for="left_image" class="form-label">Left of Shoes Image</label>
+            <input type="file" class="form-control" id="left_image" name="left_image">
+        </div>
+        <div class="mb-3">
+            <label for="back_image" class="form-label">Back of Shoes Image (Optional)</label>
+            <input type="file" class="form-control" id="back_image" name="back_image">
+        </div>
+        <div class="mb-3">
+            <label for="bottom_image" class="form-label">Bottom of Shoes Image (Optional)</label>
+            <input type="file" class="form-control" id="bottom_image" name="bottom_image">
+        </div>
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title">
+        </div>
+        <div class="mb-3">
+            <label for="brand" class="form-label">Brand</label>
+            <input type="text" class="form-control" id="brand" name="brand">
+        </div>
+        <div class="mb-3">
+            <label for="main_color" class="form-label">Main Color</label>
+            <input type="text" class="form-control" id="main_color" name="main_color">
+        </div>
+        <div class="mb-3">
+            <label for="accent_color" class="form-label">Accent Color (if applicable)</label>
+            <input type="text" class="form-control" id="accent_color" name="accent_color">
+        </div>
+        <div class="mb-3">
+            <label for="shoe_type" class="form-label">Shoe Type</label>
+            <input type="text" class="form-control" id="shoe_type" name="shoe_type">
+        </div>
+        <div class="mb-3">
+            <label for="sex" class="form-label">Sex</label>
+            <select class="form-select" id="sex" name="sex">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="unisex">Unisex</option>
+                <option value="unisex">Kids</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="shoe_size" class="form-label">Shoe Size</label>
+            <input type="text" class="form-control" id="shoe_size" name="shoe_size">
+        </div>
+        <div class="mb-3">
+            <label for="condition" class="form-label">Condition</label>
+            <select class="form-select" id="condition" name="condition">
+                <option value="new">New</option>
+                <option value="like-new">Like New</option>
+                <option value="very-good">Very Good</option>
+                <option value="good">Good</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Quantity</label>
+            <input type="number" class="form-control" id="quantity" name="quantity">
+        </div>
+        <div class="mb-3">
+            <label for="original_price" class="form-label">Original Price ($)</label>
+            <input type="number" class="form-control" id="original_price" name="original_price">
+        </div>
+        <div class="mb-3">
+            <label for="listing_price" class="form-label">Listing Price ($)</label>
+            <input type="number" class="form-control" id="listing_price" name="listing_price">
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" rows="4" name="description"></textarea>
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a href="#" class="btn btn-secondary">Save for Later</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
