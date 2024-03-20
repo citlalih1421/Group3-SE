@@ -1,10 +1,12 @@
+from django.db import models
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator, DecimalValidator
-from django.db import models
-from django.contrib.auth.models import User
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils import timezone
-from decimal import Decimal 
+
+
+User = get_user_model()
 
 # Create your models here.
 def increment_by_half_validator(value):
@@ -70,26 +72,28 @@ class Brand(models.Model):
 
 class Category(MPTTModel):
     name = models.CharField(max_length=255)
-    parent = TreeForeignKey('self',on_delete=models.CASCADE, null=True, blank=True)
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'Categories'
+
     class MPTTMeta:
-        order_insertion_by = ['name','parent']
+        order_insertion_by = ['name', 'parent']
 
     def __str__(self):
         return self.name
-    
+
 class Review(models.Model):
+    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews', null=True)
     shoe = models.ForeignKey(Shoe, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     rating = models.DecimalField(
         max_digits=2,
         decimal_places=1,
-        validators= [
+        validators=[
             MinValueValidator(1),
             MaxValueValidator(5),
-            DecimalValidator(max_digits=2,decimal_places=1),
+            DecimalValidator(max_digits=2, decimal_places=1),
             increment_by_half_validator
         ]
     )
@@ -98,12 +102,9 @@ class Review(models.Model):
     def __str__(self):
         return self.title
     
-class Order(models.Model): #add transaction id
-    customer = models.ForeignKey(User, on_delete=models.PROTECT)
-    shoe = models.ForeignKey(Shoe, on_delete=models.PROTECT)
-    quantity = models.IntegerField(default=1,null=True,blank=True)
-    date_ordered = models.DateTimeField(default=timezone.now)
+
 
 class Favorite(models.Model):
-    customer = models.ForeignKey(User, on_delete=models.CASCADE)
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorite')
     shoe = models.ForeignKey(Shoe, on_delete=models.CASCADE)
+
