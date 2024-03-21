@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from datetime import timezone
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -13,7 +13,7 @@ class Order(models.Model):
 
 class ShoppingCart(models.Model):
     customer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='shopping_cart')
-    items = models.ManyToManyField('Shoe', through='CartItem')
+    items = models.ManyToManyField('store.Shoe', through='CartItem')
 
 class CartItem(models.Model):
     shoe = models.ForeignKey('store.Shoe', on_delete=models.CASCADE)

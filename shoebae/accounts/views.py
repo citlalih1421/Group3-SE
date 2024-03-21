@@ -1,61 +1,67 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.contrib.auth.models import User, Group, Permission
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group, Permission
 from django.shortcuts import render, redirect
+from accounts.models import UserStatus
 from store.models import Shoe
 
 
-
+User = get_user_model()
 
 # Create your views here.
 
 def register(request):
-    if (request.method == 'POST'):
+    if request.method == 'POST':
         username = request.POST.get('username')
         email = request.POST.get('email')
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
-        password1 = request.POST.get('password2')
+        password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
-        is_buyer = request.POST.get('is_buyer')
-        is_seller = request.POST.get('is_seller')
+        is_buyer = request.POST.get('is_buyer') == 'on'
+        is_seller = request.POST.get('is_seller') == 'on'
 
-        #verfies valid and unused email
-        if (not '@' in email) or (User.objects.filter(email=email).exists()):
+        if not ('@' in email) or User.objects.filter(email=email).exists():
             messages.error(request, 'Invalid email address')
             return render(request, 'accounts/register.html')
-        
-        #verifies unique username
-        if (User.objects.filter(username=username)):
+
+        if User.objects.filter(username=username).exists():
             messages.error(request, 'Username is already taken')
             return render(request, 'accounts/register.html')
-        
-        #verifies password was confirmed
-        if (password1 != password2):
+
+        if password1 != password2:
             messages.error(request, 'Passwords do not match')
             return render(request, 'accounts/register.html')
-        
-        #creates the user and stores their registration information
+
         user = User.objects.create_user(
-            username=username, 
-            email=email, 
-            password=password1, 
-            first_name=first_name, 
+            username=username,
+            email=email,
+            password=password1,
+            first_name=first_name,
             last_name=last_name
-            )
-        group_buyer, created = Group.objects.get_or_create(name='Buyer')
-        group_seller, created = Group.objects.get_or_create(name='Seller')
-        if (is_buyer):
+        )
+
+        user_status = UserStatus.objects.create(
+            user=user,
+            is_buyer=is_buyer,
+            is_seller=is_seller
+        )
+
+        group_buyer, created_buyer = Group.objects.get_or_create(name='Buyer')
+        group_seller, created_seller = Group.objects.get_or_create(name='Seller')
+
+        if is_buyer and created_buyer:
             user.groups.add(group_buyer)
 
-        if (is_seller):
+        if is_seller and created_seller:
             user.groups.add(group_seller)
 
-        user.save()
         messages.success(request, 'Account created successfully')
         return redirect('login')
-        
+
     return render(request, 'accounts/register.html')
+
 
 def login_view(request):
     if (request.method == 'POST'):
