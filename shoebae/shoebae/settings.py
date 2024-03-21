@@ -86,7 +86,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'shoebae_db',
         'USER': 'postgres',
-        'PASSWORD': 'password',
+        'PASSWORD': 'JMT',
         'HOST': 'localhost',
         'PORT': '5432'
     }

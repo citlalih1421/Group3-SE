@@ -1,4 +1,9 @@
-from django.shortcuts import render
+from django.views import View
+from django.views.generic.edit import CreateView
+from django.shortcuts import redirect
+from django.shortcuts import render, redirect
+from .forms import ShoeForm
+from .models import Shoe
 
 # Create your views here.
 def store(request):
@@ -28,3 +33,23 @@ def productPage(request):
 def seller(request):
     context = {}
     return render(request, 'store/seller.html')
+
+
+
+class AddListingView(CreateView):
+    model = Shoe
+    form_class = ShoeForm
+    template_name = 'store/addlisting.html'
+    success_url = '/success/url/'  # Replace this with your actual success URL
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        shoe = form.save(commit=False)
+        shoe.seller = self.request.user
+        shoe.save()
+        return redirect(self.success_url)
