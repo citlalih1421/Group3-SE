@@ -17,7 +17,7 @@ def home(request):
     context = {}
     return render(request, 'store/home.html')
 
-def addLisiting(request):
+def add_listing(request):
     context = {}
     return render(request, 'store/addlisting.html')
 
