@@ -86,7 +86,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'shoebae_db',
         'USER': 'postgres',
-        'PASSWORD': 'JMT',
+        'PASSWORD': 'password',
         'HOST': 'localhost',
         'PORT': '5432'
     }
@@ -139,3 +139,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'staticfiles/')
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
