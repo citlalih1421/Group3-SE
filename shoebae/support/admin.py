@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django_mptt_admin.admin import DjangoMpttAdmin
+from support.models import Issue, Ticket
 
 # Register your models here.
 
@@ -9,6 +10,6 @@ class IssueAdmin(DjangoMpttAdmin):
 class TicketAdmin(DjangoMpttAdmin):
     list_display = ['title','parent']
     search_fields = ['title', 'parent']
-admin.site.register('support.Issue', IssueAdmin)
-admin.site.register('support.Ticket', TicketAdmin)
+admin.site.register(Issue, IssueAdmin)
+admin.site.register(Ticket, TicketAdmin)
 

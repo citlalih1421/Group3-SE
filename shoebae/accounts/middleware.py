@@ -6,7 +6,7 @@ class GroupPermissionsMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if hasattr(request,'user') and (request.user.is_authenticated):
+        if hasattr(request,'user') and (request.user.is_authenticated) and (not request.user.is_superuser):
             if (not request.user.groups.filter(name="Buyer").exists()):
                 raise PermissionDenied('You do not have permission to view or edit Buyer content')
             elif (not request.user.groups.filter(name="Seller").exists()):
