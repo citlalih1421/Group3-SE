@@ -1,0 +1,29 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+
+{% include 'filter.html' %}
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Loop through product listings -->
+        {% for product in products %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.title }}</h5>
+                    <p class="card-text">{{ product.description }}</p>
+                    <p class="card-text"><strong>Price: ${{ product.price }}</strong></p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Include Bootstrap JS and any other scripts -->
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+{% endblock %}

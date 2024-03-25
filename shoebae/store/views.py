@@ -17,14 +17,30 @@ def home(request):
     context = {}
     return render(request, 'store/home.html')
 
-def addLisiting(request):
+def addlisiting(request):
     context = {}
     return render(request, 'store/addlisting.html')
 
-def productPage(request):
+def productpage(request):
     context = {}
     return render(request, 'store/productpage.html')
 
 def seller(request):
     context = {}
     return render(request, 'store/seller.html')
+
+def apply(request):
+    context = {}
+    return render(request, 'store/apply.html')
+
+def testing(request):
+    context = {}
+    return render(request, 'store/testing.html')
+
+def filter(request):
+    context = {}
+    return render(request, 'store/filter.html')
+
+def listings(request):
+    context = {}
+    return render(request, 'store/listings.html')
