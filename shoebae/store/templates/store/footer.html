@@ -4,6 +4,10 @@
 {% block content %}
 {% endblock %}
 
+<head>
+    <!-- Include your CSS file -->
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
 
 
 <!--------Modals-------->
@@ -50,37 +54,42 @@
     </div>
 
   
-
-    <!--Footer-->
-    <footer class="bg-dark text-light py-5">
-        <div class="container">
-            <h3>ShoeBae. Affordability and quality at your fingertips.</h3>
-            <div class="row">
-                <div class="col-md-4">
-                    <h3 class="important">About</h3>
-                    <ul class="list-unstyled">
-                        <li>Website Navigation</li>
-                        <li>How ShoeBae Works</li>
-                        <li><a href="FAQ.html" class="text-light">FAQs</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h3 class="important">Help</h3>
-                    <ul class="list-unstyled">
-                        <li>Help Center</li>
-                        <li><a href="#" class="text-light" data-bs-toggle="modal" data-bs-target="#contactUsModal">Contact Us</a></li>
-                        <li><a href="#" class="text-light" data-bs-toggle="modal" data-bs-target="#sizeGuideModal">Size Guide</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h3 class="important">Languages</h3>
-                    <ul class="list-unstyled">
-                        <li>English</li>
-                        <li>Español</li>
-                        <li>Türkçe</li>
-                    </ul>
-                </div>
+<!--Footer-->
+<footer class="bg-dark text-light py-5">
+    <div class="container">
+        <h3>ShoeBae. Affordability and quality at your fingertips.</h3>
+        <div class="row">
+            <div class="col-md-3">
+                <h3 class="important">About</h3>
+                <ul class="list-unstyled">
+                    <li>Website Navigation</li>
+                    <li>How ShoeBae Works</li>
+                    <li><a href="FAQ.html" class="text-light">FAQs</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h3 class="important">Help</h3>
+                <ul class="list-unstyled">
+                    <li>Help Center</li>
+                    <li><a href="#" class="text-light" data-bs-toggle="modal" data-bs-target="#contactUsModal">Contact Us</a></li>
+                    <li><a href="#" class="text-light" data-bs-toggle="modal" data-bs-target="#sizeGuideModal">Size Guide</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h3 class="important">Languages</h3>
+                <ul class="list-unstyled">
+                    <li>English</li>
+                    <li>Español</li>
+                    <li>Türkçe</li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h3 class="important">ShoeBae Seller</h3>
+                <ul class="list-unstyled">
+                    <li>Apply Now!</li>
+                </ul>
             </div>
         </div>
-            <p class="text-left">&copy; 2024 Online Shoe Store. All rights reserved.</p>
-    </footer> 
+    </div>
+        <p class="text-left">&copy; 2024 Online Shoe Store. All rights reserved.</p>
+</footer> 

@@ -1,56 +1,7 @@
-{% extends 'store/main.html' %}
+{% extends 'store/footer.html' %}
 {% load static %}
 
 {% block content %}
-
-<!-- Seller Testimonial Carousel -->
-<section id="testimonials" class="container mt-5">
-    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-        <ol class="carousel-indicators">
-            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="3"></li>
-        </ol>
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <img src="{% static 'images/SellerIcon.jpg' %}" alt="Seller Picture" class="img-thumbnail mx-auto d-block mb-3" style="width: 100px; height: 100px; border-radius: 50%;">
-                        <p class="card-text">"I love selling with ShoeBae! The platform is user-friendly and provides great exposure for my products."</p>
-                        <p class="card-text">John Doe, ShoeBae Seller</p>
-                    </div>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <img src="{% static 'images/SellerIcon.jpg' %}" alt="Seller Picture" class="img-thumbnail mx-auto d-block mb-3" style="width: 100px; height: 100px; border-radius: 50%;">
-                        <p class="card-text">"ShoeBae has helped me reach a wider audience and increase my sales significantly. Highly recommended!"</p>
-                        <p class="card-text">Jane Smith, ShoeBae Seller</p>
-                    </div>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <img src="{% static 'images/SellerIcon.jpg' %}" alt="Seller Picture" class="img-thumbnail mx-auto d-block mb-3" style="width: 100px; height: 100px; border-radius: 50%;">
-                        <p class="card-text">"Selling with ShoeBae has been a breeze. The support team is responsive and helpful, and the platform is intuitive."</p>
-                        <p class="card-text">Michael Sur</p>
-                    </div>
-                </div>
-            </div> 
-        </div>
-        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-        </a>
-    </div>
-</section>
 
 
 <div class="container">
@@ -69,12 +20,34 @@
             <div id="collapseSex" class="collapse show" aria-labelledby="headingSex" data-parent="#filterAccordion">
               <div class="card-body">
                 <form method="GET" action="{% url 'listings' %}">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" name="sex">
-                    <label class="form-check-label" for="sexAll">All</label>
-                  </div>
-                  <!-- Add more sex options as needed -->
-                  <!-- Example: Men, Women, Unisex, Kids -->
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="men" name="sex">
+                        <label class="form-check-label" for="sexMen">
+                          Men
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="women" name="sex">
+                        <label class="form-check-label" for="sexWomen">
+                          Women
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="unisex" name="sex">
+                        <label class="form-check-label" for="sexUnisex">
+                          Unisex
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="kids" name="sex">
+                        <label class="form-check-label" for="sexKids">
+                          Kids
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" name="sex">
+                        <label class="form-check-label" for="sexAll">All</label>
+                    </div>
                 </form>
               </div>
             </div>
@@ -154,6 +127,7 @@
               </div>
             </div>
           </div>
+          <button type="submit" class="btn btn-primary">Apply Filters</button>
         </div>
       </div>
   
@@ -165,10 +139,4 @@
   </div>
   
 
-
-<link rel="stylesheet" href="{% static 'css/home.css' %}"> 
-{% endblock %}
-
-
-
-
+{% endblock content %}
