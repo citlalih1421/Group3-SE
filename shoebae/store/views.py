@@ -2,6 +2,8 @@ from django.views import View
 from django.views.generic.edit import CreateView
 from django.shortcuts import redirect
 from django.shortcuts import render, redirect
+from django.db.models import Q
+from django.views.generic import ListView
 from .forms import ShoeForm
 from .models import Shoe
 
@@ -53,3 +55,26 @@ class AddListingView(CreateView):
         shoe.seller = self.request.user
         shoe.save()
         return redirect(self.success_url)
+    
+class ShoeSearchListView(ListView):
+    model = Shoe
+    template_name = 'search.html'
+    context_object_name = 'shoes'
+    paginate_by = 10
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        seller_username = self.request.GET.get('seller')
+        queryset = super().get_queryset()
+
+        if query:
+            queryset = queryset.filter(
+                Q(name__icontains=query) |
+                Q(brand__icontains=query) |
+                Q(conditions__icontains=query) |
+                Q(category__icontains=query)
+            )
+        if seller_username:
+            queryset = queryset.filter(seller__username=seller_username)
+
+        return queryset
