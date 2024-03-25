@@ -1,5 +1,6 @@
 from django.views import View
 from django.views.generic.edit import CreateView
+from django.views.generic import ListView
 from django.shortcuts import redirect
 from django.shortcuts import render, redirect
 from .forms import ShoeForm
@@ -53,3 +54,15 @@ class AddListingView(CreateView):
         shoe.seller = self.request.user
         shoe.save()
         return redirect(self.success_url)
+
+
+
+
+class ViewListingsView(ListView):
+    model = Shoe
+    template_name = 'store/mylistings.html'
+    context_object_name = 'seller_listings'
+
+    def get_queryset(self):
+        # Filter listings to display only those associated with the currently logged-in user
+        return Shoe.objects.filter(seller=self.request.user)

@@ -1,0 +1,27 @@
+<!-- store/templates/store/view_listings.html -->
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="md-4">My Listings</h2>
+    <div class="row">
+        {% for listing in seller_listings %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <!-- Add your listing display content here -->
+                <div class="card-body">
+                    <h5 class="card-title">{{ listing.title }}</h5>
+                    <p class="card-text">Price: ${{ listing.price }}</p>
+                    <!-- Add other fields you want to display for each listing -->
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col">
+            <p>No listings found.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
