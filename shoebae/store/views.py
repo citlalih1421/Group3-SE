@@ -43,7 +43,7 @@ class AddListingView(CreateView):
     model = Shoe
     form_class = ShoeForm
     template_name = 'store/addlisting.html'
-    success_url = '/success/url/'  # Replace this with your actual success URL
+    success_url = 'listing'  # Replace this with your actual success URL
 
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
