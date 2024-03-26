@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf.urls.static import static
+from shoebae import settings
 from .import views
 from .views import AddListingView
 from .views import ViewListingsView
@@ -15,4 +17,4 @@ urlpatterns = [
     path('seller/listing/', AddListingView.as_view(), name="listing" ),
     path('seller/listings/', ViewListingsView.as_view(), name="view_listings"),
     path('store/search/', ShoeSearchListView.as_view(), name='search')
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -69,6 +69,7 @@ class ViewListingsView(ListView):
         # Filter listings to display only those associated with the currently logged-in user
         return Shoe.objects.filter(seller=self.request.user)
     
+    
 class ShoeSearchListView(ListView):
     model = Shoe
     template_name = 'search.html'

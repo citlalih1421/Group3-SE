@@ -16,7 +16,7 @@ def increment_by_half_validator(value):
 class Shoe(models.Model):
     seller = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='images/shoes/')
+    image = models.ImageField(upload_to='images/seller/')
     quantity = models.IntegerField(
         validators=[
             MinValueValidator(1),

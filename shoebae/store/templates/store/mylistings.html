@@ -10,7 +10,7 @@
         <div class="col-md-4 mb-4">
             <div class="card">
                 {% if listing.image %}
-                <img src="{{ listing.image.url }}" class="card-img-top" alt="{{ listing.name }}">
+                <img src="{{ listing.image.url }}" class="card-img-top">
                 {% else %}
                 <!-- Placeholder image -->
                 <img src="{% static 'images/product-placeholder.png' %}" class="card-img-top" alt="Placeholder Image">
