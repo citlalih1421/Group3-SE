@@ -56,7 +56,6 @@ class AddListingView(CreateView):
         shoe.seller = self.request.user
         shoe.save()
         return redirect(self.success_url)
-<<<<<<< HEAD
 
 
 
@@ -69,7 +68,6 @@ class ViewListingsView(ListView):
     def get_queryset(self):
         # Filter listings to display only those associated with the currently logged-in user
         return Shoe.objects.filter(seller=self.request.user)
-=======
     
 class ShoeSearchListView(ListView):
     model = Shoe
@@ -93,4 +91,3 @@ class ShoeSearchListView(ListView):
             queryset = queryset.filter(seller__username=seller_username)
 
         return queryset
->>>>>>> f7e592c67c1700be4e40ddf98f41f5b0923a4461
