@@ -82,6 +82,8 @@ class Category(MPTTModel):
 
     def __str__(self):
         return self.name
+    
+    
 
 class Review(models.Model):
     reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews', null=True)
