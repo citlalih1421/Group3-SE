@@ -25,7 +25,7 @@ def home(request):
     context = {}
     return render(request, 'store/home.html')
 
-def add_listing(request):
+def add_listing(request): #remove this
     context = {}
     return render(request, 'store/addlisting.html')
 
