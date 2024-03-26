@@ -9,10 +9,17 @@
         {% for listing in seller_listings %}
         <div class="col-md-4 mb-4">
             <div class="card">
-                <!-- Add your listing display content here -->
+                {% if listing.image %}
+                <img src="{{ listing.image.url }}" class="card-img-top" alt="{{ listing.name }}">
+                {% else %}
+                <!-- Placeholder image -->
+                <img src="{% static 'images/product-placeholder.png' %}" class="card-img-top" alt="Placeholder Image">
+                {% endif %}
                 <div class="card-body">
-                    <h5 class="card-title">{{ listing.title }}</h5>
+                    <h5 class="card-title">{{ listing.name }}</h5>
                     <p class="card-text">Price: ${{ listing.price }}</p>
+                    <p class="card-text">Size: {{ listing.size }}</p>
+                    <p class="card-text">Condition: {{ listing.conditions }}</p>
                     <!-- Add other fields you want to display for each listing -->
                 </div>
             </div>
