@@ -28,7 +28,7 @@ def add_listing(request):
     context = {}
     return render(request, 'store/addlisting.html')
 
-def productPage(request):
+def productpage(request):
     context = {}
     return render(request, 'store/productpage.html')
 
