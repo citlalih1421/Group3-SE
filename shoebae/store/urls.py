@@ -16,9 +16,3 @@ urlpatterns = [
     path('seller/listings/', ViewListingsView.as_view(), name="view_listings"),
     path('store/search/', ShoeSearchListView.as_view(), name='search')
 ]
-
-
-
-
-    
-
