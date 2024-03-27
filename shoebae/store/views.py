@@ -7,6 +7,8 @@ from django.db.models import Q
 from django.views.generic import ListView
 from .forms import ShoeForm
 from .models import Shoe
+from django.views.generic.edit import DeleteView
+from django.urls import reverse_lazy
 
 # Create your views here.
 def store(request):
@@ -69,6 +71,8 @@ class ViewListingsView(ListView):
         # Filter listings to display only those associated with the currently logged-in user
         return Shoe.objects.filter(seller=self.request.user)
     
+
+
     
 class ShoeSearchListView(ListView):
     model = Shoe
@@ -92,3 +96,10 @@ class ShoeSearchListView(ListView):
             queryset = queryset.filter(seller__username=seller_username)
 
         return queryset
+
+
+
+class DeleteListingView(DeleteView):
+    model = Shoe
+    success_url = reverse_lazy('view_listings')
+    template_name = 'store/delete_listing.html'  # Create this template if you want to customize the delete confirmation page
