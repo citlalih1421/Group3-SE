@@ -13,49 +13,10 @@ def increment_by_half_validator(value):
     if value % 0.5 != 0:
         raise ValidationError('Value must be incrementable by 0.5.')
 
-class Shoe(models.Model):
-    seller = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='images/seller/')
-    quantity = models.IntegerField(
-        validators=[
-            MinValueValidator(1),
-            MaxValueValidator(10)
-        ]
-    )
-    price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        validators=[
-            MinValueValidator(0.01),
-            MaxValueValidator(5000),
-            DecimalValidator(max_digits=10, decimal_places=2)
-        ]
-    )
-    size = models.DecimalField(
-        max_digits=3,
-        decimal_places=1,
-        validators=[
-            MinValueValidator(1),
-            DecimalValidator(max_digits=3, decimal_places=1)
-        ]
-    )
-    conditions = models.CharField(
-        max_length=100,
-        default='other'
-    )
-    brand = models.CharField(
-        max_length=100,
-        default='other'
-    )
-    category = models.CharField(
-        max_length=255,
-        default='other'
-    )
-    date_posted = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return self.name
+def upload_image_path(instance, filename):
+    # Generate upload path based on seller's ID and product's ID
+    seller_id = instance.seller.id
+    return f'sellers/{seller_id}/{filename}'
 
 class Condition(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -79,6 +40,42 @@ class Category(MPTTModel):
 
     class MPTTMeta:
         order_insertion_by = ['name', 'parent']
+
+    def __str__(self):
+        return self.name
+    
+class Shoe(models.Model):
+    seller = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    image = models.ImageField(upload_to=upload_image_path)
+    quantity = models.IntegerField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(10)
+        ]
+    )
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[
+            MinValueValidator(0.01),
+            MaxValueValidator(5000),
+            DecimalValidator(max_digits=10, decimal_places=2)
+        ]
+    )
+    size = models.DecimalField(
+        max_digits=3,
+        decimal_places=1,
+        validators=[
+            MinValueValidator(1),
+            DecimalValidator(max_digits=3, decimal_places=1)
+        ]
+    )
+    condition = models.ForeignKey(Condition, on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True)
+    
+    date_posted = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name

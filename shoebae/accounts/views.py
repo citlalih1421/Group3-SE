@@ -49,22 +49,21 @@ class RegisterView(View):
             first_name=first_name,
             last_name=last_name
         )
-
-        # Check if UserProfile exists for the user
+        
+        
         user_profile, created = UserProfile.objects.get_or_create(user=user)
-
-        # Update the UserProfile fields
         user_profile.is_buyer = is_buyer
         user_profile.is_seller = is_seller
         user_profile.save()
+        
 
         group_buyer, created_buyer = Group.objects.get_or_create(name='Buyer')
         group_seller, created_seller = Group.objects.get_or_create(name='Seller')
 
-        if is_buyer and created_buyer:
+        if is_buyer:
             user.groups.add(group_buyer)
 
-        if is_seller and created_seller:
+        if is_seller:
             user.groups.add(group_seller)
 
         messages.success(request, 'Account created successfully')
