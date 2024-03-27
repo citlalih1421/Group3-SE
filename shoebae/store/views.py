@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.views.generic import ListView
 from .forms import ShoeForm
-from .models import Shoe
+from .models import Shoe, Condition, Brand, Category
 from django.views.generic.edit import DeleteView
 from django.urls import reverse_lazy
 
@@ -47,11 +47,36 @@ class AddListingView(CreateView):
     template_name = 'store/addlisting.html'
     success_url = 'listing'  # Replace this with your actual success URL
 
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        categories = Category.objects.all()
+        # Arrange categories in a hierarchical structure
+        structured_categories = self.get_structured_categories(categories)
+        context['categories'] = structured_categories
+        context['brands'] = Brand.objects.all()
+        context['conditions'] = Condition.objects.all()
+        return context
 
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
+    def get_structured_categories(self, categories):
+        structured_categories = []
+        for category in categories:
+            if category.parent is None:
+                # This is a top-level category
+                structured_categories.append({
+                    'category': category,
+                    'children': self.get_children(category, categories),
+                })
+        return structured_categories
+
+    def get_children(self, parent_category, all_categories):
+        children = []
+        for category in all_categories:
+            if category.parent == parent_category:
+                children.append({
+                    'category': category,
+                    'children': self.get_children(category, all_categories),
+                })
+        return children
 
     def form_valid(self, form):
         shoe = form.save(commit=False)

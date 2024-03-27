@@ -49,11 +49,22 @@
                 <div class="mb-3">
                     <label for="category" class="form-label">Category</label>
                     <select class="form-select" id="category" name="category">
-                        {% for category in categories %}
-                            <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% for category_obj in categories %}
+                            <option value="{{ category_obj.category.id }}">{{ category_obj.category.name }}</option>
+                            {% if category_obj.children %}
+                                {% for child_category in category_obj.children %}
+                                    <option value="{{ child_category.category.id }}">- {{ child_category.category.name }}</option>
+                                    {% if child_category.children %}
+                                        {% for grandchild_category in child_category.children %}
+                                            <option value="{{ grandchild_category.category.id }}">-- {{ grandchild_category.category.name }}</option>
+                                            <!-- Add more levels as needed -->
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
                         {% endfor %}
                     </select>
-                </div>                
+                </div>                                
             </div>
         </div>
         <div class="mb-3">
@@ -62,5 +73,8 @@
         </div>
     </form>
 </div>
+
+
+
 {% endblock %}
 
