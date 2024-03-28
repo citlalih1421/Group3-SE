@@ -39,6 +39,22 @@ def seller(request):
     context = {}
     return render(request, 'store/seller.html')
 
+def filter(request):
+    context = {}
+    return render(request, 'store/filter.html')
+
+def testing(request):
+    context = {}
+    return render(request, 'store/testing.html')
+
+def paymentmethod(request):
+    context = {}
+    return render(request, 'store/paymentmethod.html')
+
+def viewlisting(request):
+    context = {}
+    return render(request, 'store/viewlisting.html')
+
 
 
 class AddListingView(CreateView):

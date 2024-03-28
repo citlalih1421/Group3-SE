@@ -49,7 +49,7 @@
 <section id="categories" class="container mt-5">
     <h2 class="text-center">Shop by Category</h2>
     <div class="row">
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 md-4">
             <div class="card text-center">
                 <a href="men.html">
                     <img src="{% static 'images/home/categories/sex/Men.webp' %}" class="card-img-top" alt="Men's Shoes">
@@ -60,9 +60,9 @@
             </div>
         </div>
         
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 md-4">
             <div class="card text-center">
-                <a href="men.html">
+                <a href="{% url 'store' %}">
                     <img src="{% static 'images/home/categories/sex/Women.webp' %}" class="card-img-top" alt="Women's Shoes">
                     <div class="card-body">
                         <p class="card-text">Women</p>
@@ -71,9 +71,9 @@
             </div>
         </div>
 
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 col-md-4">
             <div class="card text-center">
-                <a href="men.html">
+                <a href="{% url 'store' %}">
                     <img src="{% static 'images/home/categories/sex/Kids.webp' %}" class="card-img-top" alt="Kids' Shoes">
                     <div class="card-body">
                         <p class="card-text">Kids</p>
@@ -158,7 +158,7 @@
     <div class="row">
         <div class="col-md-4 mb-4">
             <div class="card text-center">
-                <a href="men.html">
+                <a href="{% url 'store' %}">
                     <img src="{% static 'images/home/categories/type/Sneakers.jpg' %}" class="card-img-top" alt="Sneakers">
                     <div class="card-body">
                         <p class="card-text">Sneakers</p>
@@ -168,7 +168,7 @@
         </div>
         <div class="col-md-4 mb-4">
             <div class="card text-center">
-                <a href="men.html">
+                <a href="{% url 'store' %}">
                     <img src="{% static 'images/home/categories/type/Boots.jpg' %}" class="card-img-top" alt="Boots">
                     <div class="card-body">
                         <p class="card-text">Boots</p>
@@ -178,20 +178,10 @@
         </div>
         <div class="col-md-4 mb-4">
             <div class="card text-center">
-                <a href="men.html">
-                    <img src="{% static 'images/home/type/Heels.jpg' %}" class="card-img-top" alt="Heels">
+                <a href="{% url 'store' %}">
+                    <img src="{% static 'images/home/type/Heels.webp' %}" class="card-img-top" alt="Heels">
                     <div class="card-body">
                         <p class="card-text">Boots</p>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card text-center">
-                <a href="men.html">
-                    <img src="{% static 'images/home/categories/brand/UnderArmour.jpg' %}" class="card-img-top" alt="Men's Shoes">
-                    <div class="card-body">
-                        <p class="card-text">Men</p>
                     </div>
                 </a>
             </div>

@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin #only logged-in users will see MyAcountView
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -102,7 +103,6 @@ class MyAccountView(View):
         user_groups = Group.objects.filter(user=request.user)
         context = {'user': request.user, 'user_groups': user_groups}
         return render(request, 'accounts/my_account/account.html', context)
-
 
 class MyInfoView(View):
     def get(self, request):

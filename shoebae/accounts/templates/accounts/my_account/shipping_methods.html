@@ -1,5 +1,225 @@
-{% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-<p>Shipping Methods</p>
-{% endblock %}
+<style>
+  #shipping-info{
+    height: 450px;
+  }
+  strong{
+    color:rgb(12, 12, 12);
+  }
+</style>
+
+    <div class="container">
+      <h2 class="text-center" style="color: #4f868c"> Shipping Information</h2>  
+
+      <div id="myShippingAddresses" class="carousel slide col-12" data-ride="carousel">
+        <div class="carousel-inner my-5">
+
+          <!-- Carousel element 1 if there is a payment method saved-->
+          <div class="carousel-item active">
+            <div class="row justify-content-center">
+              <div class="col-lg-8" id="saved-shipping-info" style="height: 450px;">
+                <!-- Include saved payment info here -->
+                {% if savedPaymentInfo %}
+                <h5 class="text-center">Saved Shipping Information</h5>
+                  <!-- Display saved Shipping information using savedShippingInfo object -->
+                  <div class="row d-flex justify-content-between">
+                    <!--Shipping Information-->
+                    <div class="container col-md-6">
+                      <h5>Shipping Information</h5>
+                      <p><strong>Name:</strong></p>
+                      <p>{{ savedShippingInfo.name }}</p>
+                      <p><strong>Address:</strong><p>
+                      <p>{{ savedShippingInfo.address }}</p>
+                      <p>{{ savedPaymentInfo.city }}, {{ savedPaymentInfo.state }} {{ savedPaymentInfo.zipcode }}</p>
+                      <p><strong>Phone Number:</strong></p>
+                      <p>{{ savedPaymentInfo.number }}</p>
+                    </div>
+                  </div>
+                  {% else %}
+                    <div class="text-center"> 
+                      <button id="addShippingMethodBtn" class="btn btn-primary">Add Shipping Address</button>
+                    </div>
+                  {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Carousel element 1 if there is NO shipping method-->
+          <div class="carousel-item">
+            <div class="row justify-content-center"> 
+              <!-- Center shipping information -->
+              <!--Shipping Information-->
+              <div class="col-lg-8" id="shipping-info">
+                <form id="ShippingForm" method="post">
+                  {% csrf_token %}
+                  <div class="row">
+                    <!--Shipping Information-->
+                    <div class="col-md-6">
+                      <h5>Shipping Information</h5>
+                      <div class="row mb-1">
+                        <div class="col">
+                          <div class="form-group">
+                            <label for="name">Name:</label>
+                            <input type="text" class="form-control" id="shipping-name" name="shipping-name" required>
+                          </div>
+                        </div>
+                      </div>
+                      <!--Shipping Address-->
+                      <div class="row mb-1">
+                        <div class="col">
+                          <div class="form-group">
+                            <label for="address">Address:</label>
+                            <input type="text" class="form-control" id="shipping-address" name="shipping-address" required>
+                          </div>
+                        </div>
+                      </div>
+                      <!--Billing Address Information 2-->
+                      <div class="row md-1">
+                          <div class="col">
+                            <div class="form-group">
+                              <label for="city">City:</label>
+                              <input type="text" class="form-control" id="shipping-city" name="shipping-city" required>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="form-group">
+                              <label for="state">State:</label>
+                              <input type="text" class="form-control" id="shipping-state" name="shipping-state" required>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="form-group">
+                              <label for="zipcode">Zip Code:</label>
+                              <input type="text" class="form-control" id="shipping-zipcode" name="shipping-zipcode" required>
+                            </div>
+                          </div>
+                      </div>
+                      <!--Billing Phone Number-->
+                      <div class="row mb-1">
+                        <div class="col">
+                          <div class="form-group">
+                            <label for="number">Phone Number:</label>
+                            <input type="tel" class="form-control" id="number" name="number" required>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-center"> <!-- Center the submit button -->
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                  </div>
+                  {% endif %}
+                </form>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        <a class="carousel-control-prev col-1" href="#myShippingAddresses" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true" style="width: 35px; height: 40px; background-color:#4f868c;"></span>
+          <span class="sr-only" >Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#myShippingAddresses" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true" style="width: 35px; height: 40px; background-color:#4f868c;"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+
+    </div>
+
+<script>
+  // Initialize the carousel
+  $('#myShippingAddresses').carousel({
+    interval: false, 
+    wrap: false // Disable wrapping, preventing resizing
+  });
+
+  // Save and display payment information
+  $('#ShippingForm').submit(function(event) {
+    event.preventDefault(); // Prevent form submission
+
+    // Retrieve form data
+    var formDataShipping = {
+        name: $('#shipping-name').val(),
+        address: $('#shipping-address').val(),
+        city: $('#shipping-city').val(),
+        state: $('#shipping-state').val(),
+        zipcode: $('#shipping-zipcode').val(),
+        number: $('#number').val()
+    };
+
+    // Save form data to localStorage
+    localStorage.setItem('shippingInfo', JSON.stringify(formDataShipping));
+
+    // Display saved payment information
+    displayShippingInfo(formDataShipping);
+  });
+
+  // Function to display payment information
+  function displayShippingInfo(data) {
+    var html = `
+      <div class="carousel-item">
+        <div class="row justify-content-center">
+          <div class="col-lg-8" id="saved-payment-info" style="height: 450px;">
+            <!-- Display saved payment information -->
+            <h4 class="text-center">Saved Shipping Information</h4>
+                    <!--Shipping Information-->
+                      <h5>Shipping Information</h5>
+                      <p><strong>Name:</strong></p>
+                        <p> ${data.name}</p>
+                      <p><strong>Address:</strong><p>
+                        <p> ${data.address}</p>
+                        <p>${data.city} , ${data.state}  ${data.zipcode}</p>
+                      <p><strong>Phone Number:</strong></p>
+                        <p> ${data.number}</p>
+                    
+                  <div class="text-center mt-3">
+                    <button class="btn btn-danger" onclick="deleteShippingMethod()">
+                      Delete Shipping Method
+                    </button>
+                  </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Append the saved payment information to the carousel
+    $('.carousel-inner').prepend(html);
+
+    // Update the carousel indicators
+    var index = $('.carousel-item').length - 1;
+    $('.carousel-indicators').prepend(`<li data-target="#myShippingAddresses" data-slide-to="${index}"></li>`);
+
+    // Move the carousel to the first slide (the newly added saved payment info)
+    $('#myShippingAddresses').carousel(0);
+
+    // Reset the form
+    $('#shippingForm')[0].reset();
+  }
+
+  // Retrieve saved payment information from localStorage on page load
+  var savedPaymentInfo = JSON.parse(localStorage.getItem('shippingInfo'));
+  if (savedPaymentInfo) {
+    displayPaymentInfo(savedPaymentInfo);
+  }
+
+  $('#addShippingMethodBtn').click(function() {
+    $('#myCards').carousel('next');
+  });
+
+  // Function to delete payment method
+  function deleteShippingAddresses() {
+    // Remove saved payment information from localStorage
+    localStorage.removeItem('paymentInfo');
+
+    // Remove the saved payment information slide from the carousel
+    $('.carousel-item:first-child').remove();
+    
+    // Move the carousel back to the initial slide
+    $('#myShippingAddresses').carousel(0);
+  }
+</script>
+
+{% endblock content %}

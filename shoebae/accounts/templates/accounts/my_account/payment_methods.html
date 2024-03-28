@@ -1,5 +1,283 @@
 {% extends 'store/main.html' %}
+
 {% load static %}
 {% block content %}
-<p>Payment Methods</p>
-{% endblock %}
+<style>
+  #payment-info{
+    height: 450px;
+  }
+  strong{
+    color:rgb(12, 12, 12);
+  }
+</style>
+
+    <div class="container">
+       <h2 class="text-center" style="color: #4f868c">Payment Information</h2>
+      <div id="myCards" class="carousel slide col-12" data-ride="carousel">
+        <div class="carousel-inner my-5">
+
+          <!-- Carousel element 1 if there is a payment method saved-->
+          <div class="carousel-item active">
+            <div class="row justify-content-center">
+              <div class="col-lg-8" id="saved-payment-info" style="height: 450px;">
+                <!-- Include saved payment info here -->
+                {% if savedPaymentInfo %}
+                <h5 class="text-center">Saved Payment Information</h5>
+                  <!-- Display saved payment information using savedPaymentInfo object -->
+                  <div class="row d-flex justify-content-around">
+                    <!--Card Information-->
+                    <div class="container col-md-6">
+                      <h5>Card Information</h5>
+                      <p><strong>Card Holder's Name:</strong></p>
+                      <p>{{ savedPaymentInfo.cardholder }}</p>
+                      <p><strong>Card Number:</strong></p>
+                      <p>{{ savedPaymentInfo.cardnumber }}</p>
+                      <p><strong>Expiration Date:</strong></p>
+                      <p>{{ savedPaymentInfo.expiration }}</p>
+                      <p><strong>CCV:</strong></p>
+                      <p>{{ savedPaymentInfo.ccv }}</p>
+                    </div>
+                    <!--Billing Information-->
+                    <div class="container col-md-6">
+                      <h5>Billing Information</h5>
+                      <p><strong>Name:</strong></p>
+                      <p>{{ savedPaymentInfo.name }}</p>
+                      <p><strong>Address:</strong><p>
+                      <p>{{ savedPaymentInfo.address }}</p>
+                      <p>{{ savedPaymentInfo.city }}, {{ savedPaymentInfo.state }} {{ savedPaymentInfo.zipcode }}</p>
+                      <p><strong>Phone Number:</strong></p>
+                      <p>{{ savedPaymentInfo.number }}</p>
+                    </div>
+                  </div>
+                  {% else %}
+                    <div class="text-center"> 
+                      <button id="addPaymentMethodBtn" class="btn btn-primary">Add Payment Method</button>
+                    </div>
+                  {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Carousel element 1 if there is NO payment method-->
+          <div class="carousel-item">
+            <div class="row justify-content-center"> <!-- Center payment information -->
+              <!--Payment Information-->
+              <div class="col-lg-8" id="payment-info">
+                <form id="paymentForm" method="post">
+                  {% csrf_token %}
+                  <div class="row">
+                    <!--Card Information-->
+                    <div class="container col-md-6">
+                      <h5>Card Information</h5>
+                      <div class="form-group">
+                        <label for="cardholder">Card Holder's Name:</label>
+                        <input type="text" class="form-control" id="cardholder" name="cardholder" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="cardnumber">Card Number:</label>
+                        <input type="text" class="form-control" id="cardnumber" name="cardnumber" pattern="\d{4} \d{4} \d{4} \d{4}" maxlength="19" placeholder="XXXX XXXX XXXX XXXX" required>
+                      </div>
+                      <div class="row">
+                        <div class="col-7">
+                          <div class="form-group">
+                            <label for="expiration">Expiration Date:</label>
+                            <input type="text" class="form-control" id="expiration" name="expiration" pattern="(?:0[1-9]|1[0-2])\{2}/(?:20)\d{2}" maxlength="5" placeholder="XX/XX" required>
+                          </div>
+                        </div>
+                        <div class="col-5">
+                          <div class="form-group">
+                            <label for="cardholder">CCV:</label>
+                            <input type="text" class="form-control" id="cardccv" name="ccv" maxlength="3" placeholder="XXX" required>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!--Billing Information-->
+                    <div class="col-md-6">
+                      <h5>Billing Information</h5>
+                      <div class="row mb-1">
+                        <div class="col">
+                          <div class="form-group">
+                            <label for="name">Name:</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                          </div>
+                        </div>
+                      </div>
+                      <!--Billing Address-->
+                      <div class="row mb-1">
+                        <div class="col">
+                          <div class="form-group">
+                            <label for="address">Address:</label>
+                            <input type="text" class="form-control" id="address" name="address" required>
+                          </div>
+                        </div>
+                      </div>
+                      <!--Billing Address Information 2-->
+                      <div class="row md-1">
+                          <div class="col">
+                            <div class="form-group">
+                              <label for="city">City:</label>
+                              <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="form-group">
+                              <label for="state">State:</label>
+                              <input type="text" class="form-control" id="state" name="state" required>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="form-group">
+                              <label for="zipcode">Zip Code:</label>
+                              <input type="text" class="form-control" id="zipcode" name="zipcode" required>
+                            </div>
+                          </div>
+                      </div>
+                      <!--Billing Phone Number-->
+                      <div class="row mb-1">
+                        <div class="col">
+                          <div class="form-group">
+                            <label for="number">Phone Number:</label>
+                            <input type="tel" class="form-control" id="number" name="number" required>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-center"> <!-- Center the submit button -->
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                  </div>
+                {% endif %}
+                </form>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        <a class="carousel-control-prev col-1" href="#myCards" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true" style="width: 35px; height: 40px; background-color:#4f868c;"></span>
+          <span class="sr-only" >Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#myCards" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true" style="width: 35px; height: 40px; background-color:#4f868c;"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+
+    </div>
+
+<script>
+  // Initialize the carousel
+  $('#myCards').carousel({
+    interval: false, 
+    wrap: false // Disable wrapping, preventing resizing
+  });
+
+  // Save and display payment information
+  $('#paymentForm').submit(function(event) {
+    event.preventDefault(); // Prevent form submission
+
+    // Retrieve form data
+    var formData = {
+      cardholder: $('#cardholder').val(),
+      cardnumber: $('#cardnumber').val(),
+      expiration: $('#expiration').val(),
+      ccv: $('#cardccv').val(),
+      name: $('#name').val(),
+      address: $('#address').val(),
+      city: $('#city').val(),
+      state: $('#state').val(),
+      zipcode: $('#zipcode').val(),
+      number: $('#number').val()
+    };
+
+    // Save form data to localStorage
+    localStorage.setItem('paymentInfo', JSON.stringify(formData));
+
+    // Display saved payment information
+    displayPaymentInfo(formData);
+  });
+
+  // Function to display payment information
+  function displayPaymentInfo(data) {
+    var html = `
+      <div class="carousel-item">
+        <div class="row justify-content-center">
+          <div class="col-lg-8" id="saved-payment-info" style="height: 450px;">
+            <!-- Display saved payment information -->
+            <h4 class="text-center">Saved Payment Information</h4>
+                  <div class="row d-flex justify-content-around">
+                    <!--Card Information-->
+                    <div class="container col-md-6">
+                      <h5>Card Information</h5>
+                          <p"><strong>Card Holder's Name:</strong></p> 
+                            <p> ${data.cardholder}</p>
+                          <p><strong>Card Number:</strong></p> 
+                            <p> ${data.cardnumber}</p>
+                          <p><strong>Expiration Date:</strong></p>
+                            <p>${data.expiration}</p>
+                          <p><strong>CCV:</strong></p>
+                            <p> ${data.ccv}</p>
+                    </div>
+                    <!--Billing Information-->
+                    <div class="container col-md-6">
+                      <h5>Billing Information</h5>
+                      <p><strong>Name:</strong></p>
+                        <p> ${data.name}</p>
+                      <p><strong>Address:</strong><p>
+                        <p> ${data.address}</p>
+                        <p>${data.city} , ${data.state}  ${data.zipcode}</p>
+                      <p><strong>Phone Number:</strong></p>
+                        <p> ${data.number}</p>
+                    </div>
+                  </div>
+                  <div class="text-center mt-3">
+                    <button class="btn btn-danger" onclick="deletePaymentMethod()">
+                      Delete Payment Method
+                    </button>
+                  </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Append the saved payment information to the carousel
+    $('.carousel-inner').prepend(html);
+
+    // Update the carousel indicators
+    var index = $('.carousel-item').length - 1;
+    $('.carousel-indicators').prepend(`<li data-target="#myCards" data-slide-to="${index}"></li>`);
+
+    // Move the carousel to the first slide (the newly added saved payment info)
+    $('#myCards').carousel(0);
+
+    // Reset the form
+    $('#paymentForm')[0].reset();
+  }
+
+  // Retrieve saved payment information from localStorage on page load
+  var savedPaymentInfo = JSON.parse(localStorage.getItem('paymentInfo'));
+  if (savedPaymentInfo) {
+    displayPaymentInfo(savedPaymentInfo);
+  }
+
+  $('#addPaymentMethodBtn').click(function() {
+    $('#myCards').carousel('next');
+  });
+
+  // Function to delete payment method
+  function deletePaymentMethod() {
+    // Remove saved payment information from localStorage
+    localStorage.removeItem('paymentInfo');
+
+    // Remove the saved payment information slide from the carousel
+    $('.carousel-item:first-child').remove();
+    
+    // Move the carousel back to the initial slide
+    $('#myCards').carousel(0);
+  }
+</script>
+
+{% endblock content %}
