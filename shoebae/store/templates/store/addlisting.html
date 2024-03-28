@@ -26,24 +26,33 @@
                 </div>
                 <div class="mb-3">
                     <label for="size" class="form-label">Size</label>
-                    <input type="number" class="form-control" id="size" name="size" min="1" max="99.9" step="0.1">
+                    <input type="number" class="form-control" id="size" name="size" min="1" max="99.9" step="0.5">
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="mb-3">
                     <label for="conditions" class="form-label">Condition</label>
                     <select class="form-select" id="conditions" name="condition">
+                        <option value="1">New</option>
+                        <option value="2">Like New</option>
+                        <option value="3">Very Good</option>
+                        <option value="4">Good</option>
+                    </select> <!--
+                    <label for="size" class="form-label">Condition</label>
                         {% for condition in conditions %}
+                        <input type="number" class="form-control" id="conditions" name="condition">
                             <option value="{{ condition.id }}">{{ condition.name }}</option>
-                        {% endfor %}
-                    </select>
+                        {% endfor %} -->
                 </div>
                 <div class="mb-3">
+                    <label for="brand" class="form-label">Brand</label>
+                    <input type="text" class="form-control" id="brand" name="brand">
+                    <!--
                     <label for="brand" class="form-label">Brand</label>
                     <select class="form-select" id="brand" name="brand">
                         {% for brand in brands %}
                             <option value="{{ brand.id }}">{{ brand.name }}</option>
-                        {% endfor %}
+                        {% endfor %} -->
                     </select>
                 </div>
                 <div class="mb-3">

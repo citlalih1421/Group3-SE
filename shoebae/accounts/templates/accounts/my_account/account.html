@@ -109,6 +109,10 @@
             <div class="col-mb-6" id="listings-container">
                 <h3>Listings</h3>
                 <p>No listings</p>
+
+                <div class="text-center"> <!-- Center the submit button -->
+                    <button onclick="location.href='{% url 'listing' %}'" class="btn btn-primary">Add Listing</button>
+                </div>
             </div>
         {% endif %}
 
@@ -139,21 +143,13 @@
                 </div>
             </div>
             {% if user|has_group:"Buyer" %}
-            <div class="col-lg-8">
+            <div onclick="location.href='{% url 'order_history' %}';" class="col-lg-8">
                 <div class="box-element">
                     <h3>Order History</h3>
                 </div>
             </div>
             {% endif %}
-        </div>
-        {% if user|has_group:"Buyer" %}
-        <div class="col-lg-8">
-            <div onclick="location.href='{% url 'order_history' %}';" class="box-element">
-                <h3>Order History</h3>
-            </div>
-        </div>
-        {% endif %}
-        {% if user|has_group:"Seller" %}
+            {% if user|has_group:"Seller" %}
         <div class="col-lg-8">
             <div onclick="location.href='{% url 'view_listings' %}';" class="box-element">
                 <h3>My Listings</h3>
@@ -165,6 +161,8 @@
                 <h3>Tickets</h3>
             </div>
         </div>
+        </div>
+        
     </div>
     {% endif %}
 </div>
