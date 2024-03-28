@@ -9,6 +9,7 @@ from django.views.generic import View
 from store.models import Shoe
 from .models import UserProfile  # Import the UserProfile model
 
+
 User = get_user_model()
 
 class RegisterView(View):
@@ -133,7 +134,10 @@ class MyTicketsView(View):
     def get(self, request):
         return render(request, 'accounts/my_account/tickets.html')
 
-
+class MyFavoritesView(View):
+    def get(self, request):
+        return render(request, 'accounts/my_account/favorites.html')
+    
 '''class MyListingsView(View):
     def get(self, request):
         seller_listings = Shoe.objects.filter(seller=request.user)

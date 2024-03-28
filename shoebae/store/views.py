@@ -117,7 +117,7 @@ class ViewListingsView(ListView):
     
 class ShoeSearchListView(ListView):
     model = Shoe
-    template_name = 'search.html'
+    template_name = 'filter.html'
     context_object_name = 'shoes'
     paginate_by = 10
 
@@ -144,3 +144,5 @@ class DeleteListingView(DeleteView):
     model = Shoe
     success_url = reverse_lazy('view_listings')
     template_name = 'store/delete_listing.html'  # Create this template if you want to customize the delete confirmation page
+
+

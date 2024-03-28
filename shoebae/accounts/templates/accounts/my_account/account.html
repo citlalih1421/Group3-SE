@@ -1,6 +1,7 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% load custom_filters %}
+
 {% block content %}
 <style>
     #profile-information, #listings-container, #favorites-container{
@@ -103,7 +104,7 @@
             </div>
         </div>
 
-        {% if user|has_group: "Buyer"%}
+        {% if user|has_group:"Buyer" %}
         <div class="col-md-6">
             <div class="col-mb-6" id="listings-container">
                 <h3>Listings</h3>
@@ -137,13 +138,13 @@
                     <h3>Shipping Methods</h3>
                 </div>
             </div>
-            {% if user|has_group: "Buyer"%}
+            {% if user|has_group:"Buyer" %}
             <div class="col-lg-8">
                 <div class="box-element">
                     <h3>Order History</h3>
                 </div>
             </div>
-<<<<<<< Updated upstream
+            {% endif %}
         </div>
         {% if user|has_group:"Buyer" %}
         <div class="col-lg-8">
@@ -162,16 +163,10 @@
         <div class="col-lg-8">
             <div onclick="location.href='{% url 'tickets' %}';" class="box-element">
                 <h3>Tickets</h3>
-=======
-            {% endif %}
-            <div onclick="location.href='{% url 'tickets' %}';" class="col-lg-8">
-                <div  class="box-element">
-                    <h3>Tickets</h3>
-                </div>
->>>>>>> Stashed changes
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 
 {% endblock %}

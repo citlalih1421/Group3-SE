@@ -15,15 +15,10 @@ urlpatterns = [
     path('productpage/', views.productpage, name="productpage"),
     path('seller/', views.seller, name="seller"),
     path('seller/listing/', AddListingView.as_view(), name="listing" ),
-<<<<<<< Updated upstream
     path('seller/listings/', ViewListingsView.as_view(), name="view_listings"),
     path('store/search/', ShoeSearchListView.as_view(), name='search'),
-    path('listing/delete/<int:pk>/', DeleteListingView.as_view(), name='delete_listing')
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-=======
+    path('listing/delete/<int:pk>/', DeleteListingView.as_view(), name='delete_listing'),
     path('fitler/', views.filter, name="filter"),
     path('testing/', views.testing, name="testing"),
     path('viewlisting/', views.viewlisting, name="viewlisting"),
-    path('paymentmethods/', views.paymentmethod, name="paymentmethods"),
 ]
->>>>>>> Stashed changes

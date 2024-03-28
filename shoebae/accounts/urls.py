@@ -12,5 +12,6 @@ urlpatterns = [
     path('account/shipping-methods/', views.MyShippingView.as_view(), name='shipping_methods'),
     path('account/order-history/', views.MyOrdersView.as_view(), name='order_history'),
     path('account/tickets/', views.MyTicketsView.as_view(), name='tickets'),
+    path('account/favorites/', views.MyFavoritesView.as_view(), name='favorites'),
     # path('account/my-listings/', views.MyListingsView.as_view(), name='my_listings'),
 ]
