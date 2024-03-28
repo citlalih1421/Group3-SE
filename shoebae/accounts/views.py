@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.validators import EmailValidator
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import View
 from store.models import Shoe
 from .models import UserProfile  # Import the UserProfile model
@@ -52,12 +52,10 @@ class RegisterView(View):
             last_name=last_name
         )
         
-        
         user_profile, created = UserProfile.objects.get_or_create(user=user)
         user_profile.is_buyer = is_buyer
         user_profile.is_seller = is_seller
         user_profile.save()
-        
 
         group_buyer, created_buyer = Group.objects.get_or_create(name='Buyer')
         group_seller, created_seller = Group.objects.get_or_create(name='Seller')
@@ -142,3 +140,4 @@ class MyFavoritesView(View):
     def get(self, request):
         seller_listings = Shoe.objects.filter(seller=request.user)
         return render(request, 'my_listings.html', {'seller_listings': seller_listings})'''
+
