@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator, DecimalValidator
 from mptt.models import MPTTModel, TreeForeignKey
+from django.utils.text import slugify
 from django.utils import timezone
 
 
@@ -74,8 +75,13 @@ class Shoe(models.Model):
     condition = models.ForeignKey(Condition, on_delete=models.SET_NULL, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True)
-    
+    slug = models.SlugField(unique=True, default='')
     date_posted = models.DateTimeField(default=timezone.now)
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:  # Generate slug only if it's not already set
+            self.slug = slugify(self.name)  # Generate slug from the shoe's name
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name

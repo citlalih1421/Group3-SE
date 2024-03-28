@@ -1,6 +1,6 @@
 from django.views import View
 from django.views.generic.edit import CreateView
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.shortcuts import redirect
 from django.shortcuts import render, redirect
 from django.db.models import Q
@@ -11,9 +11,6 @@ from django.views.generic.edit import DeleteView
 from django.urls import reverse_lazy
 
 # Create your views here.
-def store(request):
-    context = {}
-    return render(request, 'store/store.html')
 
 def cart(request):
     context = {}
@@ -31,9 +28,17 @@ def add_listing(request): #remove this
     context = {}
     return render(request, 'store/addlisting.html')
 
-def productpage(request):
-    context = {}
-    return render(request, 'store/productpage.html')
+
+class ProductPageView(DetailView):
+    model = Shoe
+    template_name = 'store/productpage.html'
+    context_object_name = 'shoe'
+    slug_url_kwarg = 'slug'  # Specify the slug URL keyword
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(slug=self.kwargs[self.slug_url_kwarg])
+
 
 def seller(request):
     context = {}
@@ -101,8 +106,6 @@ class AddListingView(CreateView):
         return redirect(self.success_url)
 
 
-
-
 class ViewListingsView(ListView):
     model = Shoe
     template_name = 'store/mylistings.html'
@@ -113,7 +116,14 @@ class ViewListingsView(ListView):
         return Shoe.objects.filter(seller=self.request.user)
     
 
+class ViewAllListingsView(ListView):
+    model = Shoe
+    template_name = 'store/store.html'
+    context_object_name = 'listings'
 
+    def get_queryset(self):
+        queryset = Shoe.objects.all().order_by('-date_posted')
+        return queryset
     
 class ShoeSearchListView(ListView):
     model = Shoe
@@ -144,5 +154,6 @@ class DeleteListingView(DeleteView):
     model = Shoe
     success_url = reverse_lazy('view_listings')
     template_name = 'store/delete_listing.html'  # Create this template if you want to customize the delete confirmation page
+    slug_url_kwarg = 'slug'  # Specify the slug URL keyword
 
 
