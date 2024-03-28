@@ -1,7 +1,8 @@
+from django.http import Http404, HttpResponseRedirect
 from django.views import View
 from django.views.generic.edit import CreateView
 from django.views.generic import ListView, DetailView
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.views.generic import ListView
@@ -149,11 +150,20 @@ class ShoeSearchListView(ListView):
         return queryset
 
 
+class DeleteListingView(View):
+    def post(self, request, slug):
+        # Retrieve the listing based on the slug
+        listing = get_object_or_404(Shoe, slug=slug)
 
-class DeleteListingView(DeleteView):
-    model = Shoe
-    success_url = reverse_lazy('view_listings')
-    template_name = 'store/delete_listing.html'  # Create this template if you want to customize the delete confirmation page
-    slug_url_kwarg = 'slug'  # Specify the slug URL keyword
+        # Check if the confirmation parameter is present in the request
+        if request.POST.get('confirmation') == 'true':
+            # Perform deletion logic
+            listing.delete()
+            return redirect('store')  # Redirect to the desired URL after deletion
+        else:
+            # Handle case where confirmation is not provided
+            error_message = "Confirmation was not provided. Deletion was not performed."
+            return render(request, 'store/store.html', {'error_message': error_message})
+
 
 

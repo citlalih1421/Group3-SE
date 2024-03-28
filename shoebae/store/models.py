@@ -76,6 +76,7 @@ class Shoe(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True)
     slug = models.SlugField(unique=True, default='')
+    is_approved = models.BooleanField(default=False)
     date_posted = models.DateTimeField(default=timezone.now)
     
     def save(self, *args, **kwargs):
