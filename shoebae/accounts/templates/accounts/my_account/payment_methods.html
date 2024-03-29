@@ -100,7 +100,7 @@
                         <div class="col">
                           <div class="form-group">
                             <label for="name">Name:</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
+                            <input type="text" class="form-control" id="billing-name" name="billing-name" required>
                           </div>
                         </div>
                       </div>
@@ -109,7 +109,7 @@
                         <div class="col">
                           <div class="form-group">
                             <label for="address">Address:</label>
-                            <input type="text" class="form-control" id="address" name="address" required>
+                            <input type="text" class="form-control" id="billing-address" name="billing-address" required>
                           </div>
                         </div>
                       </div>
@@ -118,19 +118,19 @@
                           <div class="col">
                             <div class="form-group">
                               <label for="city">City:</label>
-                              <input type="text" class="form-control" id="city" name="city" required>
+                              <input type="text" class="form-control" id="billing-city" name="billing-city" required>
                             </div>
                           </div>
                           <div class="col">
                             <div class="form-group">
                               <label for="state">State:</label>
-                              <input type="text" class="form-control" id="state" name="state" required>
+                              <input type="text" class="form-control" id="billing-state" name="billing-state" required>
                             </div>
                           </div>
                           <div class="col">
                             <div class="form-group">
                               <label for="zipcode">Zip Code:</label>
-                              <input type="text" class="form-control" id="zipcode" name="zipcode" required>
+                              <input type="text" class="form-control" id="billing-zipcode" name="billing-zipcode" required>
                             </div>
                           </div>
                       </div>
@@ -139,7 +139,7 @@
                         <div class="col">
                           <div class="form-group">
                             <label for="number">Phone Number:</label>
-                            <input type="tel" class="form-control" id="number" name="number" required>
+                            <input type="tel" class="form-control" id="billing-number" name="billing-number" required>
                           </div>
                         </div>
                       </div>
@@ -184,12 +184,12 @@
       cardnumber: $('#cardnumber').val(),
       expiration: $('#expiration').val(),
       ccv: $('#cardccv').val(),
-      name: $('#name').val(),
-      address: $('#address').val(),
-      city: $('#city').val(),
-      state: $('#state').val(),
-      zipcode: $('#zipcode').val(),
-      number: $('#number').val()
+      name: $('#billing-name').val(),
+      address: $('#billing-address').val(),
+      city: $('#billing-city').val(),
+      state: $('#billing-state').val(),
+      zipcode: $('#billing-zipcode').val(),
+      number: $('#billing-number').val()
     };
 
     // Save form data to localStorage
@@ -270,6 +270,9 @@
   function deletePaymentMethod() {
     // Remove saved payment information from localStorage
     localStorage.removeItem('paymentInfo');
+
+    // Show a success message
+    $('.carousel-inner').after('<div class="alert alert-success">Payment method successfully deleted. Please refresh the page if you are having problems.</div>');
 
     // Remove the saved payment information slide from the carousel
     $('.carousel-item:first-child').remove();
