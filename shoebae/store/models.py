@@ -128,6 +128,10 @@ class ShoppingCart(models.Model):
             cart_item.save()
             self.update_total() 
     
+    def reset_total(self):
+        self.total = Decimal('0.00')
+        self.save()
+        
     def __str__(self):
         return (self.customer.get_username()+str("'s cart"))
 

@@ -48,9 +48,27 @@ def cart(request, cart_id):
 
 
 
+@login_required
 def checkout(request):
-    context = {}
-    return render(request, 'store/checkout.html')
+    # Retrieve the current user's shopping cart
+    shopping_cart = request.user.shopping_cart
+
+    # Calculate total items and total amount
+    total_items = shopping_cart.cartitem_set.count()
+    total_amount = shopping_cart.total
+
+    # Delete all cart items associated with the shopping cart
+    shopping_cart.cartitem_set.all().delete()
+    shopping_cart.reset_total()
+
+    context = {
+        'shopping_cart': shopping_cart,
+        'cart_items': [],  # Since cart items are deleted, pass an empty list
+        'total_items': total_items,
+        'total_amount': total_amount,
+    }
+
+    return render(request, 'store/checkout.html', context)
 
 def home(request):
     context = {}
