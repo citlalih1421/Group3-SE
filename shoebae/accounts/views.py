@@ -8,7 +8,8 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import View
 from store.models import Shoe
 from .models import UserProfile  # Import the UserProfile model
-
+from .forms import ShippingForm
+from .forms import PaymentForm
 
 User = get_user_model()
 
@@ -115,13 +116,35 @@ class MySecurityView(View):
 
 class MyPaymentView(View):
     def get(self, request):
-        return render(request, 'accounts/my_account/payment_methods.html')
+        return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
+    
+    def post(self, request):
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            # Save payment information to session
+            print("Payment method added successfully!") # Redirect to the same page or another page
+            return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
+        else:
+            # If form is invalid, re-render the form with errors
+            print("Error in adding payment method. Please try again.")
+            return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
 
 
 class MyShippingView(View):
     def get(self, request):
-        return render(request, 'accounts/my_account/shipping_methods.html')
+        form = ShippingForm()
+        return render(request, 'accounts/my_account/shipping_methods.html', {'form': form})
 
+    def post(self, request):
+        form = ShippingForm(request.POST)
+        if form.is_valid():
+            # Save shipping information to session
+            print("Shipping address added successfully!") # Redirect to the same page or another page
+            return render(request, 'accounts/my_account/shipping_methods.html', {'form': form})
+        else:
+            # If form is invalid, re-render the form with errors
+            print("Error in adding shipping address. Please try again.")
+            return render(request, 'accounts/my_account/shipping_methods.html', {'form': form})
 
 class MyOrdersView(View):
     def get(self, request):
@@ -140,4 +163,3 @@ class MyFavoritesView(View):
     def get(self, request):
         seller_listings = Shoe.objects.filter(seller=request.user)
         return render(request, 'my_listings.html', {'seller_listings': seller_listings})'''
-
