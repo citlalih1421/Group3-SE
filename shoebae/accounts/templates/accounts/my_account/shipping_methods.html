@@ -13,27 +13,26 @@
       <h2 class="text-center" style="color: #4f868c"> Shipping Information</h2>  
 
       <div id="myShippingAddresses" class="carousel slide col-12" data-ride="carousel">
-        <div class="carousel-inner my-5">
+        <div class="carousel-inner my-5" style="height: 475px">
 
-          <!-- Carousel element 1 if there is a payment method saved-->
+          <!-- Carousel element 1 if there is a shipping address saved-->
           <div class="carousel-item active">
             <div class="row justify-content-center">
               <div class="col-lg-8" id="saved-shipping-info" style="height: 450px;">
-                <!-- Include saved payment info here -->
-                {% if savedPaymentInfo %}
+                <!-- Include saved shipping info here -->
+                {% if savedShippingInfo %}
                 <h5 class="text-center">Saved Shipping Information</h5>
                   <!-- Display saved Shipping information using savedShippingInfo object -->
                   <div class="row d-flex justify-content-between">
                     <!--Shipping Information-->
                     <div class="container col-md-6">
-                      <h5>Shipping Information</h5>
                       <p><strong>Name:</strong></p>
                       <p>{{ savedShippingInfo.name }}</p>
                       <p><strong>Address:</strong><p>
                       <p>{{ savedShippingInfo.address }}</p>
-                      <p>{{ savedPaymentInfo.city }}, {{ savedPaymentInfo.state }} {{ savedPaymentInfo.zipcode }}</p>
+                      <p>{{ savedShippingInfo.city }}, {{ savedShippingInfo.state }} {{ savedShippingInfo.zipcode }}</p>
                       <p><strong>Phone Number:</strong></p>
-                      <p>{{ savedPaymentInfo.number }}</p>
+                      <p>{{ savedShippingInfo.number }}</p>
                     </div>
                   </div>
                   {% else %}
@@ -45,7 +44,7 @@
             </div>
           </div>
 
-          <!-- Carousel element 1 if there is NO shipping method-->
+          <!-- Carousel element 1 if there is NO shipping address-->
           <div class="carousel-item">
             <div class="row justify-content-center"> 
               <!-- Center shipping information -->
@@ -100,13 +99,13 @@
                         <div class="col">
                           <div class="form-group">
                             <label for="number">Phone Number:</label>
-                            <input type="tel" class="form-control" id="number" name="number" required>
+                            <input type="tel" class="form-control" id="shipping-number" name="shipping-number" required>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="text-center"> <!-- Center the submit button -->
+                  <div class="text-center"> 
                     <button type="submit" class="btn btn-primary">Submit</button>
                   </div>
                 </form>
@@ -135,7 +134,7 @@
     wrap: false // Disable wrapping, preventing resizing
   });
 
-  // Save and display payment information
+  // Save and display shipping information
   $('#ShippingForm').submit(function(event) {
     event.preventDefault(); // Prevent form submission
 
@@ -146,26 +145,25 @@
         city: $('#shipping-city').val(),
         state: $('#shipping-state').val(),
         zipcode: $('#shipping-zipcode').val(),
-        number: $('#number').val()
+        number: $('#shipping-number').val()
     };
 
     // Save form data to localStorage
-    localStorage.setItem('shippingInfo', JSON.stringify(formDataShipping));
+    localStorage.setItem('ShippingInfo', JSON.stringify(formDataShipping));
 
-    // Display saved payment information
+    // Display saved shipping information
     displayShippingInfo(formDataShipping);
   });
 
-  // Function to display payment information
+  // Function to display shipping information
   function displayShippingInfo(data) {
     var html = `
       <div class="carousel-item">
         <div class="row justify-content-center">
-          <div class="col-lg-8" id="saved-payment-info" style="height: 450px;">
-            <!-- Display saved payment information -->
+          <div class="col-lg-8" id="saved-shipping-info" style="height: 450px;">
+            <!-- Display saved shipping information -->
             <h4 class="text-center">Saved Shipping Information</h4>
                     <!--Shipping Information-->
-                      <h5>Shipping Information</h5>
                       <p><strong>Name:</strong></p>
                         <p> ${data.name}</p>
                       <p><strong>Address:</strong><p>
@@ -175,8 +173,8 @@
                         <p> ${data.number}</p>
                     
                   <div class="text-center mt-3">
-                    <button class="btn btn-danger" onclick="deleteShippingMethod()">
-                      Delete Shipping Method
+                    <button class="btn btn-danger" onclick="deleteShippingAddresses()">
+                      Delete Shipping Address
                     </button>
                   </div>
           </div>
@@ -184,40 +182,45 @@
       </div>
     `;
 
-    // Append the saved payment information to the carousel
+    // Append the saved shipping information to the carousel
     $('.carousel-inner').prepend(html);
 
     // Update the carousel indicators
     var index = $('.carousel-item').length - 1;
     $('.carousel-indicators').prepend(`<li data-target="#myShippingAddresses" data-slide-to="${index}"></li>`);
 
-    // Move the carousel to the first slide (the newly added saved payment info)
+    // Move the carousel to the first slide (the newly added saved shipping info)
     $('#myShippingAddresses').carousel(0);
 
     // Reset the form
     $('#shippingForm')[0].reset();
   }
 
-  // Retrieve saved payment information from localStorage on page load
-  var savedPaymentInfo = JSON.parse(localStorage.getItem('shippingInfo'));
-  if (savedPaymentInfo) {
-    displayPaymentInfo(savedPaymentInfo);
+  // Retrieve saved shipping information from localStorage on page load
+  var savedShippingInfo = JSON.parse(localStorage.getItem('ShippingInfo'));
+  if (savedShippingInfo) {
+    displayShippingInfo(savedShippingInfo);
   }
 
   $('#addShippingMethodBtn').click(function() {
-    $('#myCards').carousel('next');
+    $('#myShippingAddresses').carousel('next');
   });
 
-  // Function to delete payment method
+  // Function to delete shipping address
   function deleteShippingAddresses() {
-    // Remove saved payment information from localStorage
-    localStorage.removeItem('paymentInfo');
+    // Remove saved shipping information from localStorage
+    localStorage.removeItem('ShippingInfo');
 
-    // Remove the saved payment information slide from the carousel
+    // Remove the saved shipping information slide from the carousel
     $('.carousel-item:first-child').remove();
+
+    // Show a success message
+    $('.carousel-inner').after('<div class="alert alert-success">Shipping address successfully deleted. Please refresh the page.</div>');
     
-    // Move the carousel back to the initial slide
-    $('#myShippingAddresses').carousel(0);
+    // Move the carousel back to the initial slide if there are no more saved shipping methods
+    if ($('.carousel-item').length === 0) {
+        $('#myShippingAddresses').carousel(0);
+    }
   }
 </script>
 
