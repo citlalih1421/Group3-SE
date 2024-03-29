@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -108,7 +109,41 @@ class Review(models.Model):
     def __str__(self):
         return self.title
     
+class ShoppingCart(models.Model):
+    customer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='shopping_cart')
+    items = models.ManyToManyField('CartItem')
+    quantity = models.IntegerField(default=1)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
+    def update_total(self):
+        cart_items = self.cartitem_set.all()
+        total_amount = sum(item.shoe.price * item.quantity for item in cart_items)
+        self.total = Decimal(total_amount).quantize(Decimal('.01'))
+        self.save()
+
+    def update_quantity(self, shoe_id, new_quantity):
+        cart_item = self.items.filter(shoe_id=shoe_id).first()
+        if cart_item:
+            cart_item.quantity = new_quantity
+            cart_item.save()
+            self.update_total() 
+    
+    def __str__(self):
+        return (self.customer.get_username()+str("'s cart"))
+
+class CartItem(models.Model):
+    shoe = models.ForeignKey(Shoe, on_delete=models.CASCADE)
+    shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    date_added = models.DateTimeField(default=timezone.now)
+
+    def update_subtotal(self):
+        self.subtotal = Decimal(self.shoe.price * self.quantity).quantize(Decimal('.01'))
+        self.save()
+
+    def __str__(self):
+        return (self.shoe.name)
 
 class Favorite(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorite')

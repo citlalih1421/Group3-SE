@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from orders.models import ShoppingCart, CartItem, Order
+from orders.models import Order
+from store.models import ShoppingCart, CartItem
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):

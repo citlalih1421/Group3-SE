@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django_mptt_admin.admin import DjangoMpttAdmin
-from .models import Condition, Brand, Category, Shoe
+from .models import Condition, Brand, Category, Shoe, ShoppingCart, CartItem
 
 # Register your models here.
 class CategoryAdmin(DjangoMpttAdmin):
@@ -10,3 +10,5 @@ admin.site.register(Category, CategoryAdmin)
 admin.site.register(Condition)
 admin.site.register(Brand)
 admin.site.register(Shoe)
+admin.site.register(ShoppingCart)
+admin.site.register(CartItem)

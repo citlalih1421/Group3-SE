@@ -10,7 +10,8 @@ from .views import DeleteListingView
 urlpatterns = [
     #empty for base url
     path('', ViewAllListingsView.as_view(), name="store"),
-    path('cart/', views.cart, name="cart"),
+    path('cart/<int:cart_id>/', views.cart, name='cart'),
+    path('add-to-cart/<slug:slug>/',views.add_to_cart,name='add_to_cart'),
     path('checkout/', views.checkout, name="checkout"),
     path('home/', views.home, name="home"),
     path('productpage/<slug:slug>/', ProductPageView.as_view(), name='productpage'),

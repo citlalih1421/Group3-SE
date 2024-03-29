@@ -7,15 +7,46 @@ from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.views.generic import ListView
 from .forms import ShoeForm
-from .models import Shoe, Condition, Brand, Category
+from .models import Shoe, Condition, Brand, Category, ShoppingCart, CartItem
 from django.views.generic.edit import DeleteView
 from django.urls import reverse_lazy
+from orders.models import Order
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required
+def add_to_cart(request, slug):
+    shoe = get_object_or_404(Shoe, slug=slug)
+    shopping_cart, created = ShoppingCart.objects.get_or_create(customer=request.user)
 
-def cart(request):
-    context = {}
-    return render(request, 'store/cart.html')
+    # Check if the item is already in the cart
+    cart_item = shopping_cart.cartitem_set.filter(shoe=shoe).first()
+    if cart_item:
+        # If item exists, update its quantity using the update_quantity method from Shoe model
+        shoe.update_quantity(quantity=cart_item.quantity + 1)
+    else:
+        # If item does not exist, create a new cart item
+        cart_item = shopping_cart.cartitem_set.create(shoe=shoe, quantity=1)
+
+    # Update shopping cart total using the method defined in the model
+    shopping_cart.update_total()
+
+    # Redirect to cart view with the shopping cart ID as a URL parameter
+    return redirect('cart', cart_id=shopping_cart.id)
+
+@login_required
+def cart(request, cart_id):
+    # Retrieve the shopping cart using the cart_id from the URL
+    shopping_cart = get_object_or_404(ShoppingCart, id=cart_id)
+    cart_items = shopping_cart.cartitem_set.all()
+
+    # Calculate total for the cart
+    total_amount = sum(item.shoe.price * item.quantity for item in cart_items)
+
+    context = {'shopping_cart': shopping_cart, 'cart_items': cart_items, 'total_amount': total_amount}
+    return render(request, 'store/cart.html', context)
+
+
 
 def checkout(request):
     context = {}
