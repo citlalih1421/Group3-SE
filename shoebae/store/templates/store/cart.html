@@ -7,13 +7,12 @@
                 <a class="btn btn-outline-dark" href="{% url 'store' %}">&#x1289; Continue Shopping</a>
                 <br>
                 <br>
+                <a href="{% url 'checkout' %}" class="btn btn-success">Checkout</a>
+                <br>
                 <table class="table">
                     <tr>
                         <th><h5>Products: <strong>{{ cart_items.count }}</strong></h5></th>
                         <th><h5>Total: <strong>${{ total_amount }}</strong></h5></th>
-                        <th>
-                            <a style="float:right; margin:5px;" class="btn btn-success" href="{% url 'checkout' %}">Checkout</a>
-                        </th>
                     </tr>
                 </table>
                 <div class="box-element">

@@ -10,7 +10,8 @@ from .forms import ShoeForm
 from .models import Shoe, Condition, Brand, Category, ShoppingCart, CartItem
 from django.views.generic.edit import DeleteView
 from django.urls import reverse_lazy
-from orders.models import Order
+from orders.models import Order, OrderItem
+from payments.models import PaymentInfo
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -48,7 +49,7 @@ def cart(request, cart_id):
 
 
 
-@login_required
+'''@login_required
 def checkout(request):
     # Retrieve the current user's shopping cart
     shopping_cart = request.user.shopping_cart
@@ -68,7 +69,56 @@ def checkout(request):
         'total_amount': total_amount,
     }
 
-    return render(request, 'store/checkout.html', context)
+    return render(request, 'store/checkout.html', context)'''
+
+class Checkout(View):
+    model = Order
+    fields = []  # Assuming no specific fields need to be defined for Order creation
+
+    def get(self, request):
+        shopping_cart = request.user.shopping_cart
+        cart_items = shopping_cart.items.all()
+        payment_info = PaymentInfo.objects.filter(customer=request.user, is_default=True).first()
+    
+        context = {
+            'shopping_cart': shopping_cart,
+            'cart_items': cart_items,
+            'total_items': cart_items.count(),
+            'total_amount': shopping_cart.total,
+            'payment_info': payment_info,
+        }
+        return render(request, 'store/checkout.html', context)
+
+    def post(self, request):
+        shopping_cart = request.user.shopping_cart
+        cart_items = shopping_cart.items.all()
+
+        # Create order
+        order = Order.objects.create(customer=request.user)
+
+        # Convert cart items to order items and update quantities
+        for cart_item in cart_items:
+            order_item = OrderItem.objects.create(
+                order=order,
+                shoe=cart_item.shoe,
+                quantity=cart_item.quantity,
+                total=cart_item.subtotal,
+            )
+            cart_item.shoe.quantity -= cart_item.quantity
+            cart_item.shoe.save()
+
+        # Update payment info and deduct balance
+        payment_info = PaymentInfo.objects.filter(customer=request.user, is_default=True).first()
+        if payment_info:
+            payment_info.balance -= shopping_cart.total
+            payment_info.save()
+
+        # Clear the user's cart and delete cart items
+        shopping_cart.items.clear()
+        shopping_cart.reset_total()
+
+        return redirect(request, 'store/home.html')
+
 
 def home(request):
     context = {}
@@ -203,16 +253,10 @@ class DeleteListingView(View):
     def post(self, request, slug):
         # Retrieve the listing based on the slug
         listing = get_object_or_404(Shoe, slug=slug)
-
-        # Check if the confirmation parameter is present in the request
-        if request.POST.get('confirmation') == 'true':
+        if request.POST:
             # Perform deletion logic
             listing.delete()
             return redirect('store')  # Redirect to the desired URL after deletion
-        else:
-            # Handle case where confirmation is not provided
-            error_message = "Confirmation was not provided. Deletion was not performed."
-            return render(request, 'store/store.html', {'error_message': error_message})
 
 
 

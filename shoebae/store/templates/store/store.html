@@ -8,18 +8,14 @@
         {% for listing in listings %}
         <div class="col-md-4 mb-4">
             <div class="card">
-                {% if listing.image %}
                 <img src="{{ listing.image.url }}" class="card-img-top">
-                {% else %}
-                <!-- Placeholder image -->
-                <img src="{% static 'images/product-placeholder.png' %}" class="card-img-top" alt="Placeholder Image">
-                {% endif %}
                 <div class="card-body">
                     <h5 class="card-title">{{ listing.name }}</h5>
                     <p class="card-text">Approved: {{listing.is_approved}}</p>
                     <p class="card-text">Price: ${{ listing.price }}</p>
                     <p class="card-text">Size: {{ listing.size }}</p>
-                    <p class="card-text">Condition: {{ listing.conditions }}</p>
+                    <p class="card-text">Condition: {{ listing.condition }}</p>
+                    <p class="card-text">Brand: {{ listing.brand }}</p>
                     <p class="card-text">Category: {{listing.category}}</p>
                     <!-- Add other fields you want to display for each listing -->
                     <form method="get" action="{% url 'productpage' listing.slug %}">

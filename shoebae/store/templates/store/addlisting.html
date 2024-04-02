@@ -31,28 +31,19 @@
             </div>
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label for="conditions" class="form-label">Condition</label>
-                    <select class="form-select" id="conditions" name="condition">
-                        <option value="1">New</option>
-                        <option value="2">Like New</option>
-                        <option value="3">Very Good</option>
-                        <option value="4">Good</option>
-                    </select> <!--
-                    <label for="size" class="form-label">Condition</label>
+                    <label for="condition" class="form-label">Condition</label>
+                    <select class="form-select" id="condition" name="condition">
                         {% for condition in conditions %}
-                        <input type="number" class="form-control" id="conditions" name="condition">
                             <option value="{{ condition.id }}">{{ condition.name }}</option>
-                        {% endfor %} -->
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="mb-3">
-                    <label for="brand" class="form-label">Brand</label>
-                    <input type="text" class="form-control" id="brand" name="brand">
-                    <!--
                     <label for="brand" class="form-label">Brand</label>
                     <select class="form-select" id="brand" name="brand">
                         {% for brand in brands %}
                             <option value="{{ brand.id }}">{{ brand.name }}</option>
-                        {% endfor %} -->
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="mb-3">
