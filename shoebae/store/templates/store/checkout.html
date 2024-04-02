@@ -6,65 +6,54 @@
                <div class="box-element" id="form-wrapper">
                     <form id="form" method="post" action="{% url 'checkout' %}">
                          {% csrf_token %}
-                         <h2>Checkout</h2>
+                         <h2> Checkout </h2>
+                         <hr>
                          <div id="user-info">
-                              <hr>
-                              <h5>User Information:</h5>
-                              <hr>
-                              <div class="form-field">
-                                   <input required class="form-control" type="text" name="name" placeholder="Name">
+                              <h4>User Information:</h4>
+                              <div id="user-name">
+                                   <a>Username: {{request.user.username}}</a>
                               </div>
-                              <div class="form-field">
-                                   <input required class="form-control" type="email" name="email" placeholder="Email">
+                              <div id="first-name">
+                                   <a>First Name: {{request.user.first_name}}</a>
                               </div>
-                         </div>
-
-                         <div id="shipping-info">
-                              <hr>
-                              <h5>Shipping Information</h5>
-                              <hr>
-                              <div class="form-field">
-                                   <input class="form-control" type="text" name="address" placeholder="Address">
+                              <div id="last-name">
+                                   <a>Last Name: {{request.user.last_name}}</a>
                               </div>
-                              <div class="form-field">
-                                   <input class="form-control" type="text" name="city" placeholder="City">
-                              </div>
-                              <div class="form-field">
-                                   <input class="form-control" type="text" name="state" placeholder="State">
-                              </div>
-                              <div class="form-field">
-                                   <input class="form-control" type="text" name="zipcode" placeholder="Zipcode">
-                              </div>
-                              <div class="form-field">
-                                   <input class="form-control" type="text" name="country" placeholder="Country">
-                              </div>
-                         </div>
-                         
-                         <div id="payment-info">
-                              <hr>
-                              <h5>Payment Information:</h5>
-                              <hr>
-                              <div class="form-field">
-                                   <input class="form-control" type="text" name="cardholder" placeholder="Card Holder" value="{{ payment_info.card_holder }}">
-                              </div>
-                              <div class="form-field">
-                                   <input class="form-control" type="number" name="cardnumber" placeholder="Card Number" value="{{ payment_info.card_number }}">
-                              </div>
-                              <div class="form-field">
-                                   <input class="form-control" type="month" name="expiration" placeholder="Expiration">
-                              </div>
-                              <div class="form-field">
-                                   <input class="form-control" type="number" name="cvv" placeholder="CVV">
+                              <div id="email">
+                                   <a>Email: {{request.user.email}}</a>
                               </div>
                          </div>
                          <hr>
-                         <button id="form-button" class="btn btn-success btn-block" type="submit">Checkout</button>
+                         <div id="shipping-info">
+                              <h4> Shipping Information: </h4>
+                              {% for shippinginfo in request.user.shippinginfo %}
+                              {% if info.is_default == true %}
+                              <div id="default-shipping">
+                                   <p>Street: {{ shippinginfo.street }}</p>
+                                   <p>City: {{ shippinginfo.city }}</p>
+                                   <p>State: {{ shippinginfo.state }}</p>
+                                   <p>Zip Code: {{ shippinginfo.zipcode }}</p>
+                                   <p>Country: {{ shippinginfo.country }}</p>
+                              </div>
+                              {% endif %}
+                              {% endfor %}
+                         </div>
+                         <hr>
+                         <div id="payment-info">
+                              <h4> Payment Information: </h4>
+                              {% for paymentinfo in request.user.paymentinfo %}
+                              {% if info.is_default == true %}
+                              <div id="default-payment">
+                                   <p>Card Holder: {{ paymentinfo.card_holder }}</p>
+                                   <p>Card Number: {{ paymentinfo.card_number }}</p>
+                                   <p>Expiration: {{ paymentinfo.card_expiration }}</p>
+                                   <p>CVV: {{ paymentinfo.card_cvv }}</p>
+                                   <p>Balance: {{ paymentinfo.card_balance }}</p>
+                              </div>
+                              {% endif %}
+                              {% endfor %}
+                         </div>
                     </form>
-                    <br>
-                    <div class="box-element hidden" id="payment-info">
-                         <small>Saved Payment Methods</small>
-                         <small>PayPal Options</small>
-                    </div>
                </div>
           </div>
           <div class="col-lg-6">
