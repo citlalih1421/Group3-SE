@@ -3,6 +3,7 @@ from django.dispatch import receiver
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from .models import UserProfile
+from store.models import ShoppingCart
 
 User = get_user_model()
 
@@ -17,3 +18,8 @@ def assign_user_to_group(sender, instance, created, **kwargs):
         if user_profile.is_seller:
             seller_group = Group.objects.get(name='Seller')
             instance.groups.add(seller_group)
+
+@receiver(post_save, sender=User)
+def create_shopping_cart(sender, instance, created, **kwargs):
+    if created and instance.is_superuser:
+        ShoppingCart.objects.create(customer=instance)

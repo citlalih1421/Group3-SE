@@ -6,10 +6,14 @@ from django.contrib.auth.models import Group
 from django.core.validators import EmailValidator
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import View
-from store.models import Shoe
+from store.models import Shoe, ShoppingCart
 from .models import UserProfile  # Import the UserProfile model
 from .forms import ShippingForm
 from .forms import PaymentForm
+from payments.models import PaymentInfo
+from orders.models import ShippingInfo
+import datetime
+
 
 User = get_user_model()
 
@@ -51,6 +55,10 @@ class RegisterView(View):
             password=password1,
             first_name=first_name,
             last_name=last_name
+        )
+
+        shopping_cart = ShoppingCart.objects.get_or_create(
+            customer=user
         )
         
         user_profile, created = UserProfile.objects.get_or_create(user=user)
@@ -116,12 +124,35 @@ class MySecurityView(View):
 
 class MyPaymentView(View):
     def get(self, request):
+        form = PaymentForm(request.GET)
         return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
     
     def post(self, request):
         form = PaymentForm(request.POST)
         if form.is_valid():
             # Save payment information to session
+            cardholder = form.cleaned_data['cardholder']
+            cardnumber = form.cleaned_data['cardnumber']
+            expiration_input = form.cleaned_data['expiration']
+            cvv = form.cleaned_data['cvv']
+            balance = form.cleaned_data['balance']
+            is_default = form.cleaned_data['is_default']
+            
+            #converts the MM/YYYY input to YYYY/MM/DD for the DateField
+            expiration_parts = expiration_input.split('/')
+            expiration_date = datetime.date(int(expiration_parts[1]), int(expiration_parts[0]), int(1))
+
+            # Create and save PaymentInfo object
+            payment_info = PaymentInfo(
+                cardholder=cardholder,
+                cardnumber=cardnumber,
+                expiration=expiration_date,
+                cvv=cvv,
+                balance=balance,
+                is_default=is_default,
+                customer=request.user  # Assuming you have a user field in PaymentInfo model
+            )
+            payment_info.save()
             print("Payment method added successfully!") # Redirect to the same page or another page
             return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
         else:
@@ -139,6 +170,22 @@ class MyShippingView(View):
         form = ShippingForm(request.POST)
         if form.is_valid():
             # Save shipping information to session
+            street = form.cleaned_data['street']
+            city = form.cleaned_data['city']
+            state = form.cleaned_data['state']
+            zipcode = form.cleaned_data['zipcode']
+            is_default = form.cleaned_data['is_default']
+
+            # Create and save PaymentInfo object
+            shipping_info = ShippingInfo(
+                street=street,
+                city=city,
+                state=state,
+                zipcode=zipcode,
+                is_default=is_default,
+                customer=request.user  # Assuming you have a user field in PaymentInfo model
+            )
+            shipping_info.save()
             print("Shipping address added successfully!") # Redirect to the same page or another page
             return render(request, 'accounts/my_account/shipping_methods.html', {'form': form})
         else:

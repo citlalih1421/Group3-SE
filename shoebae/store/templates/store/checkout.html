@@ -26,44 +26,36 @@
                          <hr>
                          <div id="shipping-info">
                               <h4> Shipping Information: </h4>
+                              {% if shippinginfo %}
                               <div id="default-shipping">
-                                   {% if request.user.shippinginfo == null %}
-                                   <button>
-                                        <a href="{% url 'shipping_methods' %}" class="btn btn-success">Add Shipping Method</a>
-                                   </button>
-                                   {% else %}
-                                   {% for shippinginfo in request.user.shippinginfo %}
-                                   {% if info.is_default == true %}
                                    <p>Street: {{ shippinginfo.street }}</p>
                                    <p>City: {{ shippinginfo.city }}</p>
                                    <p>State: {{ shippinginfo.state }}</p>
                                    <p>Zip Code: {{ shippinginfo.zipcode }}</p>
                                    <p>Country: {{ shippinginfo.country }}</p>
-                                   {% endif %}
-                                   {% endfor %}
-                                   {% endif %}
                               </div>
+                              {% else %}
+                              <button>
+                                   <a href="{% url 'shipping_methods' %}" class="btn btn-success">Add Shipping Method</a>
+                              </button>
+                              {% endif %}
                          </div>
                          <hr>
                          <div id="payment-info">
                               <h4> Payment Information: </h4>
+                              {% if paymentinfo %}
                               <div id="default-payment">
-                                   {% if request.user.paymentinfo == null %}
-                                   <button>
-                                        <a href="{% url 'payment_methods' %}" class="btn btn-success">Add Payment Method</a>
-                                   </button>
-                                   {% else %}
-                                   {% for paymentinfo in request.user.paymentinfo %}
-                                   {% if info.is_default == true %}
-                                   <p>Card Holder: {{ paymentinfo.card_holder }}</p>
-                                   <p>Card Number: {{ paymentinfo.card_number }}</p>
-                                   <p>Expiration: {{ paymentinfo.card_expiration }}</p>
-                                   <p>CVV: {{ paymentinfo.card_cvv }}</p>
-                                   <p>Balance: {{ paymentinfo.card_balance }}</p>
-                                   {% endif %}
-                                   {% endfor %}
-                                   {% endif %}
+                                   <p>Card Holder: {{ paymentinfo.cardholder }}</p>
+                                   <p>Card Number: {{ paymentinfo.cardnumber }}</p>
+                                   <p>Expiration: {{ paymentinfo.expiration }}</p>
+                                   <p>CVV: {{ paymentinfo.cvv }}</p>
+                                   <p>Balance: {{ paymentinfo.balance }}</p>
                               </div>
+                              {% else %}
+                              <button>
+                                   <a href="{% url 'payment_methods' %}" class="btn btn-success">Add Payment Method</a>
+                              </button>
+                              {% endif %}
                          </div>
                     </form>
                </div>

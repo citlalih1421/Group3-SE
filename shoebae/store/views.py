@@ -10,7 +10,7 @@ from .forms import ShoeForm
 from .models import Shoe, Condition, Brand, Category, ShoppingCart, CartItem
 from django.views.generic.edit import DeleteView
 from django.urls import reverse_lazy
-from orders.models import Order, OrderItem
+from orders.models import Order, OrderItem, ShippingInfo
 from payments.models import PaymentInfo
 from django.contrib.auth.decorators import login_required
 
@@ -79,13 +79,15 @@ class Checkout(View):
         shopping_cart = request.user.shopping_cart
         cart_items = shopping_cart.items.all()
         payment_info = PaymentInfo.objects.filter(customer=request.user, is_default=True).first()
+        shipping_info = ShippingInfo.objects.filter(customer=request.user, is_default=True).first()
     
         context = {
             'shopping_cart': shopping_cart,
             'cart_items': cart_items,
             'total_items': cart_items.count(),
             'total_amount': shopping_cart.total,
-            'payment_info': payment_info,
+            'paymentinfo': payment_info,
+            'shippinginfo': shipping_info
         }
         return render(request, 'store/checkout.html', context)
 

@@ -6,60 +6,26 @@
     <div class="row">
         <!--Product Image Carousel and seller info-->
         <div class="col-md-6">
-            <div id="productImageCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img src="{% static 'images/home/categories/brand/AdidasImg.jpg' %}" class="d-block w-100" alt="Top of Shoes">
-                    </div>
-                    <div class="carousel-item">
-                        <img src="{% static 'images/home/categories/brand/Reebok.webp' %}" class="d-block w-100" alt="Right of Shoes">
-                    </div>
-                    <div class="carousel-item">
-                        <img src="{% static 'images/home/categories/brand/UnderArmours.jpg' %}" class="d-block w-100" alt="Left of Shoes">
-                    </div>
-                    <div class="carousel-item">
-                        <img src="{% static 'back_image.jpg' %}" class="d-block w-100" alt="Back of Shoes">
-                    </div>
-                    <div class="carousel-item">
-                        <img src="{% static 'bottom_image.jpg' %}" class="d-block w-100" alt="Bottom of Shoes">
-                    </div>
-                </div>
-                <button class="carousel-control-prev" type="button" data-target="#productImageCarousel" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden"></span>
-                </button>
-                <button class="carousel-control-next" type="button" data-target="#productImageCarousel" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden"></span>
-                </button>                
-            </div>
             <div class="mb-3 mt-5">
                 <img src="{% static 'images/SellerIcon.jpg' %}" alt="Seller Picture" class="img-thumbnail me-2" style="width: 50px; height: 50px; border-radius: 50%;">
-                Seller: John Doe
+                Seller: {{shoe.seller.username}}
                 <button type="button" class="btn btn-outline-primary btn-sm ms-3">Follow </button>
+            </div>
+            <div class="shoe_image">
+                <img src="{{ shoe.image.url }}">
             </div>
         </div>
         <!--Product Information-->
         <div class="col-md-6">
-            <h2> TITLE: {{ title }}</h2>
-            <p><strong>Brand:</strong> {{ brand }}</p>
-            <p><strong>Color:</strong> {{ color }}</p>
-            <p><strong>Shoe Type:</strong> {{ shoe_type }}</p>
-            <p><strong>Sex:</strong> {{ sex }}</p>
-            <p><strong>Shoe Size:</strong> {{ shoe_size }}</p>
-            <p><strong>Condition:</strong> {{ condition }}</p>
-            <p><strong>Listing Price ($):</strong> {{ listing_price }}</p>
+            <h2> Name: {{ shoe.name }}</h2>
+            <p><strong>Brand:</strong> {{ shoe.brand }}</p>
+            <p><strong>Category:</strong> {{ shoe.category }}</p>
+            <p><strong>Shoe Size:</strong> {{ shoe.size }}</p>
+            <p><strong>Condition:</strong> {{ shoe.condition }}</p>
+            <p><strong>Listing Price ($):</strong> {{ shoe.price }}</p>
             <div class="mb-3">
                 <button type="button" class="btn btn-primary me-3">Add to Cart</button>
                 <button type="button" class="btn btn-secondary">Save for Later</button>
-            </div>
-        </div>
-        <div class="col-md-12">
-                    <div>
-                        <p><strong>Description:</strong> {{ description }}</p>
-                        <p><strong>Original Retail Price ($):</strong> {{ original_price }}</p>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
