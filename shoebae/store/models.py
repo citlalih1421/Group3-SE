@@ -120,13 +120,6 @@ class ShoppingCart(models.Model):
         total_amount = sum(item.shoe.price * item.quantity for item in cart_items)
         self.total = Decimal(total_amount).quantize(Decimal('.01'))
         self.save()
-
-    def update_quantity(self, shoe_id, new_quantity):
-        cart_item = self.items.filter(shoe_id=shoe_id).first()
-        if cart_item:
-            cart_item.quantity = new_quantity
-            cart_item.save()
-            self.update_total() 
     
     def reset_total(self):
         self.total = Decimal('0.00')

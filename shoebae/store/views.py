@@ -4,7 +4,7 @@ from django.views.generic.edit import CreateView
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render, redirect
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.views.generic import ListView
 from .forms import ShoeForm
 from .models import Shoe, Condition, Brand, Category, ShoppingCart, CartItem
@@ -13,6 +13,8 @@ from django.urls import reverse_lazy
 from orders.models import Order, OrderItem, ShippingInfo
 from payments.models import PaymentInfo
 from django.contrib.auth.decorators import login_required
+from .forms import SearchForm
+
 
 # Create your views here.
 @login_required
@@ -80,12 +82,9 @@ class Checkout(View):
         cart_items = shopping_cart.items.all()
         payment_info = PaymentInfo.objects.filter(customer=request.user, is_default=True).first()
         shipping_info = ShippingInfo.objects.filter(customer=request.user, is_default=True).first()
-    
+
         context = {
             'shopping_cart': shopping_cart,
-            'cart_items': cart_items,
-            'total_items': cart_items.count(),
-            'total_amount': shopping_cart.total,
             'paymentinfo': payment_info,
             'shippinginfo': shipping_info
         }
@@ -96,16 +95,16 @@ class Checkout(View):
         cart_items = shopping_cart.items.all()
 
         # Create order
-        order = Order.objects.create(customer=request.user)
+        order = Order.objects.create(customer=request.user, total=shopping_cart.total, date_ordered=timezone.now())
 
         # Convert cart items to order items and update quantities
         for cart_item in cart_items:
             order_item = OrderItem.objects.create(
-                order=order,
                 shoe=cart_item.shoe,
                 quantity=cart_item.quantity,
                 total=cart_item.subtotal,
             )
+            order.orderitem.add(order_item)
             cart_item.shoe.quantity -= cart_item.quantity
             cart_item.shoe.save()
 
@@ -119,7 +118,7 @@ class Checkout(View):
         shopping_cart.items.clear()
         shopping_cart.reset_total()
 
-        return redirect(request, 'store/home.html')
+        return redirect('home')  # Redirect to the home page after checkout
 
 
 def home(request):
@@ -207,6 +206,35 @@ class AddListingView(CreateView):
         shoe.save()
         return redirect(self.success_url)
 
+def search_view(request):
+    if request.method == 'POST':
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            search_query = form.cleaned_data.get('search_query')
+
+            # Perform search based on form data
+            shoes = Shoe.objects.all()  # Initial queryset
+
+            if search_query:
+                # Split the search query into keywords
+                keywords = search_query.split()
+                for keyword in keywords:
+                    # Check if keyword matches any field in Shoe model
+                    shoes = shoes.filter(
+                        Q(name__icontains=keyword) |
+                        Q(price__icontains=keyword) |
+                        Q(brand__name__icontains=keyword) |
+                        Q(condition__name__icontains=keyword) |
+                        Q(category__name__icontains=keyword) |
+                        Q(seller__username__icontains=keyword) |  # Search by seller's username
+                        Q(is_approved__icontains=keyword)  # Filter by approved listings, must type True or False for now
+                    ).distinct()
+
+            return render(request, 'store/search_results.html', {'form': form, 'shoes': shoes})
+    else:
+        form = SearchForm()
+
+    return render(request, 'store/search_results.html', {'form': form, 'shoes': None})
 
 class ViewListingsView(ListView):
     model = Shoe
@@ -225,29 +253,6 @@ class ViewAllListingsView(ListView):
 
     def get_queryset(self):
         queryset = Shoe.objects.all().order_by('-date_posted')
-        return queryset
-    
-class ShoeSearchListView(ListView):
-    model = Shoe
-    template_name = 'filter.html'
-    context_object_name = 'shoes'
-    paginate_by = 10
-
-    def get_queryset(self):
-        query = self.request.GET.get('q')
-        seller_username = self.request.GET.get('seller')
-        queryset = super().get_queryset()
-
-        if query:
-            queryset = queryset.filter(
-                Q(name__icontains=query) |
-                Q(brand__icontains=query) |
-                Q(conditions__icontains=query) |
-                Q(category__icontains=query)
-            )
-        if seller_username:
-            queryset = queryset.filter(seller__username=seller_username)
-
         return queryset
 
 

@@ -50,6 +50,30 @@
                 </li>
                 {% endif %}
                 </ul>
+                <style>
+                    /* Define styles for the solid search button */
+                    .solid-search-btn {
+                        background-color: #28a745; /* Solid green color */
+                        border-color: #28a745; /* Border color same as background */
+                        color: white; /* Text color */
+                    }
+                
+                    /* Hover styles for the solid search button */
+                    .solid-search-btn:hover {
+                        background-color: #218838; /* Darker green on hover */
+                        border-color: #218838; /* Border color on hover */
+                        color: white; /* Text color on hover */
+                    }
+                </style>                
+                <li class="nav-item">
+                    <form class="form-inline my-2 my-lg-0" action="{% url 'search_view' %}" method="post">
+                        {% csrf_token %}
+                        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" name="search_query">
+                        <!-- Add custom class to the search button -->
+                        <button class="btn btn-outline-success my-2 my-sm-0 solid-search-btn" type="submit">Search</button>
+                    </form>
+                </li>
+                <!-- Add other navbar items here -->
                 {% if user.is_authenticated %}
                 <div class="form-inline my-2 my-lg-0">
                     <a href="{% url 'cart' cart_id=request.user.shopping_cart.id %}">

@@ -22,3 +22,6 @@ class ShoeForm(forms.ModelForm):
         self.fields['condition'].queryset = Condition.objects.all()
         self.fields['category'].queryset = Category.objects.all()
         self.fields['brand'].queryset = Brand.objects.all()
+
+class SearchForm(forms.Form):
+    search_query = forms.CharField(label='Search', max_length=100, required=False)

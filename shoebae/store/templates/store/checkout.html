@@ -73,18 +73,18 @@
                        <div style="flex:1;"><strong>Quantity</strong></div>
                        <div style="flex:1;"><strong>Total</strong></div>
                    </div>
-                   {% for item in cart_items %}
+                   {% for item in order.orderitem.all %}
                    <div class="cart-row">
                        <div style="flex:2;"><img class="row-image" src="{{ item.shoe.image.url }}"></div>
                        <div style="flex:2;"><p>{{ item.shoe.name }}</p></div>
                        <div style="flex:1;"><p>${{ item.shoe.price }}</p></div>
                        <div style="flex:1;"><p>{{ item.quantity }}</p></div>
-                       <div style="flex:1;"><p>${{ item.subtotal }}</p></div>
+                       <div style="flex:1;"><p>${{ item.total }}</p></div>
                    </div>
                    {% endfor %}
                    <h5>Items: {{ total_items }}</h5>
                    <h5>Total: ${{ total_amount }}</h5>
                </div>
-           </div>
+           </div>           
      </div>
 {% endblock content %}
