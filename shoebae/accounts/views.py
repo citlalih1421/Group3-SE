@@ -124,7 +124,8 @@ class MySecurityView(View):
 
 class MyPaymentView(View):
     def get(self, request):
-        form = PaymentForm(request.GET)
+        payment_info = PaymentInfo.objects.filter(customer=request.user)
+        form = PaymentForm()
         return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
     
     def post(self, request):
@@ -150,19 +151,55 @@ class MyPaymentView(View):
                 cvv=cvv,
                 balance=balance,
                 is_default=is_default,
-                customer=request.user  # Assuming you have a user field in PaymentInfo model
+                customer=request.user  
             )
             payment_info.save()
-            print("Payment method added successfully!") # Redirect to the same page or another page
+            messages.success(request, "Payment method added successfully!") 
+
+            # Check if the user wants to set this payment method as default
+            if is_default:
+                existing_default = PaymentInfo.objects.filter(customer=request.user, is_default=True).first()
+                if existing_default:
+                    existing_default.is_default = False
+                    existing_default.save()
+                payment_info.is_default = True
+                payment_info.save()
+
             return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
         else:
             # If form is invalid, re-render the form with errors
-            print("Error in adding payment method. Please try again.")
+            messages.error(request, "Error in adding payment method. Please try again.")
             return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
+        
+
+def edit_payment(request, payment_id):
+    # Retrieve the PaymentInfo object from the database
+    payment = PaymentInfo.objects.get(id=payment_id)
+    
+    # Process the request to edit payment information (e.g., update the payment object)
+    if request.method == 'POST':
+        form = PaymentForm(request.POST, instance=payment)
+        if form.is_valid():
+            form.save()
+            # Redirect to a success page or back to the payment methods page
+            messages.success(request, "Payment method updated successfully!")
+            return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
+    else:
+        # Render the form for editing payment information
+        form = PaymentForm(instance=payment)
+        return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
+    
+    
+class DeletePaymentView(View):
+    def post(self, request, pk):
+        payment = PaymentInfo.objects.get(pk=pk)
+        payment.delete()
+        return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
 
 
 class MyShippingView(View):
     def get(self, request):
+        shipping_info = ShippingInfo.objects.filter(customer=request.user)
         form = ShippingForm()
         return render(request, 'accounts/my_account/shipping_methods.html', {'form': form})
 
@@ -174,6 +211,7 @@ class MyShippingView(View):
             city = form.cleaned_data['city']
             state = form.cleaned_data['state']
             zipcode = form.cleaned_data['zipcode']
+            country = form.cleaned_data['country']
             is_default = form.cleaned_data['is_default']
 
             # Create and save PaymentInfo object
@@ -182,16 +220,52 @@ class MyShippingView(View):
                 city=city,
                 state=state,
                 zipcode=zipcode,
+                country=country,
                 is_default=is_default,
                 customer=request.user  # Assuming you have a user field in PaymentInfo model
             )
             shipping_info.save()
-            print("Shipping address added successfully!") # Redirect to the same page or another page
+            messages.success(request, "Shipping address added successfully!") 
+
+            if is_default:
+                
+                # If setting as default, check if there's already a default
+                existing_default = ShippingInfo.objects.filter(customer=request.user, is_default=True).first()
+                if existing_default:
+                    existing_default.is_default = False
+                    existing_default.save()
+                shipping_info.is_default = True
+                shipping_info.save()
+
             return render(request, 'accounts/my_account/shipping_methods.html', {'form': form})
         else:
             # If form is invalid, re-render the form with errors
-            print("Error in adding shipping address. Please try again.")
+            messages.error(request, "Error in adding shipping address. Please try again.")
             return render(request, 'accounts/my_account/shipping_methods.html', {'form': form})
+
+def edit_shipping(request, shipping_id):
+    # Retrieve the ShippingInfo object from the database
+    shipping = ShippingInfo.objects.get(id=shipping_id)
+    
+    # Process the request to edit shipping information (e.g., update the shipping object)
+    if request.method == 'POST':
+        form = ShippingForm(request.POST, instance=shipping)
+        if form.is_valid():
+            form.save()
+
+            messages.success(request, "Shipping address updated successfully!")
+            return render(request, 'accounts/my_account/shipping_methods.html', {'form': form})
+    else:
+        # Render the form for editing shipping information
+        form = ShippingForm(instance=shipping)
+        return render(request, 'accounts/my_account/shipping_methods.html', {'form': form})
+
+class DeleteShippingView(View):
+    def post(self, request, pk):
+        shipping = ShippingInfo.objects.get(pk=pk)
+        shipping.delete()
+        return render(request, 'accounts/my_account/shipping_methods.html', {'form': form})
+
 
 class MyOrdersView(View):
     def get(self, request):

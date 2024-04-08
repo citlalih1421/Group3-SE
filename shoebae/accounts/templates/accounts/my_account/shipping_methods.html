@@ -1,14 +1,69 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-<div class="outer-container">
-  <div class="center-container">
-    <h3> Shipping Methods: </h3>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit">Submit</button>
-  </form>
+
+<!--shipping-->
+<div class="col-12">
+  <div class="row">
+    <div class="center-container col-md-6" id="saved-shipping-addresses">
+      <h3>Saved Shipping Addresses:</h3>
+      {% for shipping in shipping_info %}
+      <div class="col-md-6">
+        Street: {{ shipping.street }}<br>
+        City: {{ shipping.city }}<br>
+        State: {{ shipping.state }}<br>
+        Zipcode: {{ shipping.zipcode }}<br>
+  
+        <div id="buttons">
+          <form method="get" action="{% url 'edit_shipping' shipping.id %}">
+            <button type="submit" class="btn btn-primary">Edit</button>
+          </form>
+          <form method="post" action="{% url 'delete_shipping' shipping.id %}">
+          {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-md-6">
+        <h6> There are no shipping addresses saved. Please add a shipping address.</h6>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="center-container col-md-6" id="add-shipping-form">
+      <h3>Add a Shipping Address:</h3>
+      <form method="post" id="shipping_address" name="shipping_address">
+        {% csrf_token %}
+        <div class="form-group" id="street">
+          <label for="street">Street</label>
+          <input type="text" id="street" name="street" class="form-control" placeholder="Street">
+        </div>
+        <div class="form-group" id="city">
+          <label for="city">City</label>
+          <input type="text" id="city" name="city" class="form-control" placeholder="City">
+        </div>
+        <div class="form-group" id="state">
+          <label for="state">State</label>
+          <input type="text" id="state" name="state" class="form-control" placeholder="State">
+        </div>
+        <div class="form-group" id="zipcode">
+          <label for="zipcode">Zipcode</label>
+          <input type="text" id="zipcode" name="zipcode" class="form-control" placeholder="Zipcode">
+        </div>
+        <div class="form-group" id="country">
+          <label for="country">Country</label>
+          <input type="text" id="country" name="country" class="form-control" placeholder="Country">
+        </div>
+        <div class="form-group" id="is_default">
+          <label for="is_default">
+          <input type="checkbox" id="is_default" name="is_default" class="form-check-label"> Make this your default shipping address
+        </label>
+        </div>
+        <button id="form-button" type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
   </div>
 </div>
+
 {% endblock %}

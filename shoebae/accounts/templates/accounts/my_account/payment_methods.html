@@ -1,14 +1,71 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-<div class="outer-container">
-  <div class="center-container">
-    <h3> Payment Methods: </h3>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit">Submit</button>
-  </form>
+
+<!--payment-->
+<div class="col-12">
+  <div class="row">
+    <div class="col-md-6" id="saved-payment-methods">
+      <h3> Saved Payment Methods: </h3>
+      {% for payment in payment_info %}
+      <div class="col-6">
+        Cardholder: {{ payment.cardholder }}<br>
+        Card Number: {{ payment.cardnumber }}<br>
+        Expiration: {{ payment.expiration }}<br>
+        CVV: {{ payment.cvv }}<br>
+        Balance: {{ payment.balance }}<br>
+  
+        <div> 
+          <form method="get" action="{% url 'edit_payment' payment.id %}">
+            <button type="submit">Edit</button>
+          </form>
+          <form method="post" action="{% url 'delete_spayment' payment.id %}">
+            {% csrf_token %}
+            <button type="submit">Delete</button>
+          </form>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-md-6">
+        <h6> There are no payment methods saved. Please add a payment method.</h6>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="col-md-6" id="add-payment-form">
+      <h3> Add a Payment Method: </h3>
+      <form method="post" id="payment_methods" name="payment_methods">
+        {% csrf_token %}
+        <div class="form-group" id="cardholder">
+          <label for="cardholder">Cardholder's Name</label>
+          <input type="text" id="cardholder" name="cardholder" class="form-control" placeholder="Cardholder's Name">
+        </div>
+        <div class="form-group" id="cardnumber">
+          <label for="cardnumber">Cardnumber</label>
+          <input type="text" id="cardnumber" name="cardnumber" class="form-control" placeholder="Cardnumber">
+        </div>
+        <div class="form-group" id="expiration">
+          <label for="expiration">Expiration</label>
+          <input type="text" id="expiration" name="expiration" class="form-control" placeholder="Expiration (MM/YYYY)">
+        </div>
+        <div class="form-group" id="cvv">
+          <label for="cvv">CVV</label>
+          <input type="number" id="cvv" name="cvv" class="form-control" placeholder="CVV (XXX)">
+        </div>
+        <div class="form-group" id="balance">
+          <label for="balance">Balance</label>
+          <input type="number" id="balance" name="balance" class="form-control" placeholder="Balance">
+        </div>
+        <div class="form-group" id="is_default">
+          <label for="is_default">
+            <input type="checkbox" id="is_default" name="is_default" class="form-check-label"> Make this your default payment method
+          </label>
+        </div>
+        <button id="form-button" type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    </div>
+     
   </div>
 </div>
+
 {% endblock %}
