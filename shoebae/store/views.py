@@ -97,31 +97,33 @@ class Checkout(View):
 
     def post(self, request):
         shopping_cart = request.user.shopping_cart
-        cart_items = shopping_cart.items.all()
-
-        # Create order
-        order = Order.objects.create(customer=request.user, total=shopping_cart.total, date_ordered=timezone.now())
-
-        # Convert cart items to order items and update quantities
-        for cart_item in cart_items:
-            order_item = OrderItem.objects.create(
-                shoe=cart_item.shoe,
-                quantity=cart_item.quantity,
-                total=cart_item.subtotal,
-            )
-            order.orderitem.add(order_item)
-            cart_item.shoe.quantity -= cart_item.quantity
-            cart_item.shoe.save()
-
-        # Update payment info and deduct balance
+        cart_items = shopping_cart.cartitem_set.all()
         payment_info = PaymentInfo.objects.filter(customer=request.user, is_default=True).first()
-        if payment_info:
-            payment_info.balance -= shopping_cart.total
-            payment_info.save()
+        shipping_info = ShippingInfo.objects.filter(customer=request.user, is_default=True).first()
 
-        # Clear the user's cart and delete cart items
-        shopping_cart.items.clear()
-        shopping_cart.reset_total()
+        order_total = shopping_cart.total  # Store the total before setting it to 0
+        order = Order.objects.create(
+            customer=request.user,
+            total=order_total,
+            shippinginfo=shipping_info,
+            date_ordered=timezone.now()
+        )
+
+        for item in cart_items:
+            order_item = OrderItem.objects.create(
+                shoe=item.shoe,
+                quantity=item.quantity,
+                total=item.subtotal  # Assuming subtotal is calculated correctly in CartItem model
+            )
+            order.items.add(order_item)  # Add the order item to the order
+            # Optionally delete the cart item
+            item.delete()
+
+        shopping_cart.total = 0
+        shopping_cart.save()  # Save the updated total to the database
+
+        payment_info.balance -= order_total  # Deduct the order total from the balance
+        payment_info.save()
 
         return redirect('home')  # Redirect to the home page after checkout
 

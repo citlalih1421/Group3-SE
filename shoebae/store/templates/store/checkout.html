@@ -4,8 +4,6 @@
      <div class="row">
           <div class="col-lg-6">
                <div class="box-element" id="form-wrapper">
-                    <form id="form" method="post" action="{% url 'checkout' %}">
-                         {% csrf_token %}
                          <h2> Checkout </h2>
                          <hr>
                          <div id="user-info">
@@ -57,7 +55,6 @@
                               </button>
                               {% endif %}
                          </div>
-                    </form>
                </div>
           </div>
           <div class="col-lg-6">
@@ -84,6 +81,10 @@
                    {% endfor %}
                    <h5>Items: {{ total_items }}</h5>
                    <h5>Total: ${{ total_price }}</h5>
+                   <form id="form" method="post" action="{% url 'checkout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Checkout</button>
+                   </form>
                </div>
            </div>           
      </div>
