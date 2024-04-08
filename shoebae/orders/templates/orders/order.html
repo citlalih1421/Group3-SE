@@ -1,0 +1,56 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<div class="outer-container">
+    <div class="inner-container">
+        <h3>Order {{ order_id }} </h3>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Order Details</h5>
+                <p class="card-text">Date Ordered: {{ order.date_ordered }}</p>
+                <p class="card-text">Total Amount: ${{ order.total }}</p>
+                <p class="card-text">Refund Status: {{ order.is_refunded }}</p>
+                {% if order.shippinginfo %}
+                    <h5 class="card-title">Shipping Information</h5>
+                    <p class="card-text">Street: {{ order.shippinginfo.street }}</p>
+                    <p class="card-text">City: {{ order.shippinginfo.city }}</p>
+                    <p class="card-text">State: {{ order.shippinginfo.state }}</p>
+                    <p class="card-text">Zip Code: {{ order.shippinginfo.zipcode }}</p>
+                    <p class="card-text">Country: {{ order.shippinginfo.country }}</p>
+                {% else %}
+                    <p class="card-text">No shipping information available.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Order Items</h5>
+                {% for item in order.items.all %}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">{{ item.shoe.name }}</h6>
+                            <p class="card-text">Quantity: {{ item.quantity }}</p>
+                            <p class="card-text">Subtotal: ${{ item.total }}</p>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No items in this order.</p>
+                {% endfor %}
+            </div>
+        </div>
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% endif %}
+        {% if not order.is_refunded %}
+        <form action="{% url 'refund_submit' order_id=order.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Refund</button>
+        </form>
+        {% endif %}  
+    </div>
+</div>
+{% endblock %}

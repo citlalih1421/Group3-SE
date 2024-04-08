@@ -30,6 +30,7 @@ class Order(models.Model):
     quantity = models.IntegerField(default=1, null=True, blank=True)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     shippinginfo = models.ForeignKey(ShippingInfo, on_delete=models.CASCADE, null=True)
+    is_refunded = models.BooleanField(default=False)
     date_ordered = models.DateTimeField(default=timezone.now)
     def __str__(self):
         return str(self.id)

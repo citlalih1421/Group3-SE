@@ -11,7 +11,7 @@ from .models import UserProfile  # Import the UserProfile model
 from .forms import ShippingForm
 from .forms import PaymentForm
 from payments.models import PaymentInfo
-from orders.models import ShippingInfo
+from orders.models import Order, ShippingInfo
 import datetime
 
 
@@ -195,7 +195,9 @@ class MyShippingView(View):
 
 class MyOrdersView(View):
     def get(self, request):
-        return render(request, 'accounts/my_account/order_history.html')
+        orders = Order.objects.filter(customer=request.user)
+        context = {'orders': orders}
+        return render(request, 'accounts/my_account/order_history.html', context)
 
 
 class MyTicketsView(View):

@@ -142,7 +142,7 @@
                     <h3>Shipping Methods</h3>
                 </div>
             </div>
-            {% if user|has_group:"Buyer" %}
+            {% if user|has_group:"Buyer" or user.superuser == true%}
             <div onclick="location.href='{% url 'order_history' %}';" class="col-lg-8">
                 <div class="box-element">
                     <h3>Order History</h3>
@@ -156,11 +156,6 @@
             </div>
         </div>
         {% endif %}
-        <div class="col-lg-8">
-            <div onclick="location.href='{% url 'tickets' %}';" class="box-element">
-                <h3>Tickets</h3>
-            </div>
-        </div>
         </div>
         
     </div>

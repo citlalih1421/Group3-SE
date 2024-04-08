@@ -125,7 +125,7 @@ class Checkout(View):
         payment_info.balance -= order_total  # Deduct the order total from the balance
         payment_info.save()
 
-        return redirect('home')  # Redirect to the home page after checkout
+        return redirect('order', order=order.id)  # Redirect to the home page after checkout
 
 
 def home(request):
