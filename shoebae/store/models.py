@@ -111,36 +111,34 @@ class Review(models.Model):
     
 class ShoppingCart(models.Model):
     customer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='shopping_cart')
-    items = models.ManyToManyField('CartItem')
-    quantity = models.IntegerField(default=1)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    def update_total(self):
+    def calculate_total(self):
+        total_amount = Decimal('0.00')
         cart_items = self.cartitem_set.all()
-        total_amount = sum(item.shoe.price * item.quantity for item in cart_items)
-        self.total = Decimal(total_amount).quantize(Decimal('.01'))
+        for cart_item in cart_items:
+            total_amount += cart_item.subtotal
+        self.total = total_amount.quantize(Decimal('.01'))
         self.save()
-    
-    def reset_total(self):
-        self.total = Decimal('0.00')
-        self.save()
-        
+
     def __str__(self):
-        return (self.customer.get_username()+str("'s cart"))
+        return f"{self.customer.get_username()}'s cart"
 
 class CartItem(models.Model):
     shoe = models.ForeignKey(Shoe, on_delete=models.CASCADE)
     shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    date_added = models.DateTimeField(default=timezone.now)
 
-    def update_subtotal(self):
-        self.subtotal = Decimal(self.shoe.price * self.quantity).quantize(Decimal('.01'))
-        self.save()
+    def calculate_subtotal(self):
+        return Decimal(self.shoe.price * self.quantity).quantize(Decimal('.01'))
+
+    def save(self, *args, **kwargs):
+        self.subtotal = self.calculate_subtotal()
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return (self.shoe.name)
+        return self.shoe.name
 
 class Favorite(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorite')

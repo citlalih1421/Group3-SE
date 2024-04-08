@@ -14,6 +14,7 @@ from orders.models import Order, OrderItem, ShippingInfo
 from payments.models import PaymentInfo
 from django.contrib.auth.decorators import login_required
 from .forms import SearchForm
+from django.utils import timezone
 
 
 # Create your views here.
@@ -23,16 +24,13 @@ def add_to_cart(request, slug):
     shopping_cart, created = ShoppingCart.objects.get_or_create(customer=request.user)
 
     # Check if the item is already in the cart
-    cart_item = shopping_cart.cartitem_set.filter(shoe=shoe).first()
-    if cart_item:
-        # If item exists, update its quantity using the update_quantity method from Shoe model
-        shoe.update_quantity(quantity=cart_item.quantity + 1)
-    else:
-        # If item does not exist, create a new cart item
-        cart_item = shopping_cart.cartitem_set.create(shoe=shoe, quantity=1)
+    cart_item, created = shopping_cart.cartitem_set.get_or_create(shoe=shoe)
 
-    # Update shopping cart total using the method defined in the model
-    shopping_cart.update_total()
+    # If the item already exists in the cart, update its quantity and subtotal
+    if not created:
+        cart_item.quantity += 1
+        cart_item.subtotal = cart_item.calculate_subtotal()
+        cart_item.save()
 
     # Redirect to cart view with the shopping cart ID as a URL parameter
     return redirect('cart', cart_id=shopping_cart.id)
@@ -43,10 +41,13 @@ def cart(request, cart_id):
     shopping_cart = get_object_or_404(ShoppingCart, id=cart_id)
     cart_items = shopping_cart.cartitem_set.all()
 
-    # Calculate total for the cart
-    total_amount = sum(item.shoe.price * item.quantity for item in cart_items)
+    # Update the total and subtotals for the cart items
+    for cart_item in cart_items:
+        cart_item.subtotal = cart_item.calculate_subtotal()
+        cart_item.save()
+    shopping_cart.calculate_total()
 
-    context = {'shopping_cart': shopping_cart, 'cart_items': cart_items, 'total_amount': total_amount}
+    context = {'shopping_cart': shopping_cart, 'cart_items': cart_items}
     return render(request, 'store/cart.html', context)
 
 
@@ -79,14 +80,18 @@ class Checkout(View):
 
     def get(self, request):
         shopping_cart = request.user.shopping_cart
-        cart_items = shopping_cart.items.all()
+        cart_items = shopping_cart.cartitem_set.all()
         payment_info = PaymentInfo.objects.filter(customer=request.user, is_default=True).first()
         shipping_info = ShippingInfo.objects.filter(customer=request.user, is_default=True).first()
+        total_items = sum(item.quantity for item in cart_items)
 
         context = {
             'shopping_cart': shopping_cart,
+            'cart_items' : cart_items,
             'paymentinfo': payment_info,
-            'shippinginfo': shipping_info
+            'shippinginfo': shipping_info,
+            'total_items': total_items,
+            'total_price': shopping_cart.total
         }
         return render(request, 'store/checkout.html', context)
 
