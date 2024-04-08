@@ -13,6 +13,8 @@ from .forms import PaymentForm
 from payments.models import PaymentInfo
 from orders.models import Order, ShippingInfo
 import datetime
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 
 User = get_user_model()
@@ -282,7 +284,41 @@ class MyFavoritesView(View):
     def get(self, request):
         return render(request, 'accounts/my_account/favorites.html')
     
+
+
+
+
+class DeleteAccountView(View):
+    def get(self, request):
+        return render(request, 'accounts/delete_account.html')
+
+    def post(self, request):
+        user_id = request.user.id
+        user = User.objects.get(id=user_id)
+        user.delete()
+        logout(request)
+        messages.success(request, "Your account has been deleted successfully.")
+        return redirect('home')
+
+
+
 '''class MyListingsView(View):
     def get(self, request):
         seller_listings = Shoe.objects.filter(seller=request.user)
         return render(request, 'my_listings.html', {'seller_listings': seller_listings})'''
+class MySecurityView(View):
+    def get(self, request):
+        return render(request, 'accounts/my_account/security.html')
+
+    def post(self, request):
+        # Retrieve the current user and delete their account
+        user_id = request.user.id
+        user = User.objects.get(id=user_id)
+        user.delete()
+        
+        # Log out the user
+        logout(request)
+        
+        # Redirect to the home page or any other desired page
+        messages.success(request, "Your account has been deleted successfully.")
+        return redirect('home')  # Assuming 'home' is the name of your home page URL
