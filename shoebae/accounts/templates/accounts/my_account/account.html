@@ -82,7 +82,7 @@
                         <img src="{% static 'images/SellerIcon.jpg' %}" alt="Seller Picture" class="img-thumbnail me-2" style="width: 100px; height: 100px; border-radius: 50%;">
                     </div>
                     <div class="mb-5 mx-3 my-auto">
-                        <p style="text-align: center;"><h5>Username:</h5> {{ username }} </p>
+                        <p style="text-align: center;"><h5>Username:</h5> {{ user.username }} </p>
                     </div>
                 </div>
             </div>
@@ -95,17 +95,19 @@
             <div class="mb-3 mx-3">
                 <p><h5>Email:</h5> {{user.email}}</p>
             </div>
-            <!--
+
             <div class="mb-3 mx-3">
-                <p><h5>Status:</h5> </p>
-            </div> -->
+                <p><h5>Status:</h5>{% if user|has_group:"Buyer" %} Buyer {% endif %} {% if user|has_group:"Seller" %} Seller {% endif %}</p>
+            </div> 
+            
             <div class="mb-3 mx-3">
-                <p> <h5>Joined:</h5> {{date_joined}}</p>
+                <p> <h5>Joined:</h5> {{ user.date_joined}}</p>
             </div>
         </div>
 
-        {% if user|has_group:"Buyer" %}
+        
         <div class="col-md-6">
+            {% if user|has_group:"Buyer" %}
             <div class="col-mb-6" id="listings-container">
                 <h3>Listings</h3>
                 <p>No listings</p>
@@ -114,7 +116,7 @@
                     <button onclick="location.href='{% url 'listing' %}'" class="btn btn-primary">Add Listing</button>
                 </div>
             </div>
-        {% endif %}
+            {% endif %}
 
             <div class="col-mb-6" id="favorites-container">
                 <h3>Favorites</h3>
@@ -159,6 +161,15 @@
         </div>
         
     </div>
+
+    <!--
+    <div class="center-container">
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger primary">Delete Account</button>
+        </form>
+    </div>
+    -->
     {% endif %}
 </div>
 

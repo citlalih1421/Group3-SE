@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin #only logged-in users will see MyAcountView
 from django.contrib import messages
@@ -8,14 +9,11 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import View
 from store.models import Shoe, ShoppingCart
 from .models import UserProfile  # Import the UserProfile model
-from .forms import ShippingForm
-from .forms import PaymentForm
+from .forms import ShippingForm, PaymentForm
 from payments.models import PaymentInfo
 from orders.models import Order, ShippingInfo
 import datetime
-from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-
 
 User = get_user_model()
 
@@ -110,10 +108,19 @@ class LogoutView(View):
 
 class MyAccountView(View):
     def get(self, request):
-        user_groups = Group.objects.filter(user=request.user)
-        context = {'user': request.user, 'user_groups': user_groups}
+        user = request.user
+        user_groups = Group.objects.filter(user=user)
+        
+        is_seller = user.groups.filter(name='Seller').exists()
+        is_buyer = user.groups.filter(name='Buyer').exists()
+        
+        context = {
+            'user': user,
+            'user_groups': user_groups,
+            'is_seller': is_seller,
+            'is_buyer': is_buyer
+        }
         return render(request, 'accounts/my_account/account.html', context)
-
 class MyInfoView(View):
     def get(self, request):
         return render(request, 'accounts/my_account/account_information.html')
