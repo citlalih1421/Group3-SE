@@ -3,7 +3,6 @@ from django.test import TestCase
 # Create your tests here.
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-from django.test import TestCase
 from store.models import Brand
 
 
@@ -36,8 +35,12 @@ class BrandTestCase(TestCase):
         self.assertEqual(str(self.nike_brand), "nike")
 
 
-#CHECKS THE NUMBER OF BRAND OBJECTS IN THE DATABASE
+#CHECKS TO SEE HOW MANY OBJECTS ARE CREATED IN BRAND
     def test_brand_objects_count(self):
         self.assertEqual(Brand.objects.count(), 2)
+
+
+                            ####IMPORTANT####
+#THE TERMINAL COMMAND TO RUN THE TESTS "python manage.py test store.tests.BrandTestCase"
 
     
