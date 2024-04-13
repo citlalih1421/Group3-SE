@@ -1,88 +1,71 @@
-{% extends 'main.html' %}
+{% extends 'store/main.html' %}
 {% load static %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Add Listing</h2>
+    <h2 class="md-4">Add Listing</h2>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="mb-3">
-            <label for="top_image" class="form-label">Top of Shoes Image</label>
-            <input type="file" class="form-control" id="top_image" name="top_image">
-        </div>
-        <div class="mb-3">
-            <label for="right_image" class="form-label">Right of Shoes Image</label>
-            <input type="file" class="form-control" id="right_image" name="right_image">
-        </div>
-        <div class="mb-3">
-            <label for="left_image" class="form-label">Left of Shoes Image</label>
-            <input type="file" class="form-control" id="left_image" name="left_image">
-        </div>
-        <div class="mb-3">
-            <label for="back_image" class="form-label">Back of Shoes Image (Optional)</label>
-            <input type="file" class="form-control" id="back_image" name="back_image">
-        </div>
-        <div class="mb-3">
-            <label for="bottom_image" class="form-label">Bottom of Shoes Image (Optional)</label>
-            <input type="file" class="form-control" id="bottom_image" name="bottom_image">
-        </div>
-        <div class="mb-3">
-            <label for="title" class="form-label">Title</label>
-            <input type="text" class="form-control" id="title" name="title">
-        </div>
-        <div class="mb-3">
-            <label for="brand" class="form-label">Brand</label>
-            <input type="text" class="form-control" id="brand" name="brand">
-        </div>
-        <div class="mb-3">
-            <label for="main_color" class="form-label">Main Color</label>
-            <input type="text" class="form-control" id="main_color" name="main_color">
-        </div>
-        <div class="mb-3">
-            <label for="accent_color" class="form-label">Accent Color (if applicable)</label>
-            <input type="text" class="form-control" id="accent_color" name="accent_color">
-        </div>
-        <div class="mb-3">
-            <label for="shoe_type" class="form-label">Shoe Type</label>
-            <input type="text" class="form-control" id="shoe_type" name="shoe_type">
-        </div>
-        <div class="mb-3">
-            <label for="sex" class="form-label">Sex</label>
-            <select class="form-select" id="sex" name="sex">
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="unisex">Unisex</option>
-                <option value="unisex">Kids</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="shoe_size" class="form-label">Shoe Size</label>
-            <input type="text" class="form-control" id="shoe_size" name="shoe_size">
-        </div>
-        <div class="mb-3">
-            <label for="condition" class="form-label">Condition</label>
-            <select class="form-select" id="condition" name="condition">
-                <option value="new">New</option>
-                <option value="like-new">Like New</option>
-                <option value="very-good">Very Good</option>
-                <option value="good">Good</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="quantity" class="form-label">Quantity</label>
-            <input type="number" class="form-control" id="quantity" name="quantity">
-        </div>
-        <div class="mb-3">
-            <label for="original_price" class="form-label">Original Price ($)</label>
-            <input type="number" class="form-control" id="original_price" name="original_price">
-        </div>
-        <div class="mb-3">
-            <label for="listing_price" class="form-label">Listing Price ($)</label>
-            <input type="number" class="form-control" id="listing_price" name="listing_price">
-        </div>
-        <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea class="form-control" id="description" rows="4" name="description"></textarea>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Shoe Name</label>
+                    <input type="text" class="form-control" id="name" name="name">
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">Shoe Image</label>
+                    <input type="file" class="form-control" id="image" name="image">
+                </div>
+                <div class="mb-3">
+                    <label for="quantity" class="form-label">Quantity</label>
+                    <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="10">
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price ($)</label>
+                    <input type="number" class="form-control" id="price" name="price" min="0.01" max="5000" step="0.01">
+                </div>
+                <div class="mb-3">
+                    <label for="size" class="form-label">Size</label>
+                    <input type="number" class="form-control" id="size" name="size" min="1" max="99.9" step="0.5">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="condition" class="form-label">Condition</label>
+                    <select class="form-select" id="condition" name="condition">
+                        {% for condition in conditions %}
+                            <option value="{{ condition.id }}">{{ condition.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="brand" class="form-label">Brand</label>
+                    <select class="form-select" id="brand" name="brand">
+                        {% for brand in brands %}
+                            <option value="{{ brand.id }}">{{ brand.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="category" class="form-label">Category</label>
+                    <select class="form-select" id="category" name="category">
+                        {% for category_obj in categories %}
+                            <option value="{{ category_obj.category.id }}">{{ category_obj.category.name }}</option>
+                            {% if category_obj.children %}
+                                {% for child_category in category_obj.children %}
+                                    <option value="{{ child_category.category.id }}">- {{ child_category.category.name }}</option>
+                                    {% if child_category.children %}
+                                        {% for grandchild_category in child_category.children %}
+                                            <option value="{{ grandchild_category.category.id }}">-- {{ grandchild_category.category.name }}</option>
+                                            <!-- Add more levels as needed -->
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>                                
+            </div>
         </div>
         <div class="mb-3">
             <button type="submit" class="btn btn-primary">Submit</button>
@@ -90,4 +73,8 @@
         </div>
     </form>
 </div>
+
+
+
 {% endblock %}
+

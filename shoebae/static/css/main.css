@@ -117,3 +117,16 @@ h1,h2,h3,h4,h5,h6{
 	display: none!important;
 }
 
+/* Define styles for the solid search button */
+.solid-search-btn {
+	background-color: #28a745; /* Solid green color */
+	border-color: #28a745; /* Border color same as background */
+	color: white; /* Text color */
+}
+
+/* Hover styles for the solid search button */
+.solid-search-btn:hover {
+	background-color: #218838; /* Darker green on hover */
+	border-color: #218838; /* Border color on hover */
+	color: white; /* Text color on hover */
+}

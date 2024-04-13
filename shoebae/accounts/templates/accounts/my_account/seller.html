@@ -1,0 +1,50 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Seller Information -->
+        <div class="col-md-12 mb-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <img src="{% static 'seller_picture.jpg' %}" alt="Seller Picture" class="img-thumbnail" style="width: 100px; height: 100px;">
+                    <h3>Seller: John Doe</h3>
+                </div>
+                <div class="col-md-6 text-end">
+                    <!--
+                    <p>Products Sold: 100</p>
+                    <p>Products in Inventory: 50</p> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Listing Carousel - Wishlist/Favorites -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h3>Wishlist/Favorites</h3>
+            <!-- Add product listing carousel for wishlist/favorites -->
+            Carousel here
+        </div>
+    </div>
+
+    <!-- Product Listing Carousel - Current Inventory -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h3>Current Inventory</h3>
+            <!-- Add product listing carousel for current inventory -->
+            Carousel here
+        </div>
+    </div>
+
+    <!-- Seller Ratings and Reviews -->
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Ratings and Reviews</h3>
+            <!-- Add seller ratings and reviews section -->
+            Ratings here
+        </div>
+    </div>
+</div>
+{% endblock %}

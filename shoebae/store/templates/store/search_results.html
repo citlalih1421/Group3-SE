@@ -1,0 +1,46 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <br>
+        <h1>Search</h1>
+        <!-- Use form-inline class to display the form inline -->
+        <form class="form-inline" method="post">
+            {% csrf_token %}
+            <!-- Add custom class to the search input for consistent styling -->
+            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" name="search_query">
+            <!-- Add custom class to the search button for consistent styling -->
+            <button class="btn btn-outline-success solid-search-btn" type="submit">Search</button>
+        </form>
+
+        {% if shoes %}
+        <h2 class="mt-5 mb-3">Search Results</h2>
+        <div class="row">
+            {% for shoe in shoes %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ shoe.image.url }}" class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ shoe.name }}</h5>
+                        <p class="card-text">Brand: {{ shoe.brand }}</p>
+                        <p class="card-text">Category: {{ shoe.category }}</p>
+                        <p class="card-text">Price: ${{ shoe.price }}</p>
+                        <!-- Add other fields you want to display for each shoe -->
+                        <form method="get" action="{% url 'productpage' shoe.slug %}">
+                            <button type="submit" class="btn btn-outline-success">View</button>
+                        </form>  
+                        <form method="post" action="{% url 'add_to_cart' shoe.slug %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="shoe_slug" value="{{ shoe.slug }}">
+                            <button type="submit" class="btn btn-outline-success">Add to Cart</button>
+                        </form>                                                    
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p>No results found.</p>
+        {% endif %}
+    </div>
+{% endblock content %}

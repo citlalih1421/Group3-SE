@@ -1,47 +1,45 @@
+<!-- store/templates/store/view_listings.html -->
 {% extends 'store/main.html' %}
 {% load static %}
+
 {% block content %}
+<div class="container mt-5">
     <div class="row">
-        <div class="col-lg-4">
-            <div class="box-element product">
-                <img class="thumbnail" src="{% static 'images/product-placeholder.png' %}">
-                <div class="box-element product">
-                    <h6><strong>Product</strong></h6>
-                    <hr>
-
-                    <button class="btn btn-outline-secondary add-btn">Add to Cart</button>
-                    <a class="btn btn-outline-success" href="#">View</a>
-                    <h4 style="display: inline-block; float: right"><strong>$price</strong></h4>
+        {% for listing in listings %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ listing.image.url }}" class="card-img-top">
+                <div class="card-body">
+                    <h5 class="card-title">{{ listing.name }}</h5>
+                    <p class="card-text">Approved: {{listing.is_approved}}</p>
+                    <p class="card-text">Price: ${{ listing.price }}</p>
+                    <p class="card-text">Size: {{ listing.size }}</p>
+                    <p class="card-text">Condition: {{ listing.condition }}</p>
+                    <p class="card-text">Brand: {{ listing.brand }}</p>
+                    <p class="card-text">Category: {{listing.category}}</p>
+                    <!-- Add other fields you want to display for each listing -->
+                    <form method="get" action="{% url 'productpage' listing.slug %}">
+                        <button type="submit" class="btn btn-outline-success">View</button>
+                    </form>  
+                    <form method="post" action="{% url 'add_to_cart' listing.slug %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="shoe_slug" value="{{ listing.slug }}">
+                        <button type="submit" class="btn btn-outline-success">Add to Cart</button>
+                    </form>                                                    
+                    {% if listing.seller == user or user.is_superuser == true%}
+                    <form id="delete-form" method="post" action="{% url 'delete_listing' listing.slug %}?redirect={{ request.path }}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>                    
+                    {% endif %}
                 </div>
             </div>
         </div>
-
-        <div class="col-lg-4">
-            <div class="box-element product">
-                <img class="thumbnail" src="{% static 'images/product-placeholder.png' %}">
-                <div class="box-element product">
-                    <h6><strong>Product</strong></h6>
-                    <hr>
-
-                    <button class="btn btn-outline-secondary add-btn">Add to Cart</button>
-                    <a class="btn btn-outline-success" href="#">View</a>
-                    <h4 style="display: inline-block; float: right"><strong>$price</strong></h4>
-                </div>
-            </div>
+        {% empty %}
+        <div class="col">
+            <p>No listings found.</p>
         </div>
-        
-        <div class="col-lg-4">
-            <div class="box-element product">
-                <img class="thumbnail" src="{% static 'images/product-placeholder.png' %}">
-                <div class="box-element product">
-                    <h6><strong>Product</strong></h6>
-                    <hr>
-
-                    <button class="btn btn-outline-secondary add-btn">Add to Cart</button>
-                    <a class="btn btn-outline-success" href="#">View</a>
-                    <h4 style="display: inline-block; float: right"><strong>$price</strong></h4>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
-{% endblock content %}
+</div>
+{% endblock %}

@@ -1,8 +1,18 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% load custom_filters %}
+
 {% block content %}
 <style>
+    #profile-information, #listings-container, #favorites-container{
+        background-color: #f9f9f9;
+        border: 2px solid #f0f0f0;
+        border-radius: 10px;
+        margin-top: 20px;
+        padding: 30px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
     /* General styles */
     .outer-container {
         background-color: #f9f9f9;
@@ -54,51 +64,113 @@
             max-width: calc(100% - 40px);
         }
     }
+
+    #payment-info{
+        height: 450px;
+    }
 </style>
-<div class="outer-container">
-    <h2>My Account</h2>
+
+
+
+<div class="container col-12">
+    {% if user.is_authenticated %}
+    <div class="row">
+        <div class="col-md-6" id="profile-information">
+            <div class="mb-6">
+                <div class="row">
+                    <div class="mb-1 mx-1 mb-3">
+                        <img src="{% static 'images/SellerIcon.jpg' %}" alt="Seller Picture" class="img-thumbnail me-2" style="width: 100px; height: 100px; border-radius: 50%;">
+                    </div>
+                    <div class="mb-5 mx-3 my-auto">
+                        <p style="text-align: center;"><h5>Username:</h5> {{ user.username }} </p>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 mx-3">
+                <p><h5>First Name:</h5> {{user.first_name}}</p>
+            </div>
+            <div class="mb-3 mx-3">
+                <p><h5>Last Name:</h5> {{user.last_name}}</p>
+            </div>
+            <div class="mb-3 mx-3">
+                <p><h5>Email:</h5> {{user.email}}</p>
+            </div>
+
+            <div class="mb-3 mx-3">
+                <p><h5>Status:</h5>{% if user|has_group:"Buyer" %} Buyer {% endif %} {% if user|has_group:"Seller" %} Seller {% endif %}</p>
+            </div> 
+            
+            <div class="mb-3 mx-3">
+                <p> <h5>Joined:</h5> {{ user.date_joined}}</p>
+            </div>
+        </div>
+
+        
+        <div class="col-md-6">
+            {% if user|has_group:"Buyer" %}
+            <div class="col-mb-6" id="listings-container">
+                <h3>Listings</h3>
+                <p>No listings</p>
+
+                <div class="text-center"> <!-- Center the submit button -->
+                    <button onclick="location.href='{% url 'listing' %}'" class="btn btn-primary">Add Listing</button>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="col-mb-6" id="favorites-container">
+                <h3>Favorites</h3>
+                <p>No Favorites</p>
+            </div>
+        </div>
+    </div>
+
     <hr>
-    <h4>Welcome, {{user.first_name}}</h4>
-    <div class="center-container">
-        <div class="col-lg-8">
-            <div onclick="location.href='{% url 'account_information' %}';" class="box-element">
-                <h3>Account Information</h3>
+
+    <div class="outer-container">
+        <div class="center-container">
+            <div class="col-lg-8">
+                <div onclick="location.href='{% url 'payment_methods' %}';" class="box-element">
+                    <h3>Payment Methods</h3>
+                </div>
             </div>
-        </div>
-        <div class="col-lg-8">
-            <div onclick="location.href='{% url 'account_security' %}';" class="box-element">
-                <h3>Security</h3>
+            <div onclick="location.href='{% url 'account_security' %}';" class="col-lg-8">
+                <div  class="box-element">
+                    <h3>Account Security</h3>
+                </div>
             </div>
-        </div>
-        <div class="col-lg-8">
-            <div onclick="location.href='{% url 'payment_methods' %}';" class="box-element">
-                <h3>Payment Methods</h3>
+            <div onclick="location.href='{% url 'shipping_methods' %}';" class="col-lg-8">
+                <div class="box-element">
+                    <h3>Shipping Methods</h3>
+                </div>
             </div>
-        </div>
-        <div class="col-lg-8">
-            <div onclick="location.href='{% url 'shipping_methods' %}';" class="box-element">
-                <h3>Shipping Methods</h3>
+            {% if user|has_group:"Buyer" or user.superuser == true%}
+            <div onclick="location.href='{% url 'order_history' %}';" class="col-lg-8">
+                <div class="box-element">
+                    <h3>Order History</h3>
+                </div>
             </div>
-        </div>
-        {% if user|has_group:"Buyer" %}
-        <div class="col-lg-8">
-            <div onclick="location.href='{% url 'order_history' %}';" class="box-element">
-                <h3>Order History</h3>
-            </div>
-        </div>
-        {% endif %}
-        {% if user|has_group: "Seller"%}
+            {% endif %}
+            {% if user|has_group:"Seller" %}
         <div class="col-lg-8">
             <div onclick="location.href='{% url 'view_listings' %}';" class="box-element">
                 <h3>My Listings</h3>
             </div>
         </div>
         {% endif %}
-        <div class="col-lg-8">
-            <div onclick="location.href='{% url 'tickets' %}';" class="box-element">
-                <h3>Tickets</h3>
-            </div>
         </div>
+        
     </div>
+
+    <!--
+    <div class="center-container">
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger primary">Delete Account</button>
+        </form>
+    </div>
+    -->
+    {% endif %}
 </div>
-{% endblock content %}
+
+{% endblock %}

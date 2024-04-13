@@ -1,0 +1,142 @@
+{% extends 'store/footer.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="accordion" id="filterAccordion">
+          <!-- Sex Filter -->
+          <div class="card">
+            <div class="card-header" id="headingSex">
+              <h2 class="mb-0">
+                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseSex" aria-expanded="true" aria-controls="collapseSex">
+                  Sex
+                </button>
+              </h2>
+            </div>
+            <div id="collapseSex" class="collapse show" aria-labelledby="headingSex" data-parent="#filterAccordion">
+              <div class="card-body">
+                <form method="GET" action="{% url 'listings' %}">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="men" name="sex">
+                        <label class="form-check-label" for="sexMen">
+                          Men
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="women" name="sex">
+                        <label class="form-check-label" for="sexWomen">
+                          Women
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="unisex" name="sex">
+                        <label class="form-check-label" for="sexUnisex">
+                          Unisex
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="kids" name="sex">
+                        <label class="form-check-label" for="sexKids">
+                          Kids
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" name="sex">
+                        <label class="form-check-label" for="sexAll">All</label>
+                    </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <!-- Brand Filter -->
+          <div class="card">
+            <div class="card-header" id="headingBrand">
+              <h2 class="mb-0">
+                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseBrand" aria-expanded="false" aria-controls="collapseBrand">
+                  Brand
+                </button>
+              </h2>
+            </div>
+            <div id="collapseBrand" class="collapse" aria-labelledby="headingBrand" data-parent="#filterAccordion">
+              <div class="card-body">
+                <form method="GET" action="{% url 'listings' %}">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" name="brand">
+                    <label class="form-check-label" for="brandAll">All</label>
+                  </div>
+                  <!-- Add more brand options as needed -->
+                  <!-- Example: Adidas, Nike, etc. -->
+                </form>
+              </div>
+            </div>
+          </div>
+          <!-- Condition Filter -->
+          <div class="card">
+            <div class="card-header" id="headingCondition">
+              <h2 class="mb-0">
+                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseCondition" aria-expanded="false" aria-controls="collapseCondition">
+                  Condition
+                </button>
+              </h2>
+            </div>
+            <div id="collapseCondition" class="collapse" aria-labelledby="headingCondition" data-parent="#filterAccordion">
+              <div class="card-body">
+                <form method="GET" action="{% url 'listings' %}">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="new" name="condition">
+                    <label class="form-check-label" for="conditionNew">New</label>
+                  </div>
+                  <!-- Add more condition options as needed -->
+                  <!-- Example: Like New, Very Good, Good, etc. -->
+                </form>
+              </div>
+            </div>
+          </div>
+          <!-- Price Range Filter -->
+          <div class="card">
+            <div class="card-header" id="headingPrice">
+              <h2 class="mb-0">
+                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapsePrice" aria-expanded="false" aria-controls="collapsePrice">
+                  Price Range
+                </button>
+              </h2>
+            </div>
+            <div id="collapsePrice" class="collapse" aria-labelledby="headingPrice" data-parent="#filterAccordion">
+              <div class="card-body">
+                <form method="GET" action="{% url 'listings' %}">
+                  <!-- Add price range input fields here -->
+                  <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="minPrice">Min Price</label>
+                            <input type="number" class="form-control" id="minPrice" name="min_price">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="maxPrice">Max Price</label>
+                            <input type="number" class="form-control" id="maxPrice" name="max_price">
+                        </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Apply Filters</button>
+        </div>
+      </div>
+  
+      <div class="col-md-8">
+        <!-- Main content area -->
+        <!-- Display filtered shoes here -->
+      </div>
+    </div>
+  </div>
+  
+
+{% endblock content %}

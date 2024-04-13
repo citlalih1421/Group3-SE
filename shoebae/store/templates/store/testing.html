@@ -1,99 +1,222 @@
-{% extends 'main.html' %}
-{% load static %}
+{% extends 'store/main.html' %}
 
+{% load static %}
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Add Listing</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="row">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="top_image" class="form-label">Top of Shoes Image</label>
-                    <input type="file" class="form-control" id="top_image" name="top_image">
-                </div>
-                <div class="mb-3">
-                    <label for="right_image" class="form-label">Right of Shoes Image</label>
-                    <input type="file" class="form-control" id="right_image" name="right_image">
-                </div>
-                <div class="mb-3">
-                    <label for="left_image" class="form-label">Left of Shoes Image</label>
-                    <input type="file" class="form-control" id="left_image" name="left_image">
-                </div>
-                <div class="mb-3">
-                    <label for="back_image" class="form-label">Back of Shoes Image (Optional)</label>
-                    <input type="file" class="form-control" id="back_image" name="back_image">
-                </div>
-                <div class="mb-3">
-                    <label for="bottom_image" class="form-label">Bottom of Shoes Image (Optional)</label>
-                    <input type="file" class="form-control" id="bottom_image" name="bottom_image">
-                </div>
+<style>
+  #shipping-info{
+    height: 450px;
+  }
+  strong{
+    color:rgb(12, 12, 12);
+  }
+</style>
+
+    <div class="container">
+
+      <div id="myShippingAddresses" class="carousel slide col-12" data-ride="carousel">
+        <div class="carousel-inner my-5">
+
+          <!-- Carousel element 1 if there is a payment method saved-->
+          <div class="carousel-item active">
+            <div class="row justify-content-center">
+              <div class="col-lg-10" id="saved-shipping-info" style="height: 450px;">
+                <!-- Include saved shipping info here -->
+                {% if savedShippingInfo %}
+                <h5 class="text-center">Saved Shipping Information</h5>
+                  <!-- Display saved Shipping information using savedShippingInfo object -->
+                  <div class="row">
+                    <!--Shipping Information-->
+                    <div class="container col-md-6">
+                      <p><strong>Name:</strong></p>
+                      <p>{{ savedShippingInfo.name }}</p>
+                      <p><strong>Address:</strong><p>
+                      <p>{{ savedShippingInfo.address }}</p>
+                      <p>{{ savedShippingInfo.city }}, {{ savedShippingInfo.state }} {{ savedShippingInfo.zipcode }}</p>
+                      <p><strong>Phone Number:</strong></p>
+                      <p>{{ savedShippingInfo.number }}</p>
+                    </div>
+                  </div>
+                  {% else %}
+                    <div class="text-center" style="margin-top:10px"> 
+                      <button id="addShippingAddressBtn" class="btn btn-primary">Add Shipping Address</button>
+                    </div>
+                  {% endif %}
+              </div>
             </div>
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="title" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="title" name="title">
-                </div>
-                <div class="mb-3">
-                    <label for="brand" class="form-label">Brand</label>
-                    <input type="text" class="form-control" id="brand" name="brand">
-                </div>
-                <div class="mb-3">
-                    <label for="main_color" class="form-label">Main Color</label>
-                    <input type="text" class="form-control" id="main_color" name="main_color">
-                </div>
-                <div class="mb-3">
-                    <label for="accent_color" class="form-label">Accent Color (if applicable)</label>
-                    <input type="text" class="form-control" id="accent_color" name="accent_color">
-                </div>
-                <div class="mb-3">
-                    <label for="shoe_type" class="form-label">Shoe Type</label>
-                    <input type="text" class="form-control" id="shoe_type" name="shoe_type">
-                </div>
-                <div class="mb-3">
-                    <label for="sex" class="form-label">Sex</label>
-                    <select class="form-select" id="sex" name="sex">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="unisex">Unisex</option>
-                        <option value="kids">Kids</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="shoe_size" class="form-label">Shoe Size</label>
-                    <input type="text" class="form-control" id="shoe_size" name="shoe_size">
-                </div>
-                <div class="mb-3">
-                    <label for="condition" class="form-label">Condition</label>
-                    <select class="form-select" id="condition" name="condition">
-                        <option value="new">New</option>
-                        <option value="like-new">Like New</option>
-                        <option value="very-good">Very Good</option>
-                        <option value="good">Good</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="quantity" class="form-label">Quantity</label>
-                    <input type="number" class="form-control" id="quantity" name="quantity">
-                </div>
-                <div class="mb-3">
-                    <label for="original_price" class="form-label">Original Price ($)</label>
-                    <input type="number" class="form-control" id="original_price" name="original_price">
-                </div>
-                <div class="mb-3">
-                    <label for="listing_price" class="form-label">Listing Price ($)</label>
-                    <input type="number" class="form-control" id="listing_price" name="listing_price">
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" rows="4" name="description"></textarea>
-                </div>
+          </div>
+
+          <!-- Carousel element 1 if there is NO shipping method-->
+          <div class="carousel-item">
+            <div class="row justify-content-around"> 
+              <!-- Center shipping information -->
+              <!--Shipping Information-->
+              <div class="col-lg-6" id="shipping-info">
+                <form id="shippingForm">
+                  <div class="row">
+                    <!--Shipping Information-->
+                    <div>
+                      <h5>Shipping Information</h5>
+                      <div class="row mb-1">
+                        <div class="col">
+                          <div class="form-group">
+                            <label for="name">Name:</label>
+                            <input type="text" class="form-control" id="shipping-name" name="shipping-name" required>
+                          </div>
+                        </div>
+                      </div>
+                      <!--Shipping Address-->
+                      <div class="row mb-1">
+                        <div class="col">
+                          <div class="form-group">
+                            <label for="address">Address:</label>
+                            <input type="text" class="form-control" id="shipping-address" name="shipping-address" required>
+                          </div>
+                        </div>
+                      </div>
+                      <!--Shipping Address Information 2-->
+                      <div class="row md-1">
+                          <div class="col">
+                            <div class="form-group">
+                              <label for="city">City:</label>
+                              <input type="text" class="form-control" id="shipping-city" name="shipping-city" required>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="form-group">
+                              <label for="state">State:</label>
+                              <input type="text" class="form-control" id="shipping-state" name="shipping-state" required>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="form-group">
+                              <label for="zipcode">Zip Code:</label>
+                              <input type="text" class="form-control" id="shipping-zipcode" name="shipping-zipcode" required>
+                            </div>
+                          </div>
+                      </div>
+                      <!--Shipping Phone Number-->
+                      <div class="row mb-1">
+                        <div class="col">
+                          <div class="form-group">
+                            <label for="number">Phone Number:</label>
+                            <input type="tel" class="form-control" id="number" name="number" required>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-center"> <!-- Center the submit button -->
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                  </div>
+                </form>
+              </div>
+
             </div>
+          </div>
+
         </div>
-        <div class="mb-3">
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <a href="#" class="btn btn-secondary">Save for Later</a>
+        <a class="carousel-control-prev col-1" href="#myShippingAddresses" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true" style="width: 35px; height: 40px; background-color:#4f868c;"></span>
+          <span class="sr-only" >Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#myShippingAddresses" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true" style="width: 35px; height: 40px; background-color:#4f868c;"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+
+    </div>
+
+<script>
+  // Initialize the carousel
+  $('#myShippingAddresses').carousel({
+    interval: false, 
+    wrap: false // Disable wrapping, preventing resizing
+  });
+
+  // Save and display shipping information
+  $('#shippingForm').submit(function(event) {
+    event.preventDefault(); // Prevent form submission
+
+    // Retrieve form data
+    var formDataShipping = {
+        name: $('#shipping-name').val(),
+        address: $('#shipping-address').val(),
+        city: $('#shipping-city').val(),
+        state: $('#shipping-state').val(),
+        zipcode: $('#shipping-zipcode').val(),
+        number: $('#number').val()
+    };
+
+    // Save form data to localStorage
+    localStorage.setItem('shippingInfo', JSON.stringify(formDataShipping));
+
+    // Display saved payment information
+    displayShippingInfo(formDataShipping);
+  });
+
+  // Function to display payment information
+  function displayShippingInfo(data) {
+    var html = `
+      <div class="carousel-item">
+        <div class="row justify-content-center">
+          <div class="col-lg-8" id="saved-payment-info" style="height: 450px;">
+            <!-- Display saved payment information -->
+            <h4 class="text-center">Saved Shipping Information</h4>
+                    <!--Shipping Information-->
+                      <p><strong>Name:</strong></p>
+                        <p> ${data.name}</p>
+                      <p><strong>Address:</strong><p>
+                        <p> ${data.address}</p>
+                        <p>${data.city} , ${data.state}  ${data.zipcode}</p>
+                      <p><strong>Phone Number:</strong></p>
+                        <p> ${data.number}</p>
+                    
+                  <div class="text-center mt-3">
+                    <button class="btn btn-danger" onclick="deleteShippingAddresses()">
+                      Delete Shipping Address
+                    </button>
+                  </div>
+          </div>
         </div>
-    </form>
-</div>
-{% endblock %}
+      </div>
+    `;
+
+    // Append the saved shipping information to the carousel
+    $('.carousel-inner').prepend(html);
+
+    // Update the carousel indicators
+    var index = $('.carousel-item').length - 1;
+    $('.carousel-indicators').prepend(`<li data-target="#myShippingAddresses" data-slide-to="${index}"></li>`);
+
+    // Move the carousel to the first slide (the newly added saved payment info)
+    $('#myShippingAddresses').carousel(0);
+
+    // Reset the form
+    $('#shippingForm')[0].reset();
+  }
+
+  // Retrieve saved shipping information from localStorage on page load
+  var savedShippingInfo = JSON.parse(localStorage.getItem('shippingInfo'));
+  if (savedShippingInfo) {
+    displayShippingInfo(savedShippingInfo);
+  }
+
+  $('#addShippingAddressBtn').click(function() {
+    $('#myShippingAddresses').carousel('next');
+  });
+
+  // Function to delete shipping information
+  function deleteShippingAddresses() {
+    // Remove saved shipping information from localStorage
+    localStorage.removeItem('shippingInfo');
+
+    // Remove the saved shipping information slide from the carousel
+    $('.carousel-item:first-child').remove();
+    
+    // Move the carousel back to the initial slide
+    $('#myShippingAddresses').carousel(0);
+  }
+</script>
+
+{% endblock content %}

@@ -1,44 +1,42 @@
 {% extends 'store/main.html' %}
-{% extends 'store/footer' %}
 {% load static %}
 {% block content %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
 
-
 <!-- Slideshow container -->
-<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+<div id="headerCarouselIndicator" class="carousel slide" data-ride="carousel">
     <ol class="carousel-indicators">
-        <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-        <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-        <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+        <li data-target="#headerCarouselIndicator" data-slide-to="0" class="active"></li>
+        <li data-target="#headerCarouselIndicator" data-slide-to="1"></li>
+        <li data-target="#headerCarouselIndicator" data-slide-to="2"></li>
     </ol>
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <img class="d-block w-100" src="images/home/slideshow/Picture 3.jpg" alt="First slide">
+            <img class="d-block w-75 mx-auto" src="{% static 'images/home/slideshow/SlideImg1.jpg' %}" alt="First slide">
             <div class="carousel-caption d-none d-md-block">
-                <h5>Comfortable shoes for those endless miles of walking on campus.</h5>
+                <h4 style="color: white">Quality shoes for those crazy adventures with friends!</h4>
             </div>
         </div>
         <div class="carousel-item">
-            <img class="d-block w-100" src="images/home/slideshow/Picture 2.webp" alt="Second slide">
+            <img class="d-block w-75 mx-auto" src="{% static 'images/home/slideshow/Slide2.jpg' %}" alt="Second slide">
             <div class="carousel-caption d-none d-md-block">
-                <h5>Quality shoes for those crazy adventures with friends!</h5>
+                <h4 style="color: black">Comfortable shoes for those endless miles of walking on campus.</h4>
             </div>
         </div>
         <div class="carousel-item">
-            <img class="d-block w-100" src="images/home/slideshow/Picture 1.jpg" alt="Third slide">
+            <img class="d-block w-75 mx-auto" src="{% static 'images/home/slideshow/Slide3.jpg' %}" alt="Third slide">
             <div class="carousel-caption d-none d-md-block">
-                <h5>Get shoes for your kids in styles they will love!</h5>
+                <h4 style="color: black">Get shoes for your kids in styles they will love!</h4>
             </div>
-        </div>
+        </div> 
     </div>
-    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+    <a class="carousel-control-prev" href="#headerCarouselIndicator" role="button" data-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
+        <span class="sr-only" >Previous</span>
     </a>
-    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <a class="carousel-control-next" href="#headerCarouselIndicator" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true" ></span>
         <span class="sr-only">Next</span>
     </a>
 </div>
@@ -50,10 +48,10 @@
 <section id="categories" class="container mt-5">
     <h2 class="text-center">Shop by Category</h2>
     <div class="row">
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 md-4">
             <div class="card text-center">
                 <a href="men.html">
-                    <img src="{% static 'images/Adidas.jpg' %}" class="card-img-top" alt="Men's Shoes">
+                    <img src="{% static 'images/home/categories/sex/Men.webp' %}" class="card-img-top" alt="Men's Shoes">
                     <div class="card-body">
                         <p class="card-text">Men</p>
                     </div>
@@ -61,10 +59,10 @@
             </div>
         </div>
         
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 md-4">
             <div class="card text-center">
-                <a href="men.html">
-                    <img src="{% static 'images/Women.webp' %}" class="card-img-top" alt="Women's Shoes">
+                <a href="{% url 'store' %}">
+                    <img src="{% static 'images/home/categories/sex/Women.webp' %}" class="card-img-top" alt="Women's Shoes">
                     <div class="card-body">
                         <p class="card-text">Women</p>
                     </div>
@@ -72,10 +70,10 @@
             </div>
         </div>
 
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 col-md-4">
             <div class="card text-center">
-                <a href="men.html">
-                    <img src="{% static 'images/Kids.webp' %}" class="card-img-top" alt="Kids' Shoes">
+                <a href="{% url 'store' %}">
+                    <img src="{% static 'images/home/categories/sex/Kids.webp' %}" class="card-img-top" alt="Kids' Shoes">
                     <div class="card-body">
                         <p class="card-text">Kids</p>
                     </div>
@@ -92,7 +90,7 @@
         <div class="col-md-4 mb-4">
             <div class="card text-center">
                 <a href="men.html">
-                    <img src="images/home/brand/Adidas.jpg" class="card-img-top" alt="Adidas">
+                    <img src="{% static 'images/home/categories/brand/AdidasImg.jpg' %}" class="card-img-top" alt="Adidas">
                     <div class="card-body">
                         <p class="card-text">Adidas</p>
                     </div>
@@ -102,7 +100,7 @@
         <div class="col-md-4 mb-4">
             <div class="card text-center">
                 <a href="men.html">
-                    <img src="images/home/brand/Converse.jpg" class="card-img-top" alt="Converse">
+                    <img src="{% static 'images/home/categories/brand/Converse.jpg' %}" class="card-img-top" alt="Converse">
                     <div class="card-body">
                         <p class="card-text">Converse</p>
                     </div>
@@ -112,7 +110,7 @@
         <div class="col-md-4 mb-4">
             <div class="card text-center">
                 <a href="men.html">
-                    <img src="images/home/brand/Nike.webp" class="card-img-top" alt="Nike">
+                    <img src="{% static 'images/home/categories/brand/Nike.avif' %}" class="card-img-top" alt="Nike">
                     <div class="card-body">
                         <p class="card-text">Nike</p>
                     </div>
@@ -122,7 +120,7 @@
         <div class="col-md-4 mb-4">
             <div class="card text-center">
                 <a href="men.html">
-                    <img src="images/home/brand/OnCloud.jpg" class="card-img-top" alt="On Cloud">
+                    <img src="{% static 'images/home/categories/brand/OnCloud.jpg' %}" class="card-img-top" alt="On Cloud">
                     <div class="card-body">
                         <p class="card-text">On Cloud</p>
                     </div>
@@ -132,7 +130,7 @@
         <div class="col-md-4 mb-4">
             <div class="card text-center">
                 <a href="men.html">
-                    <img src="images/home/brand/Reebok.jpg" class="card-img-top" alt="Reebok">
+                    <img src="{% static 'images/home/categories/brand/Reebok.webp' %}" class="card-img-top" alt="Reebok">
                     <div class="card-body">
                         <p class="card-text">Reebok</p>
                     </div>
@@ -142,7 +140,7 @@
         <div class="col-md-4 mb-4">
             <div class="card text-center">
                 <a href="men.html">
-                    <img src="images/home/categories/Men's Shoes.webp" class="card-img-top" alt="Under Armour">
+                    <img src="{% static 'images/home/categories/brand/UnderArmours2.jpeg' %}" class="card-img-top" alt="Under Armour">
                     <div class="card-body">
                         <p class="card-text">Under Armour</p>
                     </div>
@@ -159,8 +157,8 @@
     <div class="row">
         <div class="col-md-4 mb-4">
             <div class="card text-center">
-                <a href="men.html">
-                    <img src="images/home/categories/Men's Shoes.webp" class="card-img-top" alt="Sneakers">
+                <a href="{% url 'store' %}">
+                    <img src="{% static 'images/home/categories/type/Sneakers.jpg' %}" class="card-img-top" alt="Sneakers">
                     <div class="card-body">
                         <p class="card-text">Sneakers</p>
                     </div>
@@ -169,8 +167,8 @@
         </div>
         <div class="col-md-4 mb-4">
             <div class="card text-center">
-                <a href="men.html">
-                    <img src="images/home/categories/Men's Shoes.webp" class="card-img-top" alt="Boots">
+                <a href="{% url 'store' %}">
+                    <img src="{% static 'images/home/categories/type/Boots.jpg' %}" class="card-img-top" alt="Boots">
                     <div class="card-body">
                         <p class="card-text">Boots</p>
                     </div>
@@ -179,20 +177,10 @@
         </div>
         <div class="col-md-4 mb-4">
             <div class="card text-center">
-                <a href="men.html">
-                    <img src="images/home/categories/Men's Shoes.webp" class="card-img-top" alt="Heels">
+                <a href="{% url 'store' %}">
+                    <img src="{% static 'images/home/type/Heels.webp' %}" class="card-img-top" alt="Heels">
                     <div class="card-body">
                         <p class="card-text">Boots</p>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card text-center">
-                <a href="men.html">
-                    <img src="images/home/categories/Men's Shoes.webp" class="card-img-top" alt="Men's Shoes">
-                    <div class="card-body">
-                        <p class="card-text">Men</p>
                     </div>
                 </a>
             </div>
@@ -205,85 +193,56 @@
 
 <!------------------------------------------------------------------>
 
-<!-- Testimonials Section -->
+<!-- Seller Testimonial Carousel -->
 <section id="testimonials" class="container mt-5">
-    <div class="row">
-        <div class="col-md-12">
-            <h2 class="text-center">Testimonials</h2>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    <!-- Testimonial 1 -->
-                    <div class="carousel-item active">
-                        <div class="row">
-                            <div class="col-md-4 mb-4">
-                                <div class="card text-center">
-                                    <img src="path_to_seller_image_1" class="card-img-top" alt="Seller Image">
-                                    <div class="card-body">
-                                        <p class="card-text">"I love selling with ShoeBae! The platform is user-friendly and provides great exposure for my products."</p>
-                                        <p class="card-text"><a href="{% url 'seller_page' seller_id=1 %}">- John Doe, ShoeBae Seller</a></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Testimonial 2 -->
-                    <div class="carousel-item">
-                        <div class="row">
-                            <div class="col-md-4 mb-4">
-                                <div class="card text-center">
-                                    <img src="path_to_seller_image_2" class="card-img-top" alt="Seller Image">
-                                    <div class="card-body">
-                                        <p class="card-text">"ShoeBae has helped me reach a wider audience and increase my sales significantly. Highly recommended!"</p>
-                                        <p class="card-text"><a href="{% url 'seller_page' seller_id=2 %}">- Jane Smith, ShoeBae Seller</a></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Testimonial 3 -->
-                    <div class="carousel-item">
-                        <div class="row">
-                            <div class="col-md-4 mb-4">
-                                <div class="card text-center">
-                                    <img src="path_to_seller_image_3" class="card-img-top" alt="Seller Image">
-                                    <div class="card-body">
-                                        <p class="card-text">"Selling with ShoeBae has been a breeze. The support team is responsive and helpful, and the platform is intuitive."</p>
-                                        <p class="card-text"><a href="{% url 'seller_page' seller_id=3 %}">- Michael Johnson, ShoeBae Seller</a></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Apply Now -->
-                    <div class="carousel-item">
-                        <div class="row">
-                            <div class="col-md-4 mb-4">
-                                <div class="card text-center">
-                                    <div class="card-body">
-                                        <h3 class="card-text">Become a seller with ShoeBae!</h3>
-                                        <p class="card-text"><a href="{% url 'apply_page' %}" class="btn btn-primary">Apply Now!</a></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <div id="testimonialCarouselIndicator" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-target="#testimonialCarouselIndicator" data-slide-to="0" class="active"></li>
+            <li data-target="#testimonialCarouselIndicator" data-slide-to="1"></li>
+            <li data-target="#testimonialCarouselIndicator" data-slide-to="2"></li>
+            <li data-target="#testimonialCarouselIndicator" data-slide-to="3"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <img src="{% static 'images/SellerIcon.jpg' %}" alt="Seller Picture" class="img-thumbnail mx-auto d-block mb-3" style="width: 100px; height: 100px; border-radius: 50%;">
+                        <p class="card-text">"I love selling with ShoeBae! The platform is user-friendly and provides great exposure for my products."</p>
+                        <p class="card-text">John Doe, ShoeBae Seller</p>
                     </div>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
             </div>
+            <div class="carousel-item">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <img src="{% static 'images/SellerIcon.jpg' %}" alt="Seller Picture" class="img-thumbnail mx-auto d-block mb-3" style="width: 100px; height: 100px; border-radius: 50%;">
+                        <p class="card-text">"ShoeBae has helped me reach a wider audience and increase my sales significantly. Highly recommended!"</p>
+                        <p class="card-text">Jane Smith, ShoeBae Seller</p>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <img src="{% static 'images/SellerIcon.jpg' %}" alt="Seller Picture" class="img-thumbnail mx-auto d-block mb-3" style="width: 100px; height: 100px; border-radius: 50%;">
+                        <p class="card-text">"Selling with ShoeBae has been a breeze. The support team is responsive and helpful, and the platform is intuitive."</p>
+                        <p class="card-text">Michael Sur</p>
+                    </div>
+                </div>
+            </div> 
         </div>
+        <a class="carousel-control-prev" href="#testimonialCarouselIndicator" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#testimonialCarouselIndicator" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
     </div>
-</section>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js" integrity="sha512-..." crossorigin="anonymous"></script>
+    <script type="text/js" src="{% static 'js/home.js'}"></script>
+</section> 
 
 {% endblock content %}

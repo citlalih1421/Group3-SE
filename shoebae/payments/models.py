@@ -6,8 +6,9 @@ User = get_user_model()
 # Create your models here.
 class PaymentInfo(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payment_information')
-    card_holder = models.CharField(blank=True, null=True)
-    card_number = models.BinaryField(blank=True, null=True)
-    card_expiration = models.BinaryField(blank=True, null=True)
-    card_cvv = models.BinaryField(blank=True, null=True)
+    cardholder = models.CharField(blank=True, null=True)
+    cardnumber = models.CharField(blank=True, null=True)
+    expiration = models.DateField(blank=True, null=True)
+    cvv = models.IntegerField(blank=True, null=True)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_default = models.BooleanField(default=False)

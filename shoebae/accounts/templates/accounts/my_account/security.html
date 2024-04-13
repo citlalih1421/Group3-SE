@@ -1,5 +1,11 @@
 {% extends 'store/main.html' %}
-{% load static %}
 {% block content %}
-<p>Security</p>
+<div class="container">
+    <h2>Delete Account</h2>
+    <p>Are you sure you want to delete your account?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Yes, Delete My Account</button>
+    </form>
+</div>
 {% endblock %}
