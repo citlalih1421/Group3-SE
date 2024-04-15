@@ -5,6 +5,12 @@ jobs:
     working_directory: ~/circleci-python
     docker:
       - image: "circleci/python:3.12.1"
+        environment:
+          POSTGRES_USER: postgres  # Your PostgreSQL username
+          POSTGRES_PASSWORD: password  # Your PostgreSQL password
+          POSTGRES_DB: shoebae_db  # Your PostgreSQL database name
+          POSTGRES_HOST: localhost  # Use 'localhost' or '127.0.0.1' for local setup
+          POSTGRES_PORT: 5432  # Default PostgreSQL port
     steps:
       - checkout
       - run:
@@ -17,6 +23,12 @@ jobs:
     working_directory: ~/circleci-python
     docker:
       - image: "circleci/python:3.12.1"
+        environment:
+          POSTGRES_USER: postgres  # Same as above
+          POSTGRES_PASSWORD: password  # Same as above
+          POSTGRES_DB: shoebae_db  # Same as above
+          POSTGRES_HOST: localhost  # Same as above
+          POSTGRES_PORT: 5432  # Same as above
     steps:
       - checkout
       - run:
