@@ -88,27 +88,6 @@ class Shoe(models.Model):
     def __str__(self):
         return self.name
     
-    
-
-class Review(models.Model):
-    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews', null=True)
-    shoe = models.ForeignKey(Shoe, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
-    rating = models.DecimalField(
-        max_digits=2,
-        decimal_places=1,
-        validators=[
-            MinValueValidator(1),
-            MaxValueValidator(5),
-            DecimalValidator(max_digits=2, decimal_places=1),
-            increment_by_half_validator
-        ]
-    )
-    date_posted = models.DateTimeField(default=timezone.now)
-    
-    def __str__(self):
-        return self.title
-    
 class ShoppingCart(models.Model):
     customer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='shopping_cart')
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -139,6 +118,27 @@ class CartItem(models.Model):
 
     def __str__(self):
         return self.shoe.name
+
+class Review(models.Model):
+    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews', null=True)
+    shoe = models.ForeignKey(Shoe, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    rating = models.DecimalField(
+        max_digits=2,
+        decimal_places=1,
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(5),
+            DecimalValidator(max_digits=2, decimal_places=1),
+            increment_by_half_validator
+        ]
+    )
+    date_posted = models.DateTimeField(default=timezone.now)
+    
+    def __str__(self):
+        return self.title
+    
+
 
 class Favorite(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorite')

@@ -135,76 +135,54 @@ class MyPaymentView(View):
     def get(self, request):
         payment_info = PaymentInfo.objects.filter(customer=request.user)
         form = PaymentForm()
-        return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
+        return render(request, 'accounts/my_account/payment_methods.html', {'form': form, 'payment_info': payment_info, 'editing': False})
     
     def post(self, request):
-        form = PaymentForm(request.POST)
-        if form.is_valid():
-            # Save payment information to session
-            cardholder = form.cleaned_data['cardholder']
-            cardnumber = form.cleaned_data['cardnumber']
-            expiration_input = form.cleaned_data['expiration']
-            cvv = form.cleaned_data['cvv']
-            balance = form.cleaned_data['balance']
-            is_default = form.cleaned_data['is_default']
-            
-            #converts the MM/YYYY input to YYYY/MM/DD for the DateField
-            expiration_parts = expiration_input.split('/')
-            expiration_date = datetime.date(int(expiration_parts[1]), int(expiration_parts[0]), int(1))
-
-            # Create and save PaymentInfo object
-            payment_info = PaymentInfo(
-                cardholder=cardholder,
-                cardnumber=cardnumber,
-                expiration=expiration_date,
-                cvv=cvv,
-                balance=balance,
-                is_default=is_default,
-                customer=request.user  
-            )
-            payment_info.save()
-            messages.success(request, "Payment method added successfully!") 
-
-            # Check if the user wants to set this payment method as default
-            if is_default:
-                existing_default = PaymentInfo.objects.filter(customer=request.user, is_default=True).first()
-                if existing_default:
-                    existing_default.is_default = False
-                    existing_default.save()
-                payment_info.is_default = True
+        editing = 'edit_payment_id' in request.POST
+        if editing:
+            payment_info_id = request.POST.get('edit_payment_id')
+            payment_info = get_object_or_404(PaymentInfo, id=payment_info_id, customer=request.user)
+            form = PaymentForm(request.POST)
+            if form.is_valid():
+                # Update the existing PaymentInfo object with form data
+                payment_info.cardholder = form.cleaned_data['cardholder']
+                payment_info.cardnumber = form.cleaned_data['cardnumber']
+                payment_info.expiration = form.cleaned_data['expiration']
+                payment_info.cvv = form.cleaned_data['cvv']
+                payment_info.balance = form.cleaned_data['balance']
                 payment_info.save()
-
-            return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
+                messages.success(request, "Payment method updated successfully!")
+                return redirect('payment_methods')  # Redirect to the same page after successful submission
+            else:
+                messages.error(request, "Error in updating payment method. Please try again.")
         else:
-            # If form is invalid, re-render the form with errors
-            messages.error(request, "Error in adding payment method. Please try again.")
-            return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
+            form = PaymentForm(request.POST)
+            if form.is_valid():
+                cardholder = form.cleaned_data['cardholder']
+                cardnumber = form.cleaned_data['cardnumber']
+                expiration_input = form.cleaned_data['expiration']
+                cvv = form.cleaned_data['cvv']
+                balance = form.cleaned_data['balance']
+                is_default = form.cleaned_data['is_default']
+                expiration_parts = expiration_input.split('/')
+                expiration_date = datetime.date(int(expiration_parts[1]), int(expiration_parts[0]), int(1))
+                payment_info = PaymentInfo(
+                    cardholder=cardholder,
+                    cardnumber=cardnumber,
+                    expiration=expiration_date,
+                    cvv=cvv,
+                    balance=balance,
+                    is_default=is_default,
+                    customer=request.user
+                )
+                payment_info.save()
+                messages.success(request, "Payment method added successfully!")
+                return redirect('payment_methods')  # Redirect to the same page after successful submission
+            else:
+                messages.error(request, "Error in adding payment method. Please try again.")
         
-
-def edit_payment(request, payment_id):
-    # Retrieve the PaymentInfo object from the database
-    payment = PaymentInfo.objects.get(id=payment_id)
-    
-    # Process the request to edit payment information (e.g., update the payment object)
-    if request.method == 'POST':
-        form = PaymentForm(request.POST, instance=payment)
-        if form.is_valid():
-            form.save()
-            # Redirect to a success page or back to the payment methods page
-            messages.success(request, "Payment method updated successfully!")
-            return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
-    else:
-        # Render the form for editing payment information
-        form = PaymentForm(instance=payment)
-        return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
-    
-    
-class DeletePaymentView(View):
-    def post(self, request, pk):
-        payment = PaymentInfo.objects.get(pk=pk)
-        payment.delete()
-        return render(request, 'accounts/my_account/payment_methods.html', {'form': form})
-
+        payment_info = PaymentInfo.objects.filter(customer=request.user)
+        return render(request, 'accounts/my_account/payment_methods.html', {'form': form, 'payment_info': payment_info, 'editing': editing})
 
 class MyShippingView(View):
     def get(self, request):
