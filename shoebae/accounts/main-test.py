@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from .models import UserProfile
+from accounts.models import UserProfile
 
 User = get_user_model()
 
