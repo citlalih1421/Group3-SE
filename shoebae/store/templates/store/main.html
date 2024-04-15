@@ -24,44 +24,26 @@
           
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'store' %}">Store<span class="sr-only">(current)</span></a>
-                </li>
-                {% if not user.is_authenticated %}
-                <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'register' %}">Register<span class="sr-only"></span></a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'login' %}">Login<span class="sr-only"></span></a>
-                </li>
-                {% else %}
+                {% if user.is_authenticated %}
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'account' %}">My Account<span class="sr-only"></span></a>
                 </li>
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'logout' %}">Logout<span class="sr-only"></span></a>
                 </li>
-                {% endif %}
-
-                {% if user.is_authenticated %}
-                {% if is_seller %}
-                <!--Only for Sellers-->
+                {% else %}
                 <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'listing' %}"> Add Listing<span class="sr-only"></span></a>
+                    <a class="nav-link" href="{% url 'register' %}">Register<span class="sr-only"></span></a>
                 </li>
-                
-
-                {% if request.user.userprofile.is_approved %}
-                <!--Still only for Sellers-->
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'view_listings' %}">View Listings<span class="sr-only"></span></a>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'login' %}">Login<span class="sr-only"></span></a>
                 </li>
                 {% endif %}
-                {% endif %}
-                {% endif %}
 
-                </ul>
-                <ul type="none">              
+                {% if user.is_authenticated and user.userprofile.is_buyer %}
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'store' %}">Store<span class="sr-only">(current)</span></a>
+                </li>
                 <li class="nav-item">
                     <form class="form-inline my-2 my-lg-0" action="{% url 'search_view' %}" method="post">
                         {% csrf_token %}
@@ -70,24 +52,32 @@
                         <button class="btn btn-outline-success my-2 my-sm-0 solid-search-btn" type="submit">Search</button>
                     </form>
                 </li>
-            </ul> 
-                <!-- Add other navbar items here -->
-                {% if user.is_authenticated %}
-                    {% if user.issuperuser or user|has_group:"Buyer" %}
-                    <div class="form-inline my-2 my-lg-0">
-                        <a href="{% url 'cart' cart_id=request.user.shopping_cart.id %}">
-                            <img id="cart-icon" src="{% static 'images/cart.png' %}">
-                        </a>
-                    </div>
-                    {% endif %}
+                <div class="form-inline my-2 my-lg-0">
+                    <a href="{% url 'cart' cart_id=request.user.shopping_cart.id %}">
+                        <img id="cart-icon" src="{% static 'images/cart.png' %}">
+                    </a>
+                </div>
+                </ul>
                 {% endif %}
+
+                {% if user.is_authenticated and user.userprofile.is_seller %}
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'listing' %}"> Add Listing<span class="sr-only"></span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'view_listings' %}">View Listings<span class="sr-only"></span></a>
+                    </li>
+                </ul>
+                {% endif %}           
             </div>
         </nav>
 
         <div class="container">
             <br>
             {% block content %}
-
+            <!-- Why does this show us the no listings found even though nothing is written here?-->
+            <!-- This needs to not show the overall site listings if the user is not a buyer (TA Said this)-->
             {% endblock content %}
             <br>
         </div>
