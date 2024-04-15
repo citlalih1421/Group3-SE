@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load custom_filters %}
 <html>
     <head>
         <title>ShoeBae</title>
@@ -71,7 +72,6 @@
                 </li>
             </ul> 
                 <!-- Add other navbar items here -->
-                {% if user.is_authenticated %}
 
                 <div class="form-inline my-2 my-lg-0">
                     <a href="{% url 'cart' cart_id=request.user.shopping_cart.id %}">

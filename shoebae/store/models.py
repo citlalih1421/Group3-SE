@@ -109,36 +109,63 @@ class Review(models.Model):
     def __str__(self):
         return self.title
     
-class ShoppingCart(models.Model):
-    customer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='shopping_cart')
-    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+class Checkout(View):
+    model = Order
+    fields = []  # Assuming no specific fields need to be defined for Order creation
 
-    def calculate_total(self):
-        total_amount = Decimal('0.00')
-        cart_items = self.cartitem_set.all()
-        for cart_item in cart_items:
-            total_amount += cart_item.subtotal
-        self.total = total_amount.quantize(Decimal('.01'))
-        self.save()
+    def get(self, request):
+        shopping_cart = request.user.shopping_cart
+        cart_items = shopping_cart.cartitem_set.all()
+        payment_info = PaymentInfo.objects.filter(customer=request.user, is_default=True).first()
+        shipping_info = ShippingInfo.objects.filter(customer=request.user, is_default=True).first()
+        total_items = sum(item.quantity for item in cart_items)
 
-    def __str__(self):
-        return f"{self.customer.get_username()}'s cart"
+        context = {
+            'shopping_cart': shopping_cart,
+            'cart_items' : cart_items,
+            'paymentinfo': payment_info,
+            'shippinginfo': shipping_info,
+            'total_items': total_items,
+            'total_price': shopping_cart.total
+        }
+        return render(request, 'store/checkout.html', context)
 
-class CartItem(models.Model):
-    shoe = models.ForeignKey(Shoe, on_delete=models.CASCADE)
-    shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    def post(self, request):
+        shopping_cart = request.user.shopping_cart
+        cart_items = shopping_cart.cartitem_set.all()
+        payment_info = PaymentInfo.objects.filter(customer=request.user, is_default=True).first()
+        shipping_info = ShippingInfo.objects.filter(customer=request.user, is_default=True).first()
 
-    def calculate_subtotal(self):
-        return Decimal(self.shoe.price * self.quantity).quantize(Decimal('.01'))
+        order_total = shopping_cart.total  # Store the total before setting it to 0
+        order = Order.objects.create(
+            customer=request.user,
+            total=order_total,
+            shippinginfo=shipping_info,
+            date_ordered=timezone.now()
+        )
 
-    def save(self, *args, **kwargs):
-        self.subtotal = self.calculate_subtotal()
-        super().save(*args, **kwargs)
+        for item in cart_items:
+            order_item = OrderItem.objects.create(
+                shoe=item.shoe,
+                quantity=item.quantity,
+                total=item.subtotal  # Assuming subtotal is calculated correctly in CartItem model
+            )
+            order.items.add(order_item)  # Add the order item to the order
+            # Optionally delete the cart item
+            item.delete()
 
-    def __str__(self):
-        return self.shoe.name
+            # Distribute payment to seller
+            seller_payment_info = item.shoe.seller.payment_info  # Assuming Shoe has a OneToOneField to Seller with a payment_info field
+            seller_payment_info.balance += item.subtotal
+            seller_payment_info.save()
+
+        shopping_cart.total = 0
+        shopping_cart.save()  # Save the updated total to the database
+
+        payment_info.balance -= order_total  # Deduct the order total from the balance
+        payment_info.save()
+
+        return redirect('order', order=order.id)
 
 class Favorite(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorite')
