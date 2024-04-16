@@ -1,15 +1,13 @@
 
 import datetime
 from django import forms
+from orders.models import ShippingInfo
 from payments.models import PaymentInfo
 
-class ShippingForm(forms.Form):
-    street = forms.CharField(max_length=100)
-    city = forms.CharField(max_length=75)
-    state = forms.CharField(max_length=50)
-    zipcode = forms.CharField(max_length=10)
-    country = forms.CharField(max_length=75)
-    is_default = forms.BooleanField(label='Set as default shipping method', required=False)
+class ShippingForm(forms.ModelForm):
+    class Meta:
+        model = ShippingInfo
+        fields = ['street','city','state','zipcode','country','is_default']
 
 
 class PaymentForm(forms.ModelForm):
