@@ -115,6 +115,11 @@ class Checkout(View):
                 quantity=item.quantity,
                 total=item.subtotal  # Assuming subtotal is calculated correctly in CartItem model
             )
+            #pays each seller for the purchase
+            order_seller = order_item.shoe.seller
+            seller_payment = PaymentInfo.objects.filter(customer=order_seller, is_default=True).first()
+            seller_payment.balance += order_item.total
+            seller_payment.save()
             order.items.add(order_item)  # Add the order item to the order
             # Optionally delete the cart item
             item.delete()

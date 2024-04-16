@@ -21,9 +21,10 @@ class RefundView(View):
         
         # Refund the sellers attached to order items
         for order_item in order.items.all():
-            seller_payment_info = order_item.shoe.seller.payment_info  # Assuming Shoe has a OneToOneField to Seller with a payment_info field
-            seller_payment_info.balance -= order_item.total
-            seller_payment_info.save()
+            order_seller = order_item.shoe.seller
+            seller_payment = PaymentInfo.objects.filter(customer=order_seller, is_default=True).first()
+            seller_payment.balance -= order_item.total
+            seller_payment.save()
         
         # Mark the order as refunded
         order.is_refunded = True
