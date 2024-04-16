@@ -1,68 +1,86 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-
+{% load custom_filters %}
 <!--payment-->
 <div class="col-12">
   <div class="row">
     <div class="col-md-6" id="saved-payment-methods">
+      {% if not editing %}
+      <!-- This is where the rendering and loop for displaying cardinfo goes-->
       <h3> Saved Payment Methods: </h3>
       {% for payment in payment_info %}
-      {% if not editing %}
+      <!-- This is where the program iterates through all the user's payment methods -->
       <div class="col-6">
         Cardholder: {{ payment.cardholder }}<br>
-        Card Number: {{ payment.cardnumber }}<br>
+        Card Number: ****-****-****-{{ payment.cardnumber|last_four }}<br>  
         Expiration: {{ payment.expiration }}<br>
         CVV: {{ payment.cvv }}<br>
-        Balance: {{ payment.balance }}<br>
-      
-      <div> 
-          <form method="post" action="{% url 'payment_methods' %}">
-            {% csrf_token %}
-            <input type="hidden" name="edit_payment_id" value="{{ payment.id }}">
-            <button type="submit">Edit</button>
-          </form>
-      {% else %}
-      <form method="post" action="{% url 'payment_methods' %}">
-        {% csrf_token %}
-        <div class="col-6">
-          Cardholder:
-          <input type="text" name="cardholder" class="form-control" placeholder="{{ payment.cardholder }}">
-          <br>
-          Card Number:
-          <input type="text" name="cardnumber" class="form-control" placeholder="{{ payment.cardnumber }}">
-          <br>
-          Expiration:
-          <input type="text" name="expiration" class="form-control" placeholder="{{ payment.expiration }}">
-          <br>
-          CVV:
-          <input type="text" name="cvv" class="form-control" placeholder="{{ payment.cvv }}">
-          <br>
-          Balance:
-          <input type="text" name="balance" class="form-control" placeholder="{{ payment.balance }}">
-          <br>
-        </div>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-      </form>      
-      {% endif %}
-          <form method="post" action="{% url 'payment_methods' %}">
-            {% csrf_token %}
-            <input type="hidden" name="delete_payment_id" value="{{ payment.id }}">
-            <button type="submit">Delete</button>
-        </form>        
-        </div>
+        <br>
+        <form method="post" action="{% url 'payment_methods' %}">
+          {% csrf_token %}
+          <input type="hidden" name="edit_payment_id" value="{{ payment.id }}">
+          <button type="submit" name="action" value="show_edit_payment_form">Edit</button>
+        </form>
+        <form method="post" action="{% url 'payment_methods' %}">
+          {% csrf_token %}
+          <input type="hidden" name="delete_payment_id" value="{{ payment.id }}">
+          <button type="submit">Delete</button>
+        </form>
       </div>
       {% empty %}
       <div class="col-md-6">
         <h6> There are no payment methods saved. Please add a payment method.</h6>
       </div>
       {% endfor %}
-    </div>
-    {% if not editing %}
+
+      {% endif %}
+
+      {% if editing %}
+      <!-- Displays the Edit Payment Form -->
+      <h3> Edit Payment Method:</h3>
+      <form method="post" action="{% url 'payment_methods' %}">
+        {% csrf_token %}
+        <input type="hidden" name="edit_payment_id" value="{{ payment.id }}">
+        <div class="col-6">
+          Cardholder:
+          <input type="text" name="cardholder" class="form-control" value="{{ payment.cardholder }}">
+          <br>
+          Card Number:
+          <input type="text" name="cardnumber" class="form-control" value="{{ payment.cardnumber }}">
+          <br>
+          Expiration:
+          <input type="date" name="expiration" class="form-control">
+          <br>
+          CVV:
+          <input type="text" name="cvv" class="form-control" placeholder="---" value="{{ payment.cvv }}">
+          <br>
+          Default:
+          <input type="checkbox" name="is_default" class="form-control" placeholder="---" value ="{{ payment.is_default }}">
+          <br>
+          <input type="hidden" name="balance" class="form-control" placeholder="$" value ="{{ payment.balance }}">
+        </div>
+        <button type="submit" name="action" value="process_edit_payment_form">Save Changes</button>
+      </form>
+      {% endif %}
+    </div> <!-- This ends the section for showing/editing saved payment methods -->
+
+    {% if not adding %}
+    <!-- Shows the button for adding a payment so no bugs occur with multiple forms being rendered -->
+    <form method="post" action="{% url 'payment_methods' %}">  
+      {% csrf_token %}
+      <input type="hidden" name="action" value="show_add_payment_form">
+      <button type="submit">Add Payment</button>
+    </form>
+    {% endif %}
+
+    {% if adding %}
+    <!-- This is displays the add payment form -->
     <div class="col-md-6" id="add-payment-form">
       <h3> Add a Payment Method: </h3>
-      <form method="post" id="payment_methods" name="payment_methods">
+      <form method="post" action="{% url 'payment_methods' %}">  
         {% csrf_token %}
+        <input type="hidden" name="action" value="process_add_payment">
         <div class="form-group" id="cardholder">
           <label for="cardholder">Cardholder's Name</label>
           <input type="text" id="cardholder" name="cardholder" class="form-control" placeholder="Cardholder's Name">
@@ -73,7 +91,7 @@
         </div>
         <div class="form-group" id="expiration">
           <label for="expiration">Expiration</label>
-          <input type="text" id="expiration" name="expiration" class="form-control" placeholder="Expiration (MM/YYYY)">
+          <input type="date" id="expiration" name="expiration" class="form-control">
         </div>
         <div class="form-group" id="cvv">
           <label for="cvv">CVV</label>
@@ -85,14 +103,14 @@
         </div>
         <div class="form-group" id="is_default">
           <label for="is_default">
-            <input type="checkbox" id="is_default" name="is_default" class="form-check-label"> Make this your default payment method
+            <input type="checkbox" id="is_default" name="is_default" class="form-check-label"> Default
           </label>
         </div>
         <button id="form-button" type="submit" class="btn btn-primary">Submit</button>
-    </form>
+      </form>
     </div>
     {% endif %}
-  </div>
+  </div> <!-- Div that is connected to the rows that hold both the add payment and saved payments -->
 </div>
 
 {% endblock %}

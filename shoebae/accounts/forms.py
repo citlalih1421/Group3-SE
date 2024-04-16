@@ -1,4 +1,7 @@
+
+import datetime
 from django import forms
+from payments.models import PaymentInfo
 
 class ShippingForm(forms.Form):
     street = forms.CharField(max_length=100)
@@ -9,11 +12,11 @@ class ShippingForm(forms.Form):
     is_default = forms.BooleanField(label='Set as default shipping method', required=False)
 
 
-class PaymentForm(forms.Form):
-    cardholder = forms.CharField(max_length=100)
-    cardnumber = forms.CharField(max_length=19)
-    expiration = forms.CharField(max_length=7, label='Expiration (MM/YYYY)')
-    cvv = forms.CharField(max_length=4, label='CVV')
-    balance = forms.IntegerField(min_value=0, max_value=10000)
-    is_default = forms.BooleanField(label='Set as default payment method', required=False)
+class PaymentForm(forms.ModelForm):
+    class Meta:
+        model = PaymentInfo
+        fields = ['cardholder', 'cardnumber', 'expiration', 'cvv', 'balance', 'is_default']
+        widgets = {
+            'expiration': forms.DateInput(attrs={'type': 'date'})
+        }
     

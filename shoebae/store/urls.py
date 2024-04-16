@@ -7,11 +7,11 @@ from store.views import AddListingView, ViewAllListingsView, ProductPageView, De
 
 urlpatterns = [
     #empty for base url
-    path('', ViewAllListingsView.as_view(), name="store"),
+    path('', views.home, name="home"),
+    path('store/', ViewAllListingsView.as_view(), name="store"),
     path('cart/<int:cart_id>/', views.cart, name='cart'),
     path('add-to-cart/<slug:slug>/',views.add_to_cart,name='add_to_cart'),
     path('checkout/', views.Checkout.as_view(), name="checkout"),
-    path('home/', views.home, name="home"),
     path('search/', views.search_view, name='search_view'),
     path('productpage/<slug:slug>/', ProductPageView.as_view(), name='productpage'),
     path('seller/', views.seller, name="seller"),

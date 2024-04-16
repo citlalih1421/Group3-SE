@@ -135,100 +135,134 @@ class MyPaymentView(View):
     def get(self, request):
         payment_info = PaymentInfo.objects.filter(customer=request.user)
         form = PaymentForm()
-        return render(request, 'accounts/my_account/payment_methods.html', {'form': form, 'payment_info': payment_info, 'editing': False})
-    
-    def post(self, request):
-        editing = 'edit_payment_id' in request.POST
-        if editing:
-            payment_info_id = request.POST.get('edit_payment_id')
-            payment_info = get_object_or_404(PaymentInfo, id=payment_info_id, customer=request.user)
-            form = PaymentForm(request.POST)
-            if form.is_valid():
-                # Update the existing PaymentInfo object with form data
-                payment_info.cardholder = form.cleaned_data['cardholder']
-                payment_info.cardnumber = form.cleaned_data['cardnumber']
-                payment_info.expiration = form.cleaned_data['expiration']
-                payment_info.cvv = form.cleaned_data['cvv']
-                payment_info.balance = form.cleaned_data['balance']
-                payment_info.save()
-                messages.success(request, "Payment method updated successfully!")
-                return redirect('payment_methods')  # Redirect to the same page after successful submission
-            else:
-                messages.error(request, "Error in updating payment method. Please try again.")
-        else:
-            form = PaymentForm(request.POST)
-            if form.is_valid():
-                cardholder = form.cleaned_data['cardholder']
-                cardnumber = form.cleaned_data['cardnumber']
-                expiration_input = form.cleaned_data['expiration']
-                cvv = form.cleaned_data['cvv']
-                balance = form.cleaned_data['balance']
-                is_default = form.cleaned_data['is_default']
-                expiration_parts = expiration_input.split('/')
-                expiration_date = datetime.date(int(expiration_parts[1]), int(expiration_parts[0]), int(1))
-                payment_info = PaymentInfo(
-                    cardholder=cardholder,
-                    cardnumber=cardnumber,
-                    expiration=expiration_date,
-                    cvv=cvv,
-                    balance=balance,
-                    is_default=is_default,
-                    customer=request.user
-                )
-                payment_info.save()
-                messages.success(request, "Payment method added successfully!")
-                return redirect('payment_methods')  # Redirect to the same page after successful submission
-            else:
-                messages.error(request, "Error in adding payment method. Please try again.")
-        
-        payment_info = PaymentInfo.objects.filter(customer=request.user)
-        return render(request, 'accounts/my_account/payment_methods.html', {'form': form, 'payment_info': payment_info, 'editing': editing})
+        return render(request, 'accounts/my_account/payment_methods.html', {'form': form, 'payment_info': payment_info})
 
+    def post(self, request):
+        if 'action' in request.POST:
+            action = request.POST['action']
+        if action == 'process_add_payment':
+            return self.process_add_payment(request)
+        elif action == 'show_add_payment_form':
+            return self.show_add_payment_form(request)
+        elif action == 'show_edit_payment_form':
+            return self.show_edit_payment_form(request)
+        elif action == 'process_edit_payment_form':
+            return self.process_edit_payment_form(request)
+        # Handle delete actions
+        elif 'delete_payment_id' in request.POST:
+            return self.delete_payment(request)
+        else:
+            return render(request, 'accounts/my_account/payment_methods.html', {'message': 'Invalid form submission'})
+
+
+    def show_edit_payment_form(self, request):
+        payment_info_id = request.POST.get('edit_payment_id')
+        if payment_info_id:
+            payment = get_object_or_404(PaymentInfo, id=payment_info_id, customer=request.user)
+            form = PaymentForm(instance=payment)  # Pre-populate form with existing data
+            return render(request, 'accounts/my_account/payment_methods.html', {'form': form, 'payment': payment, 'editing': True})
+        else:
+            return render(request, 'accounts/my_account/payment_methods.html', {'message': 'Invalid edit request'})
+
+    def process_edit_payment_form(self, request):
+        payment_info_id = request.POST.get('edit_payment_id')
+        payment_info = get_object_or_404(PaymentInfo, id=payment_info_id, customer=request.user)
+        form = PaymentForm(request.POST, instance=payment_info)
+
+        if form.is_valid():
+            submitted_expiration = form.cleaned_data['expiration']
+            if not submitted_expiration:
+                # Use original expiration if submitted is blank
+                form.instance.expiration = payment_info.expiration
+            messages.success(request, "Payment method updated successfully!")
+            return redirect('payment_methods')
+        else:
+            messages.error(request, "Error in updating payment method. Please try again.")
+            return render(request, 'accounts/my_account/payment_methods.html', {'form': form, 'payment': payment_info, 'editing': True})
+
+    def delete_payment(self, request):
+        payment_info_id = request.POST.get('delete_payment_id')
+        payment_info = get_object_or_404(PaymentInfo, id=payment_info_id, customer=request.user)
+        payment_info.delete()
+        messages.success(request, "Payment method deleted successfully!")
+        return redirect('payment_methods')
+
+    def show_add_payment_form(self, request):
+        form = PaymentForm()  # Create a new form instance
+        return render(request, 'accounts/my_account/payment_methods.html', {'form': form, 'adding': True})
+
+    def process_add_payment(self, request):
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            new_payment_info = form.save(commit=False)
+            new_payment_info.customer = request.user
+            new_payment_info.save()
+            messages.success(request, "Payment method added successfully!")
+            return redirect('payment_methods')
+        else:
+            messages.error(request, "Error in adding payment method. Please try again.")
+            payment_info = PaymentInfo.objects.filter(customer=request.user)
+        return render(request, 'accounts/my_account/payment_methods.html', {'form': form, 'payment_info': payment_info, 'adding': True})
+    
 class MyShippingView(View):
     def get(self, request):
         shipping_info = ShippingInfo.objects.filter(customer=request.user)
         form = ShippingForm()
-        return render(request, 'accounts/my_account/shipping_methods.html', {'form': form})
-
+        return render(request, 'accounts/my_account/shipping_methods.html', {'form': form, 'shipping_info': shipping_info, 'editing': False})
+    
     def post(self, request):
-        form = ShippingForm(request.POST)
-        if form.is_valid():
-            # Save shipping information to session
-            street = form.cleaned_data['street']
-            city = form.cleaned_data['city']
-            state = form.cleaned_data['state']
-            zipcode = form.cleaned_data['zipcode']
-            country = form.cleaned_data['country']
-            is_default = form.cleaned_data['is_default']
-
-            # Create and save PaymentInfo object
-            shipping_info = ShippingInfo(
-                street=street,
-                city=city,
-                state=state,
-                zipcode=zipcode,
-                country=country,
-                is_default=is_default,
-                customer=request.user  # Assuming you have a user field in PaymentInfo model
-            )
-            shipping_info.save()
-            messages.success(request, "Shipping address added successfully!") 
-
-            if is_default:
+        editing = 'edit_shipping_id' in request.POST
+        deleting = 'delete_shipping_id' in request.POST
+        if editing:
+            shipping_info_id = request.POST.get('edit_shipping_id')
+            shipping_info = get_object_or_404(ShippingInfo, id=shipping_info_id, customer=request.user)
+            form = PaymentForm(request.POST)
+            if form.is_valid():
+                # Update the existing ShippingInfo object with form data
+                shipping_info.street = form.cleaned_data['street']
+                shipping_info.city = form.cleaned_data['city']
+                shipping_info.state = form.cleaned_data['state']
+                shipping_info.zipcode = form.cleaned_data['zipcode']
+                shipping_info.country = form.cleaned_data['country']
+                shipping_info.is_default = form.cleaned_data['is_default']
                 
-                # If setting as default, check if there's already a default
-                existing_default = ShippingInfo.objects.filter(customer=request.user, is_default=True).first()
-                if existing_default:
-                    existing_default.is_default = False
-                    existing_default.save()
-                shipping_info.is_default = True
                 shipping_info.save()
-
-            return render(request, 'accounts/my_account/shipping_methods.html', {'form': form})
+                messages.success(request, "Shipping method updated successfully!")
+                return redirect('shipping_methods')  # Redirect to the same page after successful submission
+            else:
+                messages.error(request, "Error in updating shipping method. Please try again.")
+        elif deleting:
+            shipping_info_id = request.POST.get('delete_shipping_id')
+            shipping_info = get_object_or_404(ShippingInfo, id=shipping_info_id, customer=request.user)
+            shipping_info.delete()
+            return redirect('shipping_methods')
         else:
-            # If form is invalid, re-render the form with errors
-            messages.error(request, "Error in adding shipping address. Please try again.")
-            return render(request, 'accounts/my_account/shipping_methods.html', {'form': form})
+            form = ShippingForm(request.POST)
+            if form.is_valid():
+                street = form.cleaned_data['street']
+                city = form.cleaned_data['city']
+                state = form.cleaned_data['state']
+                zipcode = form.cleaned_data['zipcode']
+                country = form.cleaned_data['country']
+                is_default = form.cleaned_data['is_default']
+                shipping_info = ShippingInfo(
+                    street=street,
+                    city=city,
+                    state=state,
+                    zipcode=zipcode,
+                    country=country,
+                    is_default=is_default,
+                    customer=request.user
+                )
+                shipping_info.save()
+                messages.success(request, "Shipping method added successfully!")
+                return redirect('shipping_methods')  # Redirect to the same page after successful submission
+            else:
+                messages.error(request, "Error in adding shipping method. Please try again.")
+        
+        shipping_info = ShippingInfo.objects.filter(customer=request.user)
+        return render(request, 'accounts/my_account/shipping_methods.html', {'form': form, 'shipping_info': shipping_info, 'editing': editing})
+
 
 def edit_shipping(request, shipping_id):
     # Retrieve the ShippingInfo object from the database
