@@ -14,8 +14,9 @@
       <div class="col-6">
         Cardholder: {{ payment.cardholder }}<br>
         Card Number: ****-****-****-{{ payment.cardnumber|last_four }}<br>  
-        Expiration: {{ payment.expiration }}<br>
+        Expiration: **/** <br>
         CVV: {{ payment.cvv }}<br>
+        Balance: {{ payment.balance }}<br>
         <br>
         <form method="post" action="{% url 'payment_methods' %}">
           {% csrf_token %}
@@ -24,9 +25,10 @@
         </form>
         <form method="post" action="{% url 'payment_methods' %}">
           {% csrf_token %}
+          <input type="hidden" name="action" value="delete_payment">
           <input type="hidden" name="delete_payment_id" value="{{ payment.id }}">
           <button type="submit">Delete</button>
-        </form>
+        </form>      
       </div>
       {% empty %}
       <div class="col-md-6">
@@ -58,7 +60,7 @@
           Default:
           <input type="checkbox" name="is_default" class="form-control" placeholder="---" value ="{{ payment.is_default }}">
           <br>
-          <input type="hidden" name="balance" class="form-control" placeholder="$" value ="{{ payment.balance }}">
+          <input type="number" name="balance" class="form-control" placeholder="$" value ="{{ payment.balance }}">
         </div>
         <button type="submit" name="action" value="process_edit_payment_form">Save Changes</button>
       </form>
@@ -111,6 +113,13 @@
     </div>
     {% endif %}
   </div> <!-- Div that is connected to the rows that hold both the add payment and saved payments -->
+  {% if messages %}
+  {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% endif %}
 </div>
 
 {% endblock %}

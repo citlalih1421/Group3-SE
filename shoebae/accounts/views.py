@@ -94,7 +94,7 @@ class LoginView(View):
 
         if user is not None:
             login(request, user=user)
-            return redirect('store')
+            return redirect('home')
         else:
             messages.error(request, 'Invalid username or email')
             return render(request, 'accounts/login.html')
@@ -103,7 +103,7 @@ class LoginView(View):
 class LogoutView(View):
     def get(self, request):
         logout(request)
-        return redirect('store')
+        return redirect('home')
 
 
 class MyAccountView(View):
@@ -149,7 +149,7 @@ class MyPaymentView(View):
         elif action == 'process_edit_payment_form':
             return self.process_edit_payment_form(request)
         # Handle delete actions
-        elif 'delete_payment_id' in request.POST:
+        elif action == 'delete_payment':
             return self.delete_payment(request)
         else:
             return render(request, 'accounts/my_account/payment_methods.html', {'message': 'Invalid form submission'})

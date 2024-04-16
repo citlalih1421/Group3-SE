@@ -12,7 +12,7 @@
                 <table class="table">
                     <tr>
                         <th><h5>Products: <strong>{{ cart_items.count }}</strong></h5></th>
-                        <th><h5>Total: <strong>${{ total_amount }}</strong></h5></th>
+                        
                     </tr>
                 </table>
                 <div class="box-element">
@@ -31,10 +31,6 @@
                         <div style="flex: 1;">
                             <div class="quantity">
                                 <p class="quantity-number">{{ item.quantity }}</p>
-                                <div class="quantity-arrows">
-                                    <img class="chg-quantity" src="{% static 'images/up-arrow.png' %}">
-                                    <img class="chg-quantity" src="{% static 'images/down-arrow.png' %}">
-                                </div>
                             </div>
                         </div>
                         <div style="flex: 1;"><p>${{ item.subtotal }}</p></div>

@@ -80,7 +80,7 @@
                    </div>
                    {% endfor %}
                    <h5>Items: {{ total_items }}</h5>
-                   <h5>Total: ${{ total_price }}</h5>
+                   
                    <form id="form" method="post" action="{% url 'checkout' %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-success">Checkout</button>

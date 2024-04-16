@@ -98,6 +98,7 @@ class ShoppingCart(models.Model):
         for cart_item in cart_items:
             total_amount += cart_item.subtotal
         self.total = total_amount.quantize(Decimal('.01'))
+        print(self.total)
         self.save()
 
     def __str__(self):

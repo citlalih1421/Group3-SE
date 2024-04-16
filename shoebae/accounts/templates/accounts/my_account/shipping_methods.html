@@ -102,7 +102,7 @@
         </div>
         <div class="form-group" id="country">
           <label for="country">Country</label>
-          <input type="number" id="country" name="country" class="form-control" placeholder="Country">
+          <input type="text" id="country" name="country" class="form-control" placeholder="Country">
         </div>
         <div class="form-group" id="is_default">
           <label for="is_default">
@@ -113,6 +113,13 @@
       </form>
     </div>
     {% endif %}
+    {% if messages %}
+    {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% endif %}
   </div> <!-- Div that is connected to the rows that hold both the add shipping and saved shipping -->
 </div>
 

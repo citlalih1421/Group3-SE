@@ -45,7 +45,9 @@ def cart(request, cart_id):
     for cart_item in cart_items:
         cart_item.subtotal = cart_item.calculate_subtotal()
         cart_item.save()
-    shopping_cart.calculate_total()
+        shopping_cart.total += cart_item.subtotal
+        shopping_cart.save()
+    #shopping_cart.calculate_total()
 
     context = {'shopping_cart': shopping_cart, 'cart_items': cart_items}
     return render(request, 'store/cart.html', context)
@@ -84,14 +86,12 @@ class Checkout(View):
         payment_info = PaymentInfo.objects.filter(customer=request.user, is_default=True).first()
         shipping_info = ShippingInfo.objects.filter(customer=request.user, is_default=True).first()
         total_items = sum(item.quantity for item in cart_items)
-
         context = {
             'shopping_cart': shopping_cart,
             'cart_items' : cart_items,
             'paymentinfo': payment_info,
             'shippinginfo': shipping_info,
-            'total_items': total_items,
-            'total_price': shopping_cart.total
+            'total_items': total_items
         }
         return render(request, 'store/checkout.html', context)
 
@@ -130,7 +130,7 @@ class Checkout(View):
         payment_info.balance -= order_total  # Deduct the order total from the balance
         payment_info.save()
 
-        return redirect('order', order=order.id)  # Redirect to the home page after checkout
+        return redirect('order', order_id=order.id)  # Redirect to the home page after checkout
 
 
 def home(request):
