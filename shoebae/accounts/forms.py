@@ -13,7 +13,7 @@ class ShippingForm(forms.ModelForm):
 class PaymentForm(forms.ModelForm):
     class Meta:
         model = PaymentInfo
-        fields = ['cardholder', 'cardnumber', 'expiration', 'cvv', 'balance', 'is_default']
+        fields = ['cardholder', 'cardnumber', 'expiration', 'cvv', 'is_default']
         widgets = {
             'expiration': forms.DateInput(attrs={'type': 'date'})
         }

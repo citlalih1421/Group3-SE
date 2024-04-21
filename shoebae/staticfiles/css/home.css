@@ -1,0 +1,50 @@
+.col-md-4 mb-4{
+    background-color: white;
+    border: 0;
+}
+
+body{
+    height:auto;
+    width:auto;
+    background-color: white;
+}
+
+/* home.css */
+
+/* Style for card containers */
+.card {
+    border: none;
+    transition: transform 0.2s;
+}
+
+/* Hover effect for cards */
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Style for card images */
+.card-img-top {
+    object-fit: cover;
+    border-radius: 50%;
+    height: 300px;
+    width: 300px;
+}
+
+/* Style for card text */
+.card-text {
+    font-size: 16px;
+    color: #333;
+}
+
+/* Center align section headings */
+h2.text-center {
+    text-align: center;
+}
+
+.carousel-caption d-none d-md-block{
+ background-color: rgba(0,0,0,0.75);
+}
+
+.carousel-item {
+    padding: 20px; /* Adjust as needed */
+}

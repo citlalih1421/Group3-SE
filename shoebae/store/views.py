@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.http import Http404, HttpResponseRedirect
 from django.views import View
 from django.views.generic.edit import CreateView
@@ -52,30 +53,6 @@ def cart(request, cart_id):
     context = {'shopping_cart': shopping_cart, 'cart_items': cart_items}
     return render(request, 'store/cart.html', context)
 
-
-
-'''@login_required
-def checkout(request):
-    # Retrieve the current user's shopping cart
-    shopping_cart = request.user.shopping_cart
-
-    # Calculate total items and total amount
-    total_items = shopping_cart.cartitem_set.count()
-    total_amount = shopping_cart.total
-
-    # Delete all cart items associated with the shopping cart
-    shopping_cart.cartitem_set.all().delete()
-    shopping_cart.reset_total()
-
-    context = {
-        'shopping_cart': shopping_cart,
-        'cart_items': [],  # Since cart items are deleted, pass an empty list
-        'total_items': total_items,
-        'total_amount': total_amount,
-    }
-
-    return render(request, 'store/checkout.html', context)'''
-
 class Checkout(View):
     model = Order
     fields = []  # Assuming no specific fields need to be defined for Order creation
@@ -94,8 +71,60 @@ class Checkout(View):
             'total_items': total_items
         }
         return render(request, 'store/checkout.html', context)
-
+    
     def post(self, request):
+        action = None
+        if 'action' in request.POST:
+            action = request.POST['action']
+
+        if action == 'process_order':
+            return self.process_order(request)
+        elif action == 'process_payments':
+            return self.process_payments(request)
+
+    def process_order(self, request):
+        shopping_cart = request.user.shopping_cart
+        shipping_info = ShippingInfo.objects.filter(customer=request.user, is_default=True).first()
+        order_total = shopping_cart.total
+        try:
+            order = Order.objects.create(
+                customer=request.user,
+                total=order_total,
+                shippinginfo=shipping_info,
+                date_order=timezone.now()
+            )
+            order.save()
+            return order
+        except IntegrityError as e:
+            raise IntegrityError 
+
+    def process_order_items(self, request):
+        order = self.process_order(request)
+        if order:
+            shopping_cart = request.user.shopping_cart
+            cart_items = shopping_cart.cartitem_set.all()
+        
+            for item in cart_items:
+                try:
+                    order_item = OrderItem.objects.create(
+                        shoe = item.shoe,
+                        quantity = item.quantity,
+                        total = item.subtotal
+                    )
+                    order.items.add(order_item)
+                except IntegrityError as e:
+                    raise IntegrityError
+            order.save()
+        self.process_payments(request, order)
+
+    def process_payments(self, request, order):
+        if order:
+            order_items = order.items_set.all()
+            for item in order_items:
+                pass
+
+
+    '''def post(self, request):
         shopping_cart = request.user.shopping_cart
         cart_items = shopping_cart.cartitem_set.all()
         payment_info = PaymentInfo.objects.filter(customer=request.user, is_default=True).first()
@@ -130,7 +159,7 @@ class Checkout(View):
         payment_info.balance -= order_total  # Deduct the order total from the balance
         payment_info.save()
 
-        return redirect('order', order_id=order.id)  # Redirect to the home page after checkout
+        return redirect('order', order_id=order.id)  # Redirect to the home page after checkout'''
 
 
 def home(request):

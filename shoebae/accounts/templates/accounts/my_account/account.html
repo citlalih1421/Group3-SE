@@ -1,176 +1,496 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% load custom_filters %}
-
 {% block content %}
+
+<!-- The colors that are commented out were just so I could visibly tell where things were -->
+
 <style>
-    #profile-information, #listings-container, #favorites-container{
-        background-color: #f9f9f9;
-        border: 2px solid #f0f0f0;
-        border-radius: 10px;
-        margin-top: 20px;
-        padding: 30px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    /* General styles */
-    .outer-container {
-        background-color: #f9f9f9;
-        border: 2px solid #f0f0f0;
-        border-radius: 10px;
-        margin-top: 20px;
-        padding: 30px;
-        text-align: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .center-container {
+    .main-container {
         display: flex;
+        flex-direction: column; 
+        gap: 20px; 
+        padding: 20px;
+        /* background-color: #e8dd01;  /* Yellow background */
+    }
+
+    .inner-column-container { /* This displays elements in a column*/
+        display: flex;
+        flex-direction: column; 
+        gap: 20px; 
+        padding: 20px;
+        /* background-color: #7a4bf0;  /* Purple background */
+    }
+
+    .inner-row-container { /* This displays elements in a row */
+        display: flex;
+        flex-direction: row;
         flex-wrap: wrap;
-        justify-content: center;
-        align-items: flex-start;
+        gap: 20px;
+        border: 2px solid #f0f0f0;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        /* background-color: #af020f;  /* Red background */
+    }
+
+    .inner-row-container2 { /* This displays elements in a row */
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 20px;
+        /* background-color: #af020f;  /* Red background */
+    }
+
+    .user-profile-container {
+        display: flex;
+        gap: 10px;
         padding-top: 30px;
-        width: 95%;
-        margin: 0 auto;
-        box-sizing: border-box;
+        max-width: 50%; 
+        width: 100%;
+        /* background-color: #b1615a;  /* Red brown background */
     }
 
-    .col-lg-8 {
-        flex: 0 0 calc(50% - 40px);
-        max-width: calc(50% - 40px);
-        margin: 15px;
-        box-sizing: border-box;
+    .user-profile-picture-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center; 
+        text-align: center; 
+        /* background-color: #097cd6; /* Light blue background */
+        padding: 10px;
+        max-width: 30%; 
+        width: 100%;
     }
 
-    .box-element {
-        background-color: #f0f0f0;
+    .user-profile-info-box {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: flex-start;
+        /* background-color: #372e5e; /* Dark purple background */
+        padding: 10px;
+        max-width: 30%; 
+        width: 100%;
+    }
+
+    .user-profile-info-box hr {
+        width: 100%;
+        border: none;
+        margin-bottom: 0px;
+    }
+
+    .order-box {
+        text-align: center;
+        padding: 10px;
+        border: 2px solid transparent; /* Ensure border is transparent */
+        border-radius: 10px;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2); /* Inner shadow effect */
+        max-width: 40%; 
+        width: 100%;
+        /* background-color: #90ee90; /* Light green background */
+    }
+
+    .card-container {
+        position: relative; /* Required for absolute positioning */
+        display: flex;
+        flex-direction: column;
+        border: 2px solid #f0f0f0;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    .cards-wrapper {
+        display: flex;
+        overflow-x: auto; /* Enable horizontal scrolling */
+        scroll-snap-type: x mandatory; /* Snap to each card */
+        height: 155px;
+    }
+
+    .card-text {
+        text-align: center; /* Center-align text */
+        padding-top: 20px;
+    }
+
+    .card {
+        flex: 0 0 auto; /* Allow cards to shrink to fit content */
+        width: 300px;
+        height: 150px;
+        padding: 20px;
+        background-color: #f5f5f5;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        scroll-snap-align: center; /* Center align each card */
+        transition: background-color 0.3s ease;
+    }
+
+    .hidden-btn#open-add-payment-popup {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
+        z-index: 1;
+    }
+
+    .hidden-btn#open-edit-payment-popup {
+        position: absolute;
+        top: 50%;
+        left: calc(50% - 40px); /* Adjust the value (- 40px) to position the "Add" button to the left */
+        transform: translate(-50%, -50%);
+        display: none;
+        z-index: 1;
+    }
+    
+    .hidden-btn#open-delete-payment-popup {
+        position: absolute;
+        top: 50%;
+        left: calc(50% + 40px); /* Adjust the value (+ 40px) to position the "Delete" button to the right */
+        transform: translate(-50%, -50%);
+        display: none;
+        z-index: 1;
+    }
+
+    .hidden-btn img {
+        width: 50px; /* Set the width of the image */
+        height: auto; /* Maintain aspect ratio */
+    }
+
+    #open-delete-payment-popup img {
+        transform: scale(1.5); /* Adjust the scale factor as needed */
+    }
+
+    #open-edit-payment-popup img {
+        transform: scale(0.75);
+    }
+
+    .card:hover {
+        background-color: #c0c0c0;
+    }
+
+    .card:hover .hidden-btn {
+        display: inline-block;
+        outline: none;
+        border: none;
+        background: transparent;
+    }
+
+    .card:hover #open-add-payment-popup,
+    .card:hover #open-delete-payment-popup,
+    .card:hover #open-edit-payment-popup {
+        display: inline-block; /* Display the buttons on hover */
+    }
+
+    .card#payments {
+        /* Your specific styling for the card with id "payments" */
+        /* For example: */
+        float: left; /* Float the card to the left */
+        width: 50%; /* Adjust the width as needed */
+    }
+      
+    .prev-btn,
+    .next-btn {
+        position: absolute;
+        top: 50%; /* Position the buttons vertically at the middle of the container */
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    .prev-btn {
+        left: 0;
+        transform-origin: center left; /* Adjust transform origin */
+    }
+    
+    .next-btn {
+        right: 0;
+        transform-origin: center right; /* Adjust transform origin */
+    }
+    
+    .credit-card-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+      
+    .credit-card-info label {
+        font-weight: bold;
+        margin-right: 5px;
+    }
+      
+    .credit-card-number {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    /* Popup stuff */
+
+    .popup {
+        display: none; /* Initially hide the popup */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        z-index: 1000; /* Ensure popup appears above other content */
+    }
+
+    .popup-content {
+        background-color: #fff;
+        width: 50%;
+        max-width: 600px;
         padding: 20px;
         border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        text-align: center;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .close {
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
         cursor: pointer;
-        transition: background-color 0.3s ease;
-        border: none;
     }
 
-    .box-element:hover {
-        background-color: #e0e0e0;
+    .close:hover {
+        color: #f00; /* Change color on hover */
     }
 
-    /* Media queries for responsiveness */
-    @media only screen and (max-width: 768px) {
-        .col-lg-8 {
-            flex: 0 0 calc(100% - 40px);
-            max-width: calc(100% - 40px);
-        }
+    /* Show the popup when the URL hash matches its ID */
+    .popup:target {
+        display: block;
     }
 
-    #payment-info{
-        height: 450px;
+    /* FONTS AND TEXT STUFF */
+    .subtitle {
+        color: #888; /* Light gray color */
+        font-size: 0.9em; /* Smaller font size */
+        font-weight: lighter; /* Lighter font weight */
     }
 </style>
 
 
+<div class="main-container"> <!-- START MAIN CONTAINER -->
 
-<div class="container col-12">
-    {% if user.is_authenticated %}
-    <div class="row">
-        <div class="col-md-6" id="profile-information">
-            <div class="mb-6">
-                <div class="row">
-                    <div class="mb-1 mx-1 mb-3">
-                        <img src="{% static 'images/SellerIcon.jpg' %}" alt="Seller Picture" class="img-thumbnail me-2" style="width: 100px; height: 100px; border-radius: 50%;">
-                    </div>
-                    <div class="mb-5 mx-3 my-auto">
-                        <p style="text-align: center;"><h5>Username:</h5> {{ user.username }} </p>
-                    </div>
-                </div>
-            </div>
-            <div class="mb-3 mx-3">
-                <p><h5>First Name:</h5> {{user.first_name}}</p>
-            </div>
-            <div class="mb-3 mx-3">
-                <p><h5>Last Name:</h5> {{user.last_name}}</p>
-            </div>
-            <div class="mb-3 mx-3">
-                <p><h5>Email:</h5> {{user.email}}</p>
-            </div>
+    <div class="inner-column-container"> <!-- START INNER COLUMN CONTAINER -->
+        <h2>My Account</h2>
+        
+        <div class="inner-row-container"> <!-- START INNER ROW CONTAINER -->
 
-            <div class="mb-3 mx-3">
-                <p><h5>Status:</h5>{% if user|has_group:"Buyer" %} Buyer {% endif %} {% if user|has_group:"Seller" %} Seller {% endif %}</p>
-            </div> 
             
-            <div class="mb-3 mx-3">
-                <p> <h5>Joined:</h5> {{ user.date_joined}}</p>
-            </div>
-        </div>
+            <div class="user-profile-container"> <!-- START USER PROFILE CONTAINER -->
 
+                <div class="user-profile-picture-box">
+                    <!-- Add conditional here to display default if no image is tied to profile -->
+                    <img src="{% static 'images/default-profile-icon.jpg' %}" alt="Default Profile Picture" width="100" height="100">
+                    {{user.username}}
+                    <p class="subtitle">Joined {{user.date_joined | date:"F j, Y"}}</p>
+                </div>
+                <div class="user-profile-info-box">
+                    First Name:  <hr>
+                    Last Name:  <hr>
+                    Email:  <hr>
+                </div>
+                <div class="user-profile-info-box">
+                    {{user.first_name}} <hr>
+                    {{user.last_name}} <hr>
+                    {{user.email}} <hr>
+                </div>
+
+            </div> <!-- END USER PROFILE CONTAINER -->
+                
+                <div class="order-box"> <!-- START ORDER BOX -->
+                    <h4>Orders</h4>
+                </div> <!-- END ORDER BOX -->
+            
+        </div> <!-- END INNER ROW CONTAINER -->
         
-        <div class="col-md-6">
-            {% if user|has_group:"Buyer" %}
-            <div class="col-mb-6" id="listings-container">
-                <h3>Listings</h3>
-                <p>No listings</p>
+        <div class="inner-row-container2"> <!-- START INNER ROW CONTAINER2 -->
+            
+            <div id="payments" class="card-container">
+                <div class="card-text">
+                    <h5>Payment Methods</h5>
+                </div>
+                <div class="cards-wrapper">
+                        {% for payment in payment_info %}
+                            <div class="card">
+                                    <div class="credit-card-number">****-****-****-{{ payment.cardnumber|last_four }}</div>
+                                    <div class="credit-card-info">
+                                    <label>Cardholder:</label>
+                                    <span>{{ payment.cardholder }}</span>
+                                </div>
+                                <div class="credit-card-info">
+                                    <label>Expiration:</label>
+                                    <span>**/**</span>
+                                </div>
+                                <div class="credit-card-info">
+                                    <label>CVV:</label>
+                                    <span>{{ payment.cvv }}</span>
+                                </div>
 
-                <div class="text-center"> <!-- Center the submit button -->
-                    <button onclick="location.href='{% url 'listing' %}'" class="btn btn-primary">Add Listing</button>
-                </div>
-            </div>
-            {% endif %}
+                                    <button id="open-edit-payment-popup" class="hidden-btn">
+                                        <img src="{% static 'images/pencil-ui-circle.png' %}">
+                                    </button>
+                                
+                                    
+                                    <button id="open-delete-payment-popup" class="hidden-btn">
+                                        <img src="{% static 'images/delete-icon.png' %}">
+                                    </button>
+                                
+                            </div>
 
-            <div class="col-mb-6" id="favorites-container">
-                <h3>Favorites</h3>
-                <p>No Favorites</p>
-            </div>
-        </div>
-    </div>
+                            <div id="edit-payment-popup" class="popup">
+                                <div class="popup-content">
+                                    <a href="#" id='close-edit-payment-popup' class="close">&times;</a>
+                                    <h2>Edit Payment:</h2>
+                                    <form method="post" action="{% url 'account' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="edit_payment_id" value="{{ payment.id }}">
+                                        <div class="col-6">
+                                          Cardholder:
+                                          <input type="text" name="cardholder" class="form-control" value="{{ payment.cardholder }}">
+                                          <br>
+                                          Card Number:
+                                          <input type="text" name="cardnumber" class="form-control" value="{{ payment.cardnumber }}">
+                                          <br>
+                                          Expiration:
+                                          <input type="date" name="expiration" class="form-control" value="{{ payment.expiration }}">
+                                          <br>
+                                          CVV:
+                                          <input type="text" name="cvv" class="form-control" placeholder="---" value="{{ payment.cvv }}">
+                                          <br>
+                                          Default:
+                                          <input type="checkbox" name="is_default" class="form-control" placeholder="---" value ="{{ payment.is_default }}">
+                                        </div>
+                                        <button type="submit" name="action" value="process_edit_payment_form">Save Changes</button>
+                                      </form>
+                                </div>
+                            </div>
 
-    <hr>
+                            <div id="delete-payment-popup" class="popup">
+                                <div class="popup-content">
+                                    <a href="#" id='close-delete-payment-popup' class="close">&times;</a>
+                                    <h2>Delete Payment:</h2>
+                                    <h3>Are you sure?</h3>
+                                    <form method="post" action="{% url 'account' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="delete_payment">
+                                        <input type="hidden" name="delete_payment_id" value="{{ payment.id }}">
+                                        <button type="submit">Delete</button>
+                                      </form>
+                                </div>
+                            </div>
+                            
+                        {% endfor %}
+                        <div class="card">
+                            <button id="open-add-payment-popup" class="hidden-btn">
+                                <img src="{% static 'images/plus-icon.png' %}">
+                            </button>
+                        </div>
+                        
+                        <div id="add-payment-popup" class="popup">
+                            <div class="popup-content">
+                                <a href="#" id='close-add-payment-popup' class="close">&times;</a>
+                                <h3> Add a Payment Method: </h3>
+                                <form method="post" action="{% url 'account' %}">  
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="process_add_payment">
+                                    <div class="form-group" id="cardholder">
+                                        <label for="cardholder">Cardholder's Name</label>
+                                        <input type="text" id="cardholder" name="cardholder" class="form-control" placeholder="Cardholder's Name">
+                                    </div>
+                                    <div class="form-group" id="cardnumber">
+                                        <label for="cardnumber">Cardnumber</label>
+                                        <input type="text" id="cardnumber" name="cardnumber" class="form-control" placeholder="Cardnumber">
+                                    </div>
+                                    <div class="form-group" id="expiration">
+                                        <label for="expiration">Expiration</label>
+                                        <input type="date" id="expiration" name="expiration" class="form-control">
+                                    </div>
+                                    <div class="form-group" id="cvv">
+                                        <label for="cvv">CVV</label>
+                                        <input type="number" id="cvv" name="cvv" class="form-control" placeholder="CVV (XXX)">
+                                    </div>
+                                    <div class="form-group" id="is_default">
+                                        <label for="is_default">
+                                        <input type="checkbox" id="is_default" name="is_default" class="form-check-label"> Default
+                                        </label>
+                                    </div>
+                                    <button id="form-button" type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                
+                    <!-- Navigation buttons -->
+                    <button class="prev-btn">
+                        <img src="{% static 'images/arrow-circle-left.png' %}">
+                    </button>
+                    <button class="next-btn">
+                        <img src="{% static 'images/arrow-circle-right.png' %}">
+                    </button>
+                </div>
+            </div>
+    
+            
 
-    <div class="outer-container">
-        <div class="center-container">
-            <div class="col-lg-8">
-                <div onclick="location.href='{% url 'payment_methods' %}';" class="box-element">
-                    <h3>Payment Methods</h3>
-                </div>
-            </div>
-            <div onclick="location.href='{% url 'account_security' %}';" class="col-lg-8">
-                <div  class="box-element">
-                    <h3>Account Security</h3>
-                </div>
-            </div>
-            <div onclick="location.href='{% url 'shipping_methods' %}';" class="col-lg-8">
-                <div class="box-element">
-                    <h3>Shipping Methods</h3>
-                </div>
-            </div>
-            {% if user|has_group:"Buyer" or user.superuser == true%}
-            <div onclick="location.href='{% url 'order_history' %}';" class="col-lg-8">
-                <div class="box-element">
-                    <h3>Order History</h3>
-                </div>
-            </div>
-            {% endif %}
-            {% if user|has_group:"Seller" %}
-        <div class="col-lg-8">
-            <div onclick="location.href='{% url 'view_listings' %}';" class="box-element">
-                <h3>My Listings</h3>
-            </div>
-        </div>
-        {% endif %}
-        </div>
+        </div> <!-- END INNER ROW CONTAINER2 -->
         
-    </div>
 
-    <!--
-    <div class="center-container">
-        <form method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger primary">Delete Account</button>
-        </form>
-    </div>
-    -->
-    {% endif %}
-</div>
+    </div> <!-- END INNER COLUMN CONTAINER-->
+    
+    
+
+
+</div> <!-- END MAIN CONTAINER -->
+
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+        const cardsWrapper = document.querySelector('.cards-wrapper');
+    
+        let scrollPosition = 0;
+    
+        prevBtn.addEventListener('click', () => {
+            scrollPosition -= 300; // Adjust based on card width
+            cardsWrapper.scrollTo({ left: scrollPosition, behavior: 'smooth' });
+        });
+    
+        nextBtn.addEventListener('click', () => {
+            scrollPosition += 300; // Adjust based on card width
+            cardsWrapper.scrollTo({ left: scrollPosition, behavior: 'smooth' });
+        });
+    });
+
+    document.getElementById('open-delete-payment-popup').addEventListener('click', function() {
+        document.getElementById('delete-payment-popup').style.display = 'block';
+    });
+
+    document.getElementById('close-delete-payment-popup').addEventListener('click', function() {
+        document.getElementById('delete-payment-popup').style.display = 'none';
+    });
+
+    document.getElementById('open-edit-payment-popup').addEventListener('click', function() {
+        document.getElementById('edit-payment-popup').style.display = 'block';
+    });
+
+    document.getElementById('close-edit-payment-popup').addEventListener('click', function() {
+        document.getElementById('edit-payment-popup').style.display = 'none';
+    });
+
+    document.getElementById('open-add-payment-popup').addEventListener('click', function() {
+        document.getElementById('add-payment-popup').style.display = 'block';
+    });
+
+    document.getElementById('close-add-payment-popup').addEventListener('click', function() {
+        document.getElementById('add-payment-popup').style.display = 'none';
+    });
+</script>
+
 
 {% endblock %}

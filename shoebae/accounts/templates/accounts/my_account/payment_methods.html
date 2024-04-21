@@ -2,124 +2,115 @@
 {% load static %}
 {% block content %}
 {% load custom_filters %}
-<!--payment-->
-<div class="col-12">
-  <div class="row">
-    <div class="col-md-6" id="saved-payment-methods">
-      {% if not editing %}
-      <!-- This is where the rendering and loop for displaying cardinfo goes-->
-      <h3> Saved Payment Methods: </h3>
+
+<style>
+.outer-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background-color: lightgray;
+}
+
+.top-inner-container, .bottom-inner-container {
+  width: 100%; /* Make the top container fill the width */
+}
+
+.box {
+  background-color: #f9f9f9;
+  border: 2px solid #f0f0f0;
+  border-radius: 10px;
+  width: 80%;
+  margin: 5% auto;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-container {
+  display: flex;
+  align-items: center;
+}
+
+.form-container input {
+  flex: 1; /* Take up remaining space */
+  margin-right: 10px; /* Add spacing between input and button */
+}
+
+.credit-card {
+  display: flex;
+    flex-direction: column;
+    width: 300px;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+}
+
+.credit-card-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.credit-card-info label {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.credit-card-number {
+  font-size: 18px;
+  font-weight: bold;
+}
+</style>
+
+<h2>My Payment Methods</h2>
+<div class="outer-container">
+  <div class="top-inner-container">
+    <!-- Left Container -->
+    <div class="box">
+      <h3>Saved Payments</h3> <hr>
+      <!-- Loads Saved Payments -->
       {% for payment in payment_info %}
-      <!-- This is where the program iterates through all the user's payment methods -->
-      <div class="col-6">
-        Cardholder: {{ payment.cardholder }}<br>
-        Card Number: ****-****-****-{{ payment.cardnumber|last_four }}<br>  
-        Expiration: **/** <br>
-        CVV: {{ payment.cvv }}<br>
-        Balance: {{ payment.balance }}<br>
-        <br>
-        <form method="post" action="{% url 'payment_methods' %}">
-          {% csrf_token %}
-          <input type="hidden" name="edit_payment_id" value="{{ payment.id }}">
-          <button type="submit" name="action" value="show_edit_payment_form">Edit</button>
-        </form>
-        <form method="post" action="{% url 'payment_methods' %}">
-          {% csrf_token %}
-          <input type="hidden" name="action" value="delete_payment">
-          <input type="hidden" name="delete_payment_id" value="{{ payment.id }}">
-          <button type="submit">Delete</button>
-        </form>      
-      </div>
-      {% empty %}
-      <div class="col-md-6">
-        <h6> There are no payment methods saved. Please add a payment method.</h6>
+      <div class="credit-card">
+        <div class="credit-card-number">****-****-****-{{ payment.cardnumber|last_four }}</div>
+        <div class="credit-card-info">
+          <label>Cardholder:</label>
+          <span>{{ payment.cardholder }}</span>
+        </div>
+        <div class="credit-card-info">
+          <label>Expiration:</label>
+          <span>**/**</span>
+        </div>
+        <div class="credit-card-info">
+          <label>CVV:</label>
+          <span>{{ payment.cvv }}</span>
+        </div>
       </div>
       {% endfor %}
 
-      {% endif %}
 
-      {% if editing %}
-      <!-- Displays the Edit Payment Form -->
-      <h3> Edit Payment Method:</h3>
-      <form method="post" action="{% url 'payment_methods' %}">
+    </div>
+  </div>
+  <div class="bottom-inner-container">
+    <!-- Right Container -->
+    <div class="box">
+      <h3>Payment Details</h3> <hr>
+      <h5>Balance: ${{request.user.userprofile.balance}}</h5>
+      <div class="box">
+        <!-- Form for loading balance to your account-->
+        <form action="/submit_money_value" method="post" class="form-container">
         {% csrf_token %}
-        <input type="hidden" name="edit_payment_id" value="{{ payment.id }}">
-        <div class="col-6">
-          Cardholder:
-          <input type="text" name="cardholder" class="form-control" value="{{ payment.cardholder }}">
-          <br>
-          Card Number:
-          <input type="text" name="cardnumber" class="form-control" value="{{ payment.cardnumber }}">
-          <br>
-          Expiration:
-          <input type="date" name="expiration" class="form-control" value="{{ payment.expiration }}">
-          <br>
-          CVV:
-          <input type="text" name="cvv" class="form-control" placeholder="---" value="{{ payment.cvv }}">
-          <br>
-          Default:
-          <input type="checkbox" name="is_default" class="form-control" placeholder="---" value ="{{ payment.is_default }}">
-          <br>
-          <input type="number" name="balance" class="form-control" placeholder="$" value ="{{ payment.balance }}">
-        </div>
-        <button type="submit" name="action" value="process_edit_payment_form">Save Changes</button>
-      </form>
-      {% endif %}
-    </div> <!-- This ends the section for showing/editing saved payment methods -->
-
-    {% if not adding %}
-    <!-- Shows the button for adding a payment so no bugs occur with multiple forms being rendered -->
-    <form method="post" action="{% url 'payment_methods' %}">  
-      {% csrf_token %}
-      <input type="hidden" name="action" value="show_add_payment_form">
-      <button type="submit">Add Payment</button>
-    </form>
-    {% endif %}
-
-    {% if adding %}
-    <!-- This is displays the add payment form -->
-    <div class="col-md-6" id="add-payment-form">
-      <h3> Add a Payment Method: </h3>
-      <form method="post" action="{% url 'payment_methods' %}">  
-        {% csrf_token %}
-        <input type="hidden" name="action" value="process_add_payment">
-        <div class="form-group" id="cardholder">
-          <label for="cardholder">Cardholder's Name</label>
-          <input type="text" id="cardholder" name="cardholder" class="form-control" placeholder="Cardholder's Name">
-        </div>
-        <div class="form-group" id="cardnumber">
-          <label for="cardnumber">Cardnumber</label>
-          <input type="text" id="cardnumber" name="cardnumber" class="form-control" placeholder="Cardnumber">
-        </div>
-        <div class="form-group" id="expiration">
-          <label for="expiration">Expiration</label>
-          <input type="date" id="expiration" name="expiration" class="form-control">
-        </div>
-        <div class="form-group" id="cvv">
-          <label for="cvv">CVV</label>
-          <input type="number" id="cvv" name="cvv" class="form-control" placeholder="CVV (XXX)">
-        </div>
-        <div class="form-group" id="balance">
-          <label for="balance">Balance</label>
-          <input type="number" id="balance" name="balance" class="form-control" placeholder="Balance">
-        </div>
-        <div class="form-group" id="is_default">
-          <label for="is_default">
-            <input type="checkbox" id="is_default" name="is_default" class="form-check-label"> Default
-          </label>
-        </div>
+        <input type="number" id="money_input" name="money_input" step="0.01" min="0" max="100000" placeholder="0.00" required>
         <button id="form-button" type="submit" class="btn btn-primary">Submit</button>
       </form>
+      </div>
+
     </div>
-    {% endif %}
-  </div> <!-- Div that is connected to the rows that hold both the add payment and saved payments -->
-  {% if messages %}
-  {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-            </div>
-        {% endfor %}
-        {% endif %}
+  </div>
 </div>
 
 {% endblock %}

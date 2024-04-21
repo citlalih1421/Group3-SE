@@ -10,5 +10,4 @@ class PaymentInfo(models.Model):
     cardnumber = models.CharField(blank=True, null=True)
     expiration = models.DateField(blank=True, null=True)
     cvv = models.IntegerField(blank=True, null=True)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_default = models.BooleanField(default=False)
