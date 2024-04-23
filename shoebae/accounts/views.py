@@ -131,6 +131,17 @@ class MyAccountView(View):
             return self.process_add_payment_form(request)
         elif action == 'process_add_payment_form':
             return self.process_add_payment_form(request)
+        elif action == 'process_add_shipping_form':
+            return self.process_add_shipping_form(request)
+        elif action == 'show_add_shipping_form':
+            return self.show_add_shipping_form(request)
+        elif action == 'show_edit_shipping_form':
+            return self.show_edit_shipping_form(request)
+        elif action == 'process_edit_shipping_form':
+            return self.process_edit_shipping_form(request)
+            # Handle delete actions
+        elif action == "delete_shipping" in request.POST:
+            return self.delete_shipping(request)
         else:
             return render(request, 'accounts/my_account/account.html', {'message': 'Invalid form submission'})
     
@@ -151,7 +162,7 @@ class MyAccountView(View):
         if form.is_valid():
             form.save()
             messages.success(request, "Payment method updated successfully!")
-            return redirect('payment_methods')
+            return redirect('account')
         else:
             messages.error(request, "Error in updating payment method. Please try again.")
             return render(request, 'accounts/my_account/account.html', {'edit_payment_form': form, 'payment': payment_info})
@@ -180,98 +191,6 @@ class MyAccountView(View):
             payment_info = PaymentInfo.objects.filter(customer=request.user)
         return render(request, 'accounts/my_account/account.html', {'add_payment_form': form, 'payment_info': payment_info})
     
-
-class MyInfoView(View):
-    def get(self, request):
-        return render(request, 'accounts/my_account/account_information.html')
-
-
-class MySecurityView(View):
-    def get(self, request):
-        return render(request, 'accounts/my_account/security.html')
-
-
-class MyPaymentView(View):
-    def get(self, request):
-        payment_info = PaymentInfo.objects.filter(customer=request.user)
-        shipping_info = ShippingInfo.objects.filter(customer=request.user)
-        return render(request, 'accounts/my_account/account.html', {'payment_info': payment_info, 'shipping_info': shipping_info})
-
-    def post(self, request):
-        if 'action' in request.POST:
-            action = request.POST['action']
-        if action == 'process_add_payment':
-            return self.process_add_payment(request)
-        elif action == 'show_add_payment_form':
-            return self.show_add_payment_form(request)
-        elif action == 'show_edit_payment_form':
-            return self.show_edit_payment_form(request)
-        elif action == 'process_edit_payment_form':
-            return self.process_edit_payment_form(request)
-        # Handle delete actions
-        elif action == 'delete_payment':
-            return self.delete_payment(request)
-        elif action == 'process_add_shipping':
-            return self.process_add_shipping(request)
-        elif action == 'show_add_shipping_form':
-            return self.show_add_shipping_form(request)
-        elif action == 'show_edit_shipping_form':
-            return self.show_edit_shipping_form(request)
-        elif action == 'process_edit_shipping_form':
-            return self.process_edit_shipping_form(request)
-            # Handle delete actions
-        elif action == "delete_shipping" in request.POST:
-            return self.delete_shipping(request)
-        else:
-            return render(request, 'accounts/my_account/account.html', {'message': 'Invalid form submission'})
-
-
-    def show_edit_payment_form(self, request):
-        payment_info_id = request.POST.get('edit_payment_id')
-        if payment_info_id:
-            payment = get_object_or_404(PaymentInfo, id=payment_info_id, customer=request.user)
-            form = PaymentForm(instance=payment)  # Pre-populate form with existing data
-            return render(request, 'accounts/my_account/account.html', {'form': form, 'payment': payment, 'editing': True})
-        else:
-            return render(request, 'accounts/my_account/account.html', {'message': 'Invalid edit request'})
-
-    def process_edit_payment_form(self, request):
-        payment_info_id = request.POST.get('edit_payment_id')
-        payment_info = get_object_or_404(PaymentInfo, id=payment_info_id, customer=request.user)
-        form = PaymentForm(request.POST, instance=payment_info)
-
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Payment method updated successfully!")
-            return redirect('payment_methods')
-        else:
-            messages.error(request, "Error in updating payment method. Please try again.")
-            return render(request, 'accounts/my_account/account.html', {'form': form, 'payment': payment_info, 'editing': True})
-
-    def delete_payment(self, request):
-        payment_info_id = request.POST.get('delete_payment_id')
-        payment_info = get_object_or_404(PaymentInfo, id=payment_info_id, customer=request.user)
-        payment_info.delete()
-        messages.success(request, "Payment method deleted successfully!")
-        return redirect('account')
-
-    def show_add_payment_form(self, request):
-        form = PaymentForm()  # Create a new form instance
-        return render(request, 'accounts/my_account/account.html', {'form': form, 'adding': True})
-
-    def process_add_payment(self, request):
-        form = PaymentForm(request.POST)
-        if form.is_valid():
-            new_payment_info = form.save(commit=False)
-            new_payment_info.customer = request.user
-            new_payment_info.save()
-            messages.success(request, "Payment method added successfully!")
-            return redirect('account')
-        else:
-            messages.error(request, "Error in adding payment method. Please try again.")
-            payment_info = PaymentInfo.objects.filter(customer=request.user)
-        return render(request, 'accounts/my_account/account.html', {'form': form, 'payment_info': payment_info, 'adding': True})
-    
     def show_edit_shipping_form(self, request):
         shipping_info_id = request.POST.get('edit_shipping_id')
         if shipping_info_id:
@@ -289,7 +208,7 @@ class MyPaymentView(View):
         if form.is_valid():
             form.save()
             messages.success(request, "Shipping method updated successfully!")
-            return redirect('accounts')
+            return redirect('account')
         else:
             messages.error(request, "Error in updating shipping method. Please try again.")
             return render(request, 'accounts/my_account/account.html', {'edit_shipping_form': form, 'shipping': shipping_info})
@@ -299,7 +218,7 @@ class MyPaymentView(View):
         shipping_info = get_object_or_404(ShippingInfo, id=shipping_info_id, customer=request.user)
         shipping_info.delete()
         messages.success(request, "Shipping method deleted successfully!")
-        return redirect('accounts')
+        return redirect('account')
 
     def show_add_shipping_form(self, request):
         form = ShippingForm()  # Create a new form instance
@@ -312,11 +231,22 @@ class MyPaymentView(View):
             new_shipping_info.customer = request.user
             new_shipping_info.save()
             messages.success(request, "Shipping method added successfully!")
-            return redirect('accounts')
+            return redirect('account')
         else:
             messages.error(request, "Error in adding shipping method. Please try again.")
             shipping_info = ShippingInfo.objects.filter(customer=request.user)
         return render(request, 'accounts/my_account/account.html', {'add_shipping_form': form, 'shipping_info': shipping_info})
+    
+
+class MyInfoView(View):
+    def get(self, request):
+        return render(request, 'accounts/my_account/account_information.html')
+
+
+class MySecurityView(View):
+    def get(self, request):
+        return render(request, 'accounts/my_account/security.html')
+
 
 
 

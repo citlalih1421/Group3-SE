@@ -94,6 +94,9 @@
         position: relative; /* Required for absolute positioning */
         display: flex;
         flex-direction: column;
+        min-width: 340px; /* Set a minimum width if needed */
+        max-width: 600px;
+        height: 250px;
         border: 2px solid #f0f0f0;
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -102,7 +105,6 @@
 
     .cards-wrapper {
         display: flex;
-        overflow-x: auto; /* Enable horizontal scrolling */
         scroll-snap-type: x mandatory; /* Snap to each card */
         height: 155px;
     }
@@ -114,13 +116,14 @@
 
     .card {
         flex: 0 0 auto; /* Allow cards to shrink to fit content */
-        width: 300px;
+        position: absolute;
+        min-width: 300px; /* Set a minimum width if needed */
+        max-width: 400px;
         height: 150px;
         padding: 20px;
         background-color: #f5f5f5;
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        scroll-snap-align: center; /* Center align each card */
         transition: background-color 0.3s ease;
     }
 
@@ -170,9 +173,6 @@
 
     .card.active {
         position: absolute;
-        left: 50%;
-        top: 60%;
-        transform: translate(-50%, -50%);
         z-index: 1;
     }
 
@@ -192,12 +192,7 @@
         display: inline-block; /* Display the buttons on hover */
     }
 
-    .card#payments {
-        /* Your specific styling for the card with id "payments" */
-        /* For example: */
-        float: left; /* Float the card to the left */
-        width: 50%; /* Adjust the width as needed */
-    }
+    
       
     .prev-btn,
     .next-btn {
@@ -639,7 +634,7 @@
                             <h3>Add Shipping Method:</h3>
                             <form method="post" action="{% url 'account' %}">  
                                 {% csrf_token %}
-                                <input type="hidden" name="action" value="process_add_shipping">
+                                <input type="hidden" name="action" value="process_add_shipping_form">
                                 <div class="form-group" id="street">
                                   <label for="street">Street</label>
                                   <input type="text" id="street" name="street" class="form-control" placeholder="Street">
