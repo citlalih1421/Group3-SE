@@ -154,7 +154,7 @@ class MyAccountView(View):
             return redirect('payment_methods')
         else:
             messages.error(request, "Error in updating payment method. Please try again.")
-            return render(request, 'accounts/my_account/account.html', {'edit_paymentform': form, 'payment': payment_info})
+            return render(request, 'accounts/my_account/account.html', {'edit_payment_form': form, 'payment': payment_info})
         
     def delete_payment(self, request):
         payment_info_id = request.POST.get('delete_payment_id')
@@ -194,8 +194,8 @@ class MySecurityView(View):
 class MyPaymentView(View):
     def get(self, request):
         payment_info = PaymentInfo.objects.filter(customer=request.user)
-        form = PaymentForm()
-        return render(request, 'accounts/my_account/account.html', {'form': form, 'payment_info': payment_info})
+        shipping_info = ShippingInfo.objects.filter(customer=request.user)
+        return render(request, 'accounts/my_account/account.html', {'payment_info': payment_info, 'shipping_info': shipping_info})
 
     def post(self, request):
         if 'action' in request.POST:
@@ -211,6 +211,17 @@ class MyPaymentView(View):
         # Handle delete actions
         elif action == 'delete_payment':
             return self.delete_payment(request)
+        elif action == 'process_add_shipping':
+            return self.process_add_shipping(request)
+        elif action == 'show_add_shipping_form':
+            return self.show_add_shipping_form(request)
+        elif action == 'show_edit_shipping_form':
+            return self.show_edit_shipping_form(request)
+        elif action == 'process_edit_shipping_form':
+            return self.process_edit_shipping_form(request)
+            # Handle delete actions
+        elif action == "delete_shipping" in request.POST:
+            return self.delete_shipping(request)
         else:
             return render(request, 'accounts/my_account/account.html', {'message': 'Invalid form submission'})
 
@@ -261,41 +272,14 @@ class MyPaymentView(View):
             payment_info = PaymentInfo.objects.filter(customer=request.user)
         return render(request, 'accounts/my_account/account.html', {'form': form, 'payment_info': payment_info, 'adding': True})
     
-class MyShippingView(View):
-    def get(self, request):
-        shipping_info = ShippingInfo.objects.filter(customer=request.user)
-        form = ShippingForm()
-        return render(request, 'accounts/my_account/shipping_methods.html', {'form': form, 'shipping_info': shipping_info})
-
-    def post(self, request):
-        action = None  # Initialize 'action' with a default value
-        if 'action' in request.POST:
-            action = request.POST['action']
-
-        if action == 'process_add_shipping':
-            return self.process_add_shipping(request)
-        elif action == 'show_add_shipping_form':
-            return self.show_add_shipping_form(request)
-        elif action == 'show_edit_shipping_form':
-            return self.show_edit_shipping_form(request)
-        elif action == 'process_edit_shipping_form':
-            return self.process_edit_shipping_form(request)
-            # Handle delete actions
-        elif 'delete_shipping_id' in request.POST:
-            return self.delete_shipping(request)
-        else:
-            # Handle default or unrecognized action here
-            return render(request, 'accounts/my_account/shipping_methods.html', {'message': 'Invalid form submission or action'})
-
-
     def show_edit_shipping_form(self, request):
         shipping_info_id = request.POST.get('edit_shipping_id')
         if shipping_info_id:
             shipping = get_object_or_404(ShippingInfo, id=shipping_info_id, customer=request.user)
             form = ShippingForm(instance=shipping)  # Pre-populate form with existing data
-            return render(request, 'accounts/my_account/shipping_methods.html', {'form': form, 'shipping': shipping, 'editing': True})
+            return render(request, 'accounts/my_account/account.html', {'edit_shipping_form': form, 'shipping': shipping})
         else:
-            return render(request, 'accounts/my_account/shipping_methods.html', {'message': 'Invalid edit request'})
+            return render(request, 'accounts/my_account/account.html', {'message': 'Invalid edit request'})
 
     def process_edit_shipping_form(self, request):
         shipping_info_id = request.POST.get('edit_shipping_id')
@@ -305,34 +289,38 @@ class MyShippingView(View):
         if form.is_valid():
             form.save()
             messages.success(request, "Shipping method updated successfully!")
-            return redirect('shipping_methods')
+            return redirect('accounts')
         else:
             messages.error(request, "Error in updating shipping method. Please try again.")
-            return render(request, 'accounts/my_account/shipping_methods.html', {'form': form, 'shipping': shipping_info, 'editing': True})
+            return render(request, 'accounts/my_account/account.html', {'edit_shipping_form': form, 'shipping': shipping_info})
 
     def delete_shipping(self, request):
         shipping_info_id = request.POST.get('delete_shipping_id')
         shipping_info = get_object_or_404(ShippingInfo, id=shipping_info_id, customer=request.user)
         shipping_info.delete()
         messages.success(request, "Shipping method deleted successfully!")
-        return redirect('shipping_methods')
+        return redirect('accounts')
 
     def show_add_shipping_form(self, request):
         form = ShippingForm()  # Create a new form instance
-        return render(request, 'accounts/my_account/shipping_methods.html', {'form': form, 'adding': True})
+        return render(request, 'accounts/my_account/account.html', {'add_shipping_form': form})
 
-    def process_add_shipping(self, request):
+    def process_add_shipping_form(self, request):
         form = ShippingForm(request.POST)
         if form.is_valid():
             new_shipping_info = form.save(commit=False)
             new_shipping_info.customer = request.user
             new_shipping_info.save()
             messages.success(request, "Shipping method added successfully!")
-            return redirect('shipping_methods')
+            return redirect('accounts')
         else:
             messages.error(request, "Error in adding shipping method. Please try again.")
             shipping_info = ShippingInfo.objects.filter(customer=request.user)
-        return render(request, 'accounts/my_account/shipping_methods.html', {'form': form, 'shipping_info': shipping_info, 'adding': True})
+        return render(request, 'accounts/my_account/account.html', {'add_shipping_form': form, 'shipping_info': shipping_info})
+
+
+
+    
 
 
 class MyOrdersView(View):

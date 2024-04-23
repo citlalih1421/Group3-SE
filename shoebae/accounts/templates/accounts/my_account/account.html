@@ -124,7 +124,7 @@
         transition: background-color 0.3s ease;
     }
 
-    .hidden-btn#open-add-payment-popup {
+    .hidden-btn#open-add-payment-popup,.hidden-btn#open-add-shipping-popup {
         position: absolute;
         top: 50%;
         left: 50%;
@@ -133,7 +133,7 @@
         z-index: 1;
     }
 
-    .hidden-btn#open-edit-payment-popup {
+    .hidden-btn#open-edit-payment-popup,.hidden-btn#open-edit-shipping-popup {
         position: absolute;
         top: 50%;
         left: calc(50% - 40px); /* Adjust the value (- 40px) to position the "Add" button to the left */
@@ -142,7 +142,7 @@
         z-index: 1;
     }
     
-    .hidden-btn#open-delete-payment-popup {
+    .hidden-btn#open-delete-payment-popup,.hidden-btn#open-delete-shipping-popup {
         position: absolute;
         top: 50%;
         left: calc(50% + 40px); /* Adjust the value (+ 40px) to position the "Delete" button to the right */
@@ -156,16 +156,24 @@
         height: auto; /* Maintain aspect ratio */
     }
 
-    #open-delete-payment-popup img {
+    #open-delete-payment-popup,#open-delete-shipping-popup img {
         transform: scale(1.5); /* Adjust the scale factor as needed */
     }
 
-    #open-edit-payment-popup img {
+    #open-edit-payment-popup,#open-edit-shipping-popup img {
         transform: scale(0.75);
     }
 
     .card:hover {
         background-color: #c0c0c0;
+    }
+
+    .card.active {
+        position: absolute;
+        left: 50%;
+        top: 60%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
     }
 
     .card:hover .hidden-btn {
@@ -177,7 +185,10 @@
 
     .card:hover #open-add-payment-popup,
     .card:hover #open-delete-payment-popup,
-    .card:hover #open-edit-payment-popup {
+    .card:hover #open-edit-payment-popup,
+    .card:hover #open-add-shipping-popup,
+    .card:hover #open-delete-shipping-popup,
+    .card:hover #open-edit-shipping-popup {
         display: inline-block; /* Display the buttons on hover */
     }
 
@@ -195,6 +206,7 @@
         background-color: transparent;
         border: none;
         cursor: pointer;
+        z-index: 2;
     }
 
     .prev-btn {
@@ -207,14 +219,21 @@
         transform-origin: center right; /* Adjust transform origin */
     }
     
-    .credit-card-info {
+    .card-info {
         display: flex;
         justify-content: space-between;
         font-size: 14px;
         margin-bottom: 10px;
     }
+
+    .card-info#shipping-card {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        margin-bottom: 0px;
+    }
       
-    .credit-card-info label {
+    .card-info label {
         font-weight: bold;
         margin-right: 5px;
     }
@@ -226,7 +245,7 @@
 
     /* Popup stuff */
 
-    .popup {
+    .popup#delete-payment-popup,.popup#edit-payment-popup,.popup#add-payment-popup {
         display: none; /* Initially hide the popup */
         position: fixed;
         top: 0;
@@ -234,7 +253,18 @@
         width: 100%;
         height: 100%;
         background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-        z-index: 1000; /* Ensure popup appears above other content */
+        z-index: 3; /* Ensure popup appears above other content */
+    }
+
+    .popup#delete-shipping-popup,.popup#edit-shipping-popup,.popup#add-shipping-popup {
+        display: none; /* Initially hide the popup */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        z-index: 3; /* Ensure popup appears above other content */
     }
 
     .popup-content {
@@ -312,19 +342,19 @@
                 <div class="card-text">
                     <h5>Payment Methods</h5>
                 </div>
-                <div class="cards-wrapper">
+                <div id="payment-cards" class="cards-wrapper">
                         {% for payment in payment_info %}
-                            <div class="card">
+                            <div class="card {% if forloop.first %}active{% endif %}">
                                     <div class="credit-card-number">****-****-****-{{ payment.cardnumber|last_four }}</div>
-                                    <div class="credit-card-info">
+                                    <div class="card-info">
                                     <label>Cardholder:</label>
                                     <span>{{ payment.cardholder }}</span>
                                 </div>
-                                <div class="credit-card-info">
+                                <div class="card-info">
                                     <label>Expiration:</label>
                                     <span>**/**</span>
                                 </div>
-                                <div class="credit-card-info">
+                                <div class="card-info">
                                     <label>CVV:</label>
                                     <span>{{ payment.cvv }}</span>
                                 </div>
@@ -383,6 +413,29 @@
                             </div>
                             
                         {% endfor %}
+
+                        <script>
+                            document.getElementById('open-delete-payment-popup').addEventListener('click', function() {
+                                console.log("Open delete payment popup");
+                                document.getElementById('delete-payment-popup').style.display = 'block';
+                            });
+                        
+                            document.getElementById('close-delete-payment-popup').addEventListener('click', function() {
+                                console.log("Close delete payment popup");
+                                document.getElementById('delete-payment-popup').style.display = 'none';
+                            });
+                        
+                            document.getElementById('open-edit-payment-popup').addEventListener('click', function() {
+                                console.log("Open edit payment popup");
+                                document.getElementById('edit-payment-popup').style.display = 'block';
+                            });
+                        
+                            document.getElementById('close-edit-payment-popup').addEventListener('click', function() {
+                                console.log("Close edit payment Clicked");
+                                document.getElementById('edit-payment-popup').style.display = 'none';
+                            });
+                        </script>
+
                         <div class="card">
                             <button id="open-add-payment-popup" class="hidden-btn">
                                 <img src="{% static 'images/plus-icon.png' %}">
@@ -392,10 +445,10 @@
                         <div id="add-payment-popup" class="popup">
                             <div class="popup-content">
                                 <a href="#" id='close-add-payment-popup' class="close">&times;</a>
-                                <h3> Add a Payment Method: </h3>
+                                <h3> Add Payment Method: </h3>
                                 <form method="post" action="{% url 'account' %}">  
                                     {% csrf_token %}
-                                    <input type="hidden" name="action" value="process_add_payment">
+                                    <input type="hidden" name="action" value="process_add_payment_form">
                                     <div class="form-group" id="cardholder">
                                         <label for="cardholder">Cardholder's Name</label>
                                         <input type="text" id="cardholder" name="cardholder" class="form-control" placeholder="Cardholder's Name">
@@ -421,14 +474,243 @@
                                 </form>
                             </div>
                         </div>
+
+                        <script>
+                            document.getElementById('open-add-payment-popup').addEventListener('click', function() {
+                                console.log("Open add paymet clicked");
+                                document.getElementById('add-payment-popup').style.display = 'block';
+                            });
+                        
+                            document.getElementById('close-add-payment-popup').addEventListener('click', function() {
+                                console.log("Close add payment popup");
+                                document.getElementById('add-payment-popup').style.display = 'none';
+                            });
+                        </script>
                 
                     <!-- Navigation buttons -->
-                    <button class="prev-btn">
+                    <button id="payment-prev-btn" class="prev-btn">
                         <img src="{% static 'images/arrow-circle-left.png' %}">
                     </button>
-                    <button class="next-btn">
+                    <button id="payment-next-btn" class="next-btn">
                         <img src="{% static 'images/arrow-circle-right.png' %}">
                     </button>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const paymentPrevBtn = document.getElementById('payment-prev-btn');
+                            const paymentNextBtn = document.getElementById('payment-next-btn');
+                            const cardsPayment = document.getElementById('payment-cards').querySelectorAll('.card');
+                        
+                            let currentIndex = 0;
+                        
+                            paymentPrevBtn.addEventListener('click', () => {
+                                cardsPayment[currentIndex].classList.remove('active'); // Hide current active card
+                                currentIndex = (currentIndex - 1 + cardsPayment.length) % cardsPayment.length; // Update index
+                                cardsPayment[currentIndex].classList.add('active'); // Show new active card
+                            });
+                        
+                            paymentNextBtn.addEventListener('click', () => {
+                                cardsPayment[currentIndex].classList.remove('active'); // Hide current active card
+                                currentIndex = (currentIndex + 1) % cardsPayment.length; // Update index
+                                cardsPayment[currentIndex].classList.add('active'); // Show new active card
+                            });
+                        });                        
+                    </script>
+                </div>
+            </div>
+
+            <div id="shipping" class="card-container">
+                <div class="card-text">
+                    <h5>Shipping Methods</h5>
+                </div>
+
+                <div id="shipping-cards" class="cards-wrapper">
+                    {% for shipping in shipping_info %}
+                        <div class="card {% if forloop.first %}active{% endif %}">
+                            
+                            <div id="shipping-card" class="card-info">
+                                <label>Street:</label>
+                                <span>{{ shipping.street }}</span>
+                            </div>
+                            <div id="shipping-card" class="card-info">
+                                <label>City:</label>
+                                <span>{{ shipping.city }}</span>
+                            </div>
+                            <div id="shipping-card" class="card-info">
+                                <label>State:</label>
+                                <span>{{ shipping.state }}</span>
+                            </div>
+                            <div id="shipping-card" class="card-info">
+                                <label>Zipcode:</label>
+                                <span>{{ shipping.zipcode }}</span>
+                            </div>
+                            <div id="shipping-card" class="card-info">
+                                <label>Country:</label>
+                                <span>{{ shipping.country }}</span>
+                            </div>
+
+                            <button id="open-edit-shipping-popup" class="hidden-btn">
+                                <img src="{% static 'images/pencil-ui-circle.png' %}">
+                            </button>
+                            
+                            <div id="edit-shipping-popup" class="popup">
+                                <div class="popup-content">
+                                    <a href="#" id='close-edit-shipping-popup' class="close">&times;</a>
+                                    <h3>Edit Shipping:</h3>
+                                    <form method="post" action="{% url 'account' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="edit_shipping_id" value="{{ shipping.id }}">
+                                        <div class="col-6">
+                                          Street:
+                                          <input type="text" name="street" class="form-control" value="{{ shipping.street }}">
+                                          <br>
+                                          City:
+                                          <input type="text" name="city" class="form-control" value="{{ shipping.city }}">
+                                          <br>
+                                          State:
+                                          <input type="text" name="state" class="form-control" value="{{ shipping.state }}">
+                                          <br>
+                                          Zipcode:
+                                          <input type="text" name="zipcode" class="form-control" value="{{ shipping.zipcode }}">
+                                          <br>
+                                          Country:
+                                          <input type="text" name="country" class="form-control" placeholder="Country" value="{{ shipping.country }}">
+                                          <br>
+                                          Default:
+                                          <input type="checkbox" name="is_default" class="form-control" value ="{{ shipping.is_default }}">
+                                          <br>
+                                        </div>
+                                        <button type="submit" name="action" value="process_edit_shipping_form">Save Changes</button>
+                                      </form>
+                                </div>
+                            </div>
+
+                            <script>
+                                document.getElementById('open-edit-shipping-popup').addEventListener('click', function() {
+                                    console.log("Open edit shipping popup");
+                                    document.getElementById('edit-shipping-popup').style.display = 'block';
+                                });
+                            
+                                document.getElementById('close-edit-shipping-popup').addEventListener('click', function() {
+                                    console.log("Close edit shipping Clicked");
+                                    document.getElementById('edit-shipping-popup').style.display = 'none';
+                                });
+                            </script>
+                            
+                            <button id="open-delete-shipping-popup" class="hidden-btn">
+                                <img src="{% static 'images/delete-icon.png' %}">
+                            </button>
+
+                            <div id="delete-shipping-popup" class="popup">
+                                <div class="popup-content">
+                                    <a href="#" id='close-delete-shipping-popup' class="close">&times;</a>
+                                    <h3>Delete Shipping:</h3>
+                                    <form method="post" action="{% url 'account' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="delete_shipping_id" value="{{ shipping.id }}">
+                                        <button type="submit">Delete</button>
+                                      </form>
+                                </div>
+                            </div>
+
+                            <script>
+                                document.getElementById('open-delete-shipping-popup').addEventListener('click', function() {
+                                    console.log("Open delete shipping popup");
+                                    document.getElementById('delete-shipping-popup').style.display = 'block';
+                                });
+                            
+                                document.getElementById('close-shipping-payment-popup').addEventListener('click', function() {
+                                    console.log("Close delete shipping popup");
+                                    document.getElementById('delete-shipping-popup').style.display = 'none';
+                                });
+                            </script>
+                        </div>
+                    {% endfor %}
+
+                    <div class="card">
+                        <button id="open-add-shipping-popup" class="hidden-btn">
+                            <img src="{% static 'images/plus-icon.png' %}">
+                        </button>
+                    </div>
+
+                    <div id="add-shipping-popup" class="popup">
+                        <div class="popup-content">
+                            <a href="#" id='close-add-shipping-popup' class="close">&times;</a>
+                            <h3>Add Shipping Method:</h3>
+                            <form method="post" action="{% url 'account' %}">  
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="process_add_shipping">
+                                <div class="form-group" id="street">
+                                  <label for="street">Street</label>
+                                  <input type="text" id="street" name="street" class="form-control" placeholder="Street">
+                                </div>
+                                <div class="form-group" id="city">
+                                  <label for="city">City</label>
+                                  <input type="text" id="city" name="city" class="form-control" placeholder="City">
+                                </div>
+                                <div class="form-group" id="state">
+                                  <label for="state">State</label>
+                                  <input type="text" id="state" name="state" class="form-control" placeholder="State">
+                                </div>
+                                <div class="form-group" id="zipcode">
+                                  <label for="zipcode">Zipcode</label>
+                                  <input type="number" id="zipcode" name="zipcode" class="form-control" placeholder="Zipcode">
+                                </div>
+                                <div class="form-group" id="country">
+                                  <label for="country">Country</label>
+                                  <input type="text" id="country" name="country" class="form-control" placeholder="Country">
+                                </div>
+                                <div class="form-group" id="is_default">
+                                  <label for="is_default">
+                                    <input type="checkbox" id="is_default" name="is_default" class="form-check-label"> Default
+                                  </label>
+                                </div>
+                                <button id="form-button" type="submit" class="btn btn-primary">Submit</button>
+                              </form>
+                        </div> 
+                    </div>
+
+                    <script>
+                        document.getElementById('open-add-shipping-popup').addEventListener('click', function() {
+                            console.log("Open add shipping clicked");
+                            document.getElementById('add-shipping-popup').style.display = 'block';
+                        });
+                    
+                        document.getElementById('close-add-shipping-popup').addEventListener('click', function() {
+                            console.log("Close add shipping popup");
+                            document.getElementById('add-shipping-popup').style.display = 'none';
+                        });
+                    </script>
+
+                    <!-- Navigation buttons -->
+                    <button id="shipping-prev-btn" class="prev-btn">
+                        <img src="{% static 'images/arrow-circle-left.png' %}">
+                    </button>
+                    <button id="shipping-next-btn" class="next-btn">
+                        <img src="{% static 'images/arrow-circle-right.png' %}">
+                    </button>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const shippingPrevBtn = document.getElementById('shipping-prev-btn');
+                            const shippingNextBtn = document.getElementById('shipping-next-btn');
+                            const cardsShipping = document.getElementById('shipping-cards').querySelectorAll('.card');
+                        
+                            let currentIndex = 0;
+                        
+                            shippingPrevBtn.addEventListener('click', () => {
+                                cardsShipping[currentIndex].classList.remove('active'); // Hide current active card
+                                currentIndex = (currentIndex - 1 + cardsShipping.length) % cardsShipping.length; // Update index
+                                cardsShipping[currentIndex].classList.add('active'); // Show new active card
+                            });
+                        
+                            shippingNextBtn.addEventListener('click', () => {
+                                cardsShipping[currentIndex].classList.remove('active'); // Hide current active card
+                                currentIndex = (currentIndex + 1) % cardsShipping.length; // Update index
+                                cardsShipping[currentIndex].classList.add('active'); // Show new active card
+                            });
+                        });
+                    </script>
                 </div>
             </div>
     
@@ -443,54 +725,6 @@
 
 
 </div> <!-- END MAIN CONTAINER -->
-
-
-
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const prevBtn = document.querySelector('.prev-btn');
-        const nextBtn = document.querySelector('.next-btn');
-        const cardsWrapper = document.querySelector('.cards-wrapper');
-    
-        let scrollPosition = 0;
-    
-        prevBtn.addEventListener('click', () => {
-            scrollPosition -= 300; // Adjust based on card width
-            cardsWrapper.scrollTo({ left: scrollPosition, behavior: 'smooth' });
-        });
-    
-        nextBtn.addEventListener('click', () => {
-            scrollPosition += 300; // Adjust based on card width
-            cardsWrapper.scrollTo({ left: scrollPosition, behavior: 'smooth' });
-        });
-    });
-
-    document.getElementById('open-delete-payment-popup').addEventListener('click', function() {
-        document.getElementById('delete-payment-popup').style.display = 'block';
-    });
-
-    document.getElementById('close-delete-payment-popup').addEventListener('click', function() {
-        document.getElementById('delete-payment-popup').style.display = 'none';
-    });
-
-    document.getElementById('open-edit-payment-popup').addEventListener('click', function() {
-        document.getElementById('edit-payment-popup').style.display = 'block';
-    });
-
-    document.getElementById('close-edit-payment-popup').addEventListener('click', function() {
-        document.getElementById('edit-payment-popup').style.display = 'none';
-    });
-
-    document.getElementById('open-add-payment-popup').addEventListener('click', function() {
-        document.getElementById('add-payment-popup').style.display = 'block';
-    });
-
-    document.getElementById('close-add-payment-popup').addEventListener('click', function() {
-        document.getElementById('add-payment-popup').style.display = 'none';
-    });
-</script>
 
 
 {% endblock %}
