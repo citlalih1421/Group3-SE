@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin #only logged-in users will see MyAcountView
@@ -109,10 +110,12 @@ class LogoutView(View):
 class MyAccountView(View):
     def get(self, request):
         user = request.user
+        orders = Order.objects.filter(customer=request.user)
         payment_info = PaymentInfo.objects.filter(customer=request.user)
         shipping_info = ShippingInfo.objects.filter(customer=request.user)
         context = {
             'user': user,
+            'orders': orders,
             'payment_info': payment_info,
             'shipping_info': shipping_info
         }
@@ -121,6 +124,7 @@ class MyAccountView(View):
     def post(self, request):
         if 'action' in request.POST:
             action = request.POST['action']
+
         if action == 'show_edit_payment_form':
             return self.show_edit_payment_form(request)
         elif action == 'process_edit_payment_form':
@@ -139,9 +143,10 @@ class MyAccountView(View):
             return self.show_edit_shipping_form(request)
         elif action == 'process_edit_shipping_form':
             return self.process_edit_shipping_form(request)
-            # Handle delete actions
-        elif action == "delete_shipping" in request.POST:
+        elif action == "delete_shipping":
             return self.delete_shipping(request)
+        elif action == "update_balance":
+            return self.update_balance(request)
         else:
             return render(request, 'accounts/my_account/account.html', {'message': 'Invalid form submission'})
     
@@ -212,6 +217,22 @@ class MyAccountView(View):
         else:
             messages.error(request, "Error in updating shipping method. Please try again.")
             return render(request, 'accounts/my_account/account.html', {'edit_shipping_form': form, 'shipping': shipping_info})
+        
+    def update_balance(self, request):
+        new_balance = request.POST.get('new_balance')
+        # Validate the new_balance input (ensure it's a valid number, etc.)
+        if new_balance:
+            try:
+                new_balance = Decimal(new_balance)  # Convert to float
+                request.user.userprofile.balance += new_balance
+                request.user.userprofile.save()
+                messages.success(request, 'Balance updated successfully.')
+            except ValueError:
+                messages.error(request, 'Invalid balance input.')
+        else:
+            messages.error(request, 'New balance value is required.')
+
+        return redirect('account')  
 
     def delete_shipping(self, request):
         shipping_info_id = request.POST.get('delete_shipping_id')
@@ -246,18 +267,6 @@ class MyInfoView(View):
 class MySecurityView(View):
     def get(self, request):
         return render(request, 'accounts/my_account/security.html')
-
-
-
-
-    
-
-
-class MyOrdersView(View):
-    def get(self, request):
-        orders = Order.objects.filter(customer=request.user)
-        context = {'orders': orders}
-        return render(request, 'accounts/my_account/order_history.html', context)
 
 
 class MyTicketsView(View):

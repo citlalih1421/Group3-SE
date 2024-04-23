@@ -8,7 +8,6 @@ urlpatterns = [
     path('account/', views.MyAccountView.as_view(), name='account'),
     path('account/account-information/', views.MyInfoView.as_view(), name='account_information'),
     path('account/security/', views.MySecurityView.as_view(), name='account_security'),
-    path('account/order-history/', views.MyOrdersView.as_view(), name='order_history'),
     path('account/tickets/', views.MyTicketsView.as_view(), name='tickets'),
     path('account/favorites/', views.MyFavoritesView.as_view(), name='favorites'),
     path('delete_account/', views.DeleteAccountView.as_view, name='delete_account'),
