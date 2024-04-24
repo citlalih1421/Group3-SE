@@ -88,38 +88,35 @@ class Shoe(models.Model):
     def __str__(self):
         return self.name
     
-class ShoppingCart(models.Model):
-    customer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='shopping_cart')
-    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
-    def calculate_total(self):
-        total_amount = Decimal('0.00')
-        cart_items = self.cartitem_set.all()
-        for cart_item in cart_items:
-            total_amount += cart_item.subtotal
-        self.total = total_amount.quantize(Decimal('.01'))
-        print(self.total)
-        self.save()
-
-    def __str__(self):
-        return f"{self.customer.get_username()}'s cart"
-
 class CartItem(models.Model):
-    shoe = models.ForeignKey(Shoe, on_delete=models.CASCADE)
-    shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
-    def calculate_subtotal(self):
-        return Decimal(self.shoe.price * self.quantity).quantize(Decimal('.01'))
-
-    def save(self, *args, **kwargs):
-        self.subtotal = self.calculate_subtotal()
-        super().save(*args, **kwargs)
+    shoe = models.ForeignKey(Shoe, on_delete=models.SET_NULL, null=True, related_name='cart_item')
+    item_quantity = models.IntegerField(default=0, null=True, blank=True)
+    item_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return self.shoe.name
 
+class ShoppingCart(models.Model):
+    customer = models.OneToOneField(User, on_delete=models.PROTECT, related_name='shopping_cart')
+    cart_items = models.ManyToManyField(CartItem)
+    cart_quantity = models.IntegerField(default=0, null=True, blank=True)
+    cart_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    def reset_cart(self):
+        # Delete all cart items associated with this shopping cart
+        for item in self.cart_items.all():
+            item.delete()
+
+        # Reset other values to zero
+        self.cart_quantity = 0
+        self.cart_total = 0
+
+        # Save the changes to the shopping cart
+        self.save()
+
+    def __str__(self):
+        return f"{self.customer.get_username()}'s cart"
+    
 class Review(models.Model):
     reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews', null=True)
     shoe = models.ForeignKey(Shoe, on_delete=models.CASCADE)

@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from payments.models import PaymentInfo
@@ -13,18 +14,23 @@ def get_order(request, order_id):
 class RefundView(View):
     def post(self, request, order_id):
         order = get_object_or_404(Order, id=order_id)
-        payment_info = PaymentInfo.objects.filter(customer=request.user, is_default=True).first()
-        
+        print(str(order.total))
         # Refund the customer's payment
-        payment_info.balance += order.total
-        payment_info.save()
+        buyer = request.user.userprofile
+        print("Buyer Before: " + str(buyer.balance))
+        buyer.balance += order.total
+        buyer.save()
+        print("Buyer After: " + str(buyer.balance))
         
         # Refund the sellers attached to order items
         for order_item in order.items.all():
-            order_seller = order_item.shoe.seller
-            seller_payment = PaymentInfo.objects.filter(customer=order_seller, is_default=True).first()
-            seller_payment.balance -= order_item.total
-            seller_payment.save()
+
+            #refunds the money earned from the seller
+            seller = order_item.shoe.seller.userprofile
+            print("Seller Before: "+ str(seller.balance))
+            seller.balance -= (order_item.total * order_item.quantity)
+            seller.save()
+            print("Seller After: " + str(seller.balance))
         
         # Mark the order as refunded
         order.is_refunded = True

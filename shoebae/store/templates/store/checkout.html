@@ -34,7 +34,7 @@
                               </div>
                               {% else %}
                               <button>
-                                   <a href="{% url 'shipping_methods' %}" class="btn btn-success">Add Shipping Method</a>
+                                   <a href="{% url 'account' %}" class="btn btn-success">Add Shipping Method</a>
                               </button>
                               {% endif %}
                          </div>
@@ -47,11 +47,11 @@
                                    <p>Card Number: {{ paymentinfo.cardnumber }}</p>
                                    <p>Expiration: {{ paymentinfo.expiration }}</p>
                                    <p>CVV: {{ paymentinfo.cvv }}</p>
-                                   <p>Balance: {{ paymentinfo.balance }}</p>
+                                   <p>Balance: ${{ request.user.userprofile.balance }}</p>
                               </div>
                               {% else %}
                               <button>
-                                   <a href="{% url 'payment_methods' %}" class="btn btn-success">Add Payment Method</a>
+                                   <a href="{% url 'account' %}" class="btn btn-success">Add Payment Method</a>
                               </button>
                               {% endif %}
                          </div>
@@ -75,15 +75,15 @@
                        <div style="flex:2;"><img class="row-image" src="{{ item.shoe.image.url }}"></div>
                        <div style="flex:2;"><p>{{ item.shoe.name }}</p></div>
                        <div style="flex:1;"><p>${{ item.shoe.price }}</p></div>
-                       <div style="flex:1;"><p>{{ item.quantity }}</p></div>
-                       <div style="flex:1;"><p>${{ item.subtotal }}</p></div>
+                       <div style="flex:1;"><p>{{ item.item_quantity }}</p></div>
+                       <div style="flex:1;"><p>${{ item.item_total }}</p></div>
                    </div>
                    {% endfor %}
                    <h5>Items: {{ total_items }}</h5>
                    
                    <form id="form" method="post" action="{% url 'checkout' %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-success">Checkout</button>
+                    <button type="submit" name="action" value="process_order" class="btn btn-success">Checkout</button>
                    </form>
                </div>
            </div>           

@@ -1,16 +1,19 @@
+from decimal import Decimal
 from django.db import IntegrityError
+<<<<<<< Updated upstream
 from django.http import HttpResponse  # Import HttpResponse for debugging
 from django.http import Http404, HttpResponseRedirect
+=======
+>>>>>>> Stashed changes
 from django.views import View
 from django.views.generic.edit import CreateView
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render, redirect
-from django.db.models import Q, Sum
+from django.db.models import Q
 from django.views.generic import ListView
 from .forms import ShoeForm
 from .models import Shoe, Condition, Brand, Category, ShoppingCart, CartItem
-from django.views.generic.edit import DeleteView
 from django.urls import reverse_lazy
 from orders.models import Order, OrderItem, ShippingInfo
 from payments.models import PaymentInfo
@@ -18,7 +21,10 @@ from django.contrib.auth.decorators import login_required
 from .forms import SearchForm
 from django.utils import timezone
 from django.contrib import messages
+<<<<<<< Updated upstream
 from django.urls import reverse
+=======
+>>>>>>> Stashed changes
 
 
 # Create your views here.
@@ -27,14 +33,21 @@ def add_to_cart(request, slug):
     shoe = get_object_or_404(Shoe, slug=slug)
     shopping_cart, created = ShoppingCart.objects.get_or_create(customer=request.user)
 
-    # Check if the item is already in the cart
-    cart_item, created = shopping_cart.cartitem_set.get_or_create(shoe=shoe)
-
-    # If the item already exists in the cart, update its quantity and subtotal
+    # Check if the shoe is already in the cart
+    cart_item, created = CartItem.objects.get_or_create(shoe=shoe, defaults={'item_quantity': 1, 'item_total': shoe.price})
     if not created:
-        cart_item.quantity += 1
-        cart_item.subtotal = cart_item.calculate_subtotal()
+        cart_item.item_quantity += 1
+        cart_item.item_total += shoe.price
         cart_item.save()
+        shopping_cart.cart_total += shoe.price
+        shopping_cart.save()
+
+    # Add the cart item to the shopping cart if not already there
+    if cart_item not in shopping_cart.cart_items.all():
+        shopping_cart.cart_items.add(cart_item)
+        shopping_cart.cart_quantity += 1  # Increment cart quantity
+        shopping_cart.cart_total += cart_item.shoe.price
+        shopping_cart.save()
 
     # Redirect to cart view with the shopping cart ID as a URL parameter
     return redirect('cart', cart_id=shopping_cart.id)
@@ -43,15 +56,7 @@ def add_to_cart(request, slug):
 def cart(request, cart_id):
     # Retrieve the shopping cart using the cart_id from the URL
     shopping_cart = get_object_or_404(ShoppingCart, id=cart_id)
-    cart_items = shopping_cart.cartitem_set.all()
-
-    # Update the total and subtotals for the cart items
-    for cart_item in cart_items:
-        cart_item.subtotal = cart_item.calculate_subtotal()
-        cart_item.save()
-        shopping_cart.total += cart_item.subtotal
-        shopping_cart.save()
-    #shopping_cart.calculate_total()
+    cart_items = shopping_cart.cart_items.all()
 
     context = {'shopping_cart': shopping_cart, 'cart_items': cart_items}
     return render(request, 'store/cart.html', context)
@@ -62,70 +67,75 @@ class Checkout(View):
 
     def get(self, request):
         shopping_cart = request.user.shopping_cart
-        cart_items = shopping_cart.cartitem_set.all()
+        cart_items = shopping_cart.cart_items.all()
         payment_info = PaymentInfo.objects.filter(customer=request.user, is_default=True).first()
         shipping_info = ShippingInfo.objects.filter(customer=request.user, is_default=True).first()
-        total_items = sum(item.quantity for item in cart_items)
         context = {
             'shopping_cart': shopping_cart,
             'cart_items' : cart_items,
             'paymentinfo': payment_info,
             'shippinginfo': shipping_info,
-            'total_items': total_items
+            'total_items': shopping_cart.cart_quantity
         }
         return render(request, 'store/checkout.html', context)
     
     def post(self, request):
-        action = None
-        if 'action' in request.POST:
-            action = request.POST['action']
+        action = request.POST.get('action')
 
         if action == 'process_order':
-            return self.process_order(request)
-        elif action == 'process_payments':
-            return self.process_payments(request)
+            shopping_cart = request.user.shopping_cart
+            shipping_info = ShippingInfo.objects.filter(customer=request.user, is_default=True).first()
+            order_total = shopping_cart.cart_total
+            try:
+                order = Order.objects.create(
+                    customer=request.user,
+                    total=order_total,
+                    shippinginfo=shipping_info
+                )
+                order.save()
+                self.process_order_items(request, order)
+                self.process_payments(request, order)
+                messages.success(request, 'Order has been successfully processed!')
+                return redirect('order', order_id=order.id)
+            except IntegrityError:
+                messages.error(request, 'Error processing order.')
+        return redirect('checkout')
 
-    def process_order(self, request):
-        shopping_cart = request.user.shopping_cart
-        shipping_info = ShippingInfo.objects.filter(customer=request.user, is_default=True).first()
-        order_total = shopping_cart.total
-        try:
-            order = Order.objects.create(
-                customer=request.user,
-                total=order_total,
-                shippinginfo=shipping_info,
-                date_order=timezone.now()
-            )
-            order.save()
-            return order
-        except IntegrityError as e:
-            raise IntegrityError 
-
-    def process_order_items(self, request):
-        order = self.process_order(request)
+    def process_order_items(self, request, order):
         if order:
             shopping_cart = request.user.shopping_cart
-            cart_items = shopping_cart.cartitem_set.all()
+            cart_items = shopping_cart.cart_items.all()
         
             for item in cart_items:
                 try:
                     order_item = OrderItem.objects.create(
                         shoe = item.shoe,
-                        quantity = item.quantity,
-                        total = item.subtotal
+                        quantity = item.item_quantity,
+                        total = item.item_total
                     )
                     order.items.add(order_item)
                 except IntegrityError as e:
                     raise IntegrityError
             order.save()
+            shopping_cart.reset_cart()
+
         self.process_payments(request, order)
 
     def process_payments(self, request, order):
         if order:
-            order_items = order.items_set.all()
+            buyer = request.user.userprofile
+            buyer.balance -= order.total
+            buyer.save()
+            order_items = order.items.all()
             for item in order_items:
-                pass
-
+                try:
+                    seller = item.shoe.seller.userprofile
+                    seller.balance += item.total
+                    seller.save()
+                except IntegrityError as e:
+                    raise IntegrityError
+            messages.success(request, 'Order has been successfully processed!')
+            return redirect('order', order_id = order.id)
 
     '''def post(self, request):
         shopping_cart = request.user.shopping_cart
