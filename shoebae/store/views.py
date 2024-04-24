@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+from django.http import HttpResponse  # Import HttpResponse for debugging
 from django.http import Http404, HttpResponseRedirect
 from django.views import View
 from django.views.generic.edit import CreateView
@@ -16,6 +17,8 @@ from payments.models import PaymentInfo
 from django.contrib.auth.decorators import login_required
 from .forms import SearchForm
 from django.utils import timezone
+from django.contrib import messages
+from django.urls import reverse
 
 
 # Create your views here.
@@ -308,3 +311,42 @@ class DeleteListingView(View):
 
 
 
+def compare_products(request):
+    if request.method == 'POST':
+        # Clear the comparison list from session
+        request.session['comparison'] = []
+        return redirect('compare_products')  # Redirect to the same page after clearing the comparison
+
+    # Retrieve the slugs of shoes in the comparison list from session
+    comparison_slugs = request.session.get('comparison', [])
+
+    # Filter the Shoe objects based on slugs
+    shoes_to_compare = Shoe.objects.filter(slug__in=comparison_slugs)
+
+    context = {
+        'shoes_to_compare': shoes_to_compare,
+    }
+    return render(request, 'store/compare.html', context)
+
+def add_to_comparison(request, slug):
+    # Retrieve the shoe object based on the slug
+    shoe = get_object_or_404(Shoe, slug=slug)
+
+    # Ensure the comparison list exists in the session
+    if 'comparison' not in request.session:
+        request.session['comparison'] = []
+
+    # Check if the product is already in the comparison list
+    if slug in request.session['comparison']:
+        messages.warning(request, "Product is already in comparison.")
+    else:
+        # Check if the comparison list has reached its maximum limit
+        if len(request.session['comparison']) >= 3:
+            messages.error(request, "Maximum limit reached. You can compare up to three products.")
+        else:
+            # Add the product to the comparison list
+            request.session['comparison'].append(slug)
+            messages.success(request, "Product added to comparison.")
+
+    # Redirect to the product page
+    return redirect(reverse('productpage', args=[slug]))

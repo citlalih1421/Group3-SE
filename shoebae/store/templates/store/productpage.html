@@ -2,12 +2,31 @@
 {% load static %}
 
 {% block content %}
+<style>
+    .popup {
+        position: absolute;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000; /* Ensure popup appears over other content */
+        background-color: white;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+     /* Center align the button in the popup */
+     #comparison-popup .popup-content {
+        text-align: center;
+    }
+</style>
+
 <div class="container mt-5">
     <div class="row">
-        <!--Product Image Carousel and seller info-->
+        <!--Product Image and seller info-->
         <div class="col-md-6">
             <div class="mb-3 mt-5">
-                <img src="{% static 'images/SellerIcon.jpg' %}" alt="Seller Picture" class="img-thumbnail me-2" style="width: 50px; height: 50px; border-radius: 50%;">
+                <img src="{% static 'images/default-profile-icon.jpg' %}" alt="Seller Picture" class="img-thumbnail me-2" style="width: 50px; height: 50px; border-radius: 50%;">
                 Seller: {{shoe.seller.username}}
                 <button type="button" class="btn btn-outline-primary btn-sm ms-3">Follow </button>
             </div>
@@ -17,7 +36,7 @@
         </div>
         <!--Product Information-->
         <div class="col-md-6">
-            <h2> Name: {{ shoe.name }}</h2>
+            <h2> {{ shoe.name }}</h2>
             <p><strong>Brand:</strong> {{ shoe.brand }}</p>
             <p><strong>Category:</strong> {{ shoe.category }}</p>
             <p><strong>Shoe Size:</strong> {{ shoe.size }}</p>
@@ -26,44 +45,68 @@
             <div class="mb-3">
                 <button type="button" class="btn btn-primary me-3">Add to Cart</button>
                 <button type="button" class="btn btn-secondary">Save for Later</button>
+
+                <form id="add-to-comparison-form" method="post" action="{% url 'add_to_comparison' shoe.slug %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-info me-3">Add to Comparison</button>
+                </form>
             </div>
         </div>
     </div>
 
+    <!-- Popup template -->
+    <div class="popup" id="comparison-popup" style="display: none;">
+        <div class="popup-content">
+            <h4 style="text-align: center;"> Product added to Comparison</h4>
+            <button type="button" class="btn btn-outline-info" id="seeComparison" action="{% url 'compare_products' %}">See Comparison</button>
+        </div>
+    </div>
+
+    <hr> 
+
     <!--Reviews/Ratings and Comment Section-->
     <div class="row mt-5">
         <div class="col-md-12">
-            <h3>Reviews and Ratings</h3>
             <div class="row">
-                <div class="col-md-8">
-                    <div>
-                        <p><strong>User1:</strong> Great product! Highly recommend.</p>
-                        <div class="rating">
-                            <span class="star">&#9733;</span>
-                            <span class="star">&#9733;</span>
-                            <span class="star">&#9733;</span>
-                            <span class="star">&#9733;</span>
-                            <span class="star">&#9733;</span>
-                        </div>
-                    </div>
-                    <div>
-                        <p><strong>User2:</strong> Average quality, but decent price.</p>
-                        <div class="rating">
-                            <span class="star">&#9733;</span>
-                            <span class="star">&#9733;</span>
-                            <span class="star">&#9733;</span>
-                            <span class="star">&#9733;</span>
-                            <span class="star">&#9734;</span>
-                        </div>
+                <div class="col-md-4">
+                    <h3>Reviews and Ratings</h3>
+                    <div class="mt-5">
+
                     </div>
                 </div>
                 <hr>
                 <div class="col-md-4">
                     <h3>Comments</h3>
-                    
+                    <div class="mt-5">
+
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script> 
+     // JavaScript for handling form submission
+     document.getElementById("add-to-comparison-form").addEventListener("submit", function (event) {
+        // Prevent the default form submission behavior
+        event.preventDefault();
+
+        // Show the comparison popup
+        document.getElementById("comparison-popup").style.display = "block";
+
+        // Set a timeout to hide the popup after 4 seconds
+        setTimeout(function () {
+            document.getElementById("comparison-popup").style.display = "none";
+        }, 4000);
+    });
+
+    // Listen for click on "See Comparison" button in the popup
+    document.getElementById("seeComparison").addEventListener("click", function () {
+        // Redirect to the compare.html file
+        window.location.href = '{% url "compare_products" %}';
+    });
+</script>
+
+
 {% endblock %}

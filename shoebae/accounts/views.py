@@ -269,6 +269,14 @@ class MySecurityView(View):
         return render(request, 'accounts/my_account/security.html')
 
 
+
+
+class MyOrdersView(View):
+    def get(self, request):
+        orders = Order.objects.filter(customer=request.user)
+        context = {'orders': orders}
+        return render(request, 'accounts/my_account/order_history.html', context)
+
 class MyTicketsView(View):
     def get(self, request):
         return render(request, 'accounts/my_account/tickets.html')
@@ -277,8 +285,6 @@ class MyFavoritesView(View):
     def get(self, request):
         return render(request, 'accounts/my_account/favorites.html')
     
-
-
 
 
 class DeleteAccountView(View):
