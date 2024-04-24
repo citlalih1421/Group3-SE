@@ -1,0 +1,100 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1>Product Comparison</h1>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Product Details</th>
+                        {% for shoe in shoes_to_compare %}
+                            <th>{{ shoe.name }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Image</td>
+                        {% for shoe in shoes_to_compare %}
+                            <td><img src="{{ shoe.image.url }}" alt="{{ shoe.name }}" style="max-height: 150px;"></td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Size</td>
+                        {% for shoe in shoes_to_compare %}
+                            <td>{{ shoe.size }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Condition</td>
+                        {% for shoe in shoes_to_compare %}
+                            <td>{{ shoe.condition }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Brand</td>
+                        {% for shoe in shoes_to_compare %}
+                            <td>{{ shoe.brand }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Category</td>
+                        {% for shoe in shoes_to_compare %}
+                            <td>{{ shoe.category }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Price</td>
+                        {% for shoe in shoes_to_compare %}
+                            <td> $ {{ shoe.price }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td></td>
+                        {% for shoe in shoes_to_compare %}
+                            <td>
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <form method="get" action="{% url 'productpage' shoe.slug %}">
+                                            <button type="submit" class="btn btn-outline-success">View</button>
+                                        </form>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <form method="post" action="{% url 'add_to_cart' shoe.slug %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="shoe_slug" value="{{ shoe.slug }}">
+                                            <button type="submit" class="btn btn-outline-success">Add to Cart</button>
+                                        </form>
+                                    </div>
+                                </div> 
+                                
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>
+                            <form method="post" >
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger" >Clear Comparison</button>
+                            </form>
+                        </td>
+                        {% for shoe in shoes_to_compare %}
+                        <td class="col-5">
+                            <form method="post" action="{% url 'remove_from_comparison' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="product_slug" value="{{ shoe.slug }}">
+                                <button type="submit" class="btn btn-outline-danger">Delete from Comparison</button>
+                            </form>
+                        </td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
