@@ -1,10 +1,5 @@
 from decimal import Decimal
 from django.db import IntegrityError
-<<<<<<< Updated upstream
-from django.http import HttpResponse  # Import HttpResponse for debugging
-from django.http import Http404, HttpResponseRedirect
-=======
->>>>>>> Stashed changes
 from django.views import View
 from django.views.generic.edit import CreateView
 from django.views.generic import ListView, DetailView
@@ -21,10 +16,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import SearchForm
 from django.utils import timezone
 from django.contrib import messages
-<<<<<<< Updated upstream
 from django.urls import reverse
-=======
->>>>>>> Stashed changes
 
 
 # Create your views here.
