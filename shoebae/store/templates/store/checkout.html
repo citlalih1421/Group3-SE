@@ -33,8 +33,8 @@
                                    <p>Country: {{ shippinginfo.country }}</p>
                               </div>
                               {% else %}
-                              <button>
-                                   <a href="{% url 'account' %}" class="btn btn-success">Add Shipping Method</a>
+                              <button type="button" class="btn btn-success">
+                                   <a href="{% url 'account' %}" style="color:white; text-decoration: none;">Add Shipping Method</a>
                               </button>
                               {% endif %}
                          </div>
@@ -50,8 +50,8 @@
                                    <p>Balance: ${{ request.user.userprofile.balance }}</p>
                               </div>
                               {% else %}
-                              <button>
-                                   <a href="{% url 'account' %}" class="btn btn-success">Add Payment Method</a>
+                              <button type="button" class="btn btn-success">
+                                   <a href="{% url 'account' %}" style="color:white; text-decoration: none;">Add Payment Method</a>
                               </button>
                               {% endif %}
                          </div>

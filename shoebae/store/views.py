@@ -338,19 +338,15 @@ class CompareProducts(View):
 
         comparison_slugs = request.session.get('comparison', [])
 
-        if 'comparison' not in request.session:
-            request.session['comparison'] = []
-
-        if len(request.session['comparison']) >= 3:
-            return render(request, 'store/compare.html', {'message': 'Maximum limit reached. You can compare up to three products.'})
-
-        if slug not in request.session['comparison']:
-            comparison_slugs.append(slug)
-            request.session['comparison'] = comparison_slugs  # Update session with modified list
-            request.session.modified = True  # Ensure session changes are saved
-            message = 'Product added to comparison.'
-        else:
+        if len(comparison_slugs) >= 3:
+            message = 'Maximum limit reached. You can compare up to three products.'
+        elif slug in comparison_slugs:
             message = 'Product is already in comparison.'
+        else:
+            comparison_slugs.append(slug)
+            request.session['comparison'] = comparison_slugs
+            request.session.modified = True
+            message = 'Product added to comparison.'
             
         shoes_to_compare = Shoe.objects.filter(slug__in=comparison_slugs)
         context = {
