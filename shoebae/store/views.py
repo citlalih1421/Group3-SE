@@ -3,8 +3,7 @@ from django.db import IntegrityError
 from django.views import View
 from django.views.generic.edit import CreateView
 from django.views.generic import ListView, DetailView
-from django.shortcuts import get_object_or_404, redirect
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Q
 from django.views.generic import ListView
 from .forms import ShoeForm
@@ -312,43 +311,146 @@ class DeleteListingView(View):
             return redirect('store')  # Redirect to the desired URL after deletion
 
 
+class CompareProducts(View):
+    def get(self, request):
+        comparison_slugs = request.session.get('comparison', [])
+        shoes_to_compare = Shoe.objects.filter(slug__in=comparison_slugs)
+        context = {
+            'shoes_to_compare': shoes_to_compare,
+        }
+        return render(request, 'store/compare.html', context)
 
-def compare_products(request):
-    if request.method == 'POST':
-        # Clear the comparison list from session
-        request.session['comparison'] = []
-        return redirect('compare_products')  # Redirect to the same page after clearing the comparison
+    def post(self, request):
+        action = request.POST.get('action')
 
-    # Retrieve the slugs of shoes in the comparison list from session
-    comparison_slugs = request.session.get('comparison', [])
+        if action == 'add_to_comparison':
+            return self.add_to_comparison(request)
+        elif action == 'remove_from_comparison':
+            return self.remove_from_comparison(request)
+        elif action == 'clear_comparison':
+            return self.clear_comparison(request)
+        else:
+            return render(request, 'store/compare.html', {'message': 'Invalid form submission'})
 
-    # Filter the Shoe objects based on slugs
-    shoes_to_compare = Shoe.objects.filter(slug__in=comparison_slugs)
+    def add_to_comparison(self, request):
+        slug = request.POST.get('slug')
+        shoe = get_object_or_404(Shoe, slug=slug)
 
-    context = {
-        'shoes_to_compare': shoes_to_compare,
-    }
-    return render(request, 'store/compare.html', context)
+        comparison_slugs = request.session.get('comparison', [])
 
-def add_to_comparison(request, slug):
-    # Retrieve the shoe object based on the slug
-    shoe = get_object_or_404(Shoe, slug=slug)
+        if 'comparison' not in request.session:
+            request.session['comparison'] = []
 
-    # Ensure the comparison list exists in the session
-    if 'comparison' not in request.session:
-        request.session['comparison'] = []
-
-    # Check if the product is already in the comparison list
-    if slug in request.session['comparison']:
-        messages.warning(request, "Product is already in comparison.")
-    else:
-        # Check if the comparison list has reached its maximum limit
         if len(request.session['comparison']) >= 3:
+            return render(request, 'store/compare.html', {'message': 'Maximum limit reached. You can compare up to three products.'})
+
+        if slug not in request.session['comparison']:
+            comparison_slugs.append(slug)
+            request.session['comparison'] = comparison_slugs  # Update session with modified list
+            request.session.modified = True  # Ensure session changes are saved
+            message = 'Product added to comparison.'
+        else:
+            message = 'Product is already in comparison.'
+            
+        shoes_to_compare = Shoe.objects.filter(slug__in=comparison_slugs)
+        context = {
+            'shoes_to_compare': shoes_to_compare,
+            'message': message,
+        }
+        return render(request, 'store/compare.html', context)
+
+    
+    '''
+    def remove_from_comparison(self, request):
+        # Retrieve the slug of the product from the POST data
+        slug = request.POST.get('product_slug')
+    
+        # Check if the comparison list exists in session
+        if 'comparison' in request.session:
+            # Check if the product is in the comparison list
+            if slug in request.session['comparison']:
+                # Remove the product from the comparison list
+                request.session['comparison'].remove(slug)
+                # Provide feedback to the user
+                messages.success(request, "Product removed from comparison!")
+            else:
+                # If the product is not in the comparison list, display an error message
+                messages.error(request, "Product not found in comparison!")
+        else:
+            # If the comparison list does not exist in session, display an error message
+            messages.error(request, "No comparison list found!")
+    
+            # Redirect to the comparison page
+            return redirect('compare')
+            '''
+    
+
+'''
+#### adds all the shoes in inventory to the compare. ####
+class CompareProducts(View):
+    def get(self, request):
+        shoes_to_compare = Shoe.objects.all()[:3]  # Get the first 3 products for comparison
+        context = {
+            'shoes_to_compare': shoes_to_compare,
+        }
+        return render(request, 'store/compare.html', context)
+
+    def post(self, request):
+        action = None
+        if 'action' in request.POST:
+            action = request.POST['action']
+            if action == 'add_to_comparison':
+                return self.add_to_comparison(request)
+            elif action == 'remove_from_comparison':
+                return self.remove_from_comparison(request)
+            elif action == 'clear_comparison':
+                return self.clear_comparison(request)
+            else:
+                return render(request, 'store/compare.html', {'message': 'Invalid form submission'})
+        else:
+            return render(request, 'store/compare.html', {'message': 'No action specified'})
+    
+    def add_to_comparison(self, request):
+        # Implement logic to add a product to comparison
+        slug = request.POST.get('slug')
+        product = get_object_or_404(Shoe, slug=slug)
+        # Add product to comparison (you can use session)
+        if 'comparison' not in request.session:
+            request.session['comparison'] = []
+
+        # Check if the comparison list already contains the maximum number of products
+        if len(request.session['comparison']) >= 3:
+            # Provide feedback to the user
             messages.error(request, "Maximum limit reached. You can compare up to three products.")
         else:
-            # Add the product to the comparison list
-            request.session['comparison'].append(slug)
-            messages.success(request, "Product added to comparison.")
+            # Check if the product is not already in the comparison list to avoid duplicates
+            if slug not in request.session['comparison']:
+                # Add the product to the comparison list
+                request.session['comparison'].append(slug)
+                # Provide feedback to the user
+                messages.success(request, "Product added to comparison!")
 
-    # Redirect to the product page
-    return redirect(reverse('productpage', args=[slug]))
+        return redirect('compare')
+    
+    def remove_from_comparison(self, request):
+        # Retrieve the slug of the product from the POST data
+        slug = request.POST.get('product_slug')
+    
+        # Check if the comparison list exists in session
+        if 'comparison' in request.session:
+            # Check if the product is in the comparison list
+            if slug in request.session['comparison']:
+                # Remove the product from the comparison list
+                request.session['comparison'].remove(slug)
+                # Provide feedback to the user
+                messages.success(request, "Product removed from comparison!")
+            else:
+                # If the product is not in the comparison list, display an error message
+                messages.error(request, "Product not found in comparison!")
+        else:
+            # If the comparison list does not exist in session, display an error message
+            messages.error(request, "No comparison list found!")
+    
+            # Redirect to the comparison page
+            return redirect('compare')
+''' 

@@ -3,15 +3,16 @@ from django.conf.urls.static import static
 from shoebae import settings
 from .import views
 from store.views import AddListingView, ViewAllListingsView, ProductPageView, DeleteListingView, ViewListingsView, Checkout
-from .views import add_to_comparison, compare_products
+from store.views import CompareProducts
+
 
 
 urlpatterns = [
     #empty for base url
     path('', views.home, name="home"),
     path('store/', ViewAllListingsView.as_view(), name="store"),
-    path('add_to_comparison/<slug:slug>/', add_to_comparison, name='add_to_comparison'),
-    path('store/compare/', compare_products, name='compare_products'),
+    
+    path('store/compare/', CompareProducts.as_view(), name='compare'),
     path('cart/<int:cart_id>/', views.cart, name='cart'),
     path('add-to-cart/<slug:slug>/',views.add_to_cart,name='add_to_cart'),
     path('checkout/', views.Checkout.as_view(), name="checkout"),
@@ -25,3 +26,7 @@ urlpatterns = [
     path('testing/', views.testing, name="testing"),
     path('viewlisting/', views.viewlisting, name="viewlisting"),
 ]
+'''
+from .views import add_to_comparison, compare_products
+path('add_to_comparison/<slug:slug>/', add_to_comparison, name='add_to_comparison'),
+'''

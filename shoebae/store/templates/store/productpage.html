@@ -46,9 +46,11 @@
                 <button type="button" class="btn btn-primary me-3">Add to Cart</button>
                 <button type="button" class="btn btn-secondary">Save for Later</button>
 
-                <form id="add-to-comparison-form" method="post" action="{% url 'add_to_comparison' shoe.slug %}">
+                <form method="post" id="add-to-comparison-form" action="{% url 'compare' %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-info me-3">Add to Comparison</button>
+                    <input type="hidden" name="action" value="add_to_comparison">
+                    <input type="hidden" name="slug" value="{{ shoe.slug }}">
+                    <button class="btn btn-info" type="submit">Add to Comparison</button>
                 </form>
             </div>
         </div>
@@ -58,7 +60,7 @@
     <div class="popup" id="comparison-popup" style="display: none;">
         <div class="popup-content">
             <h4 style="text-align: center;"> Product added to Comparison</h4>
-            <button type="button" class="btn btn-outline-info" id="seeComparison" action="{% url 'compare_products' %}">See Comparison</button>
+            <button type="button" class="btn btn-outline-info" id="see-comparison" action="{% url 'compare' %}">See Comparison</button>
         </div>
     </div>
 
@@ -87,26 +89,25 @@
 </div>
 
 <script> 
-     // JavaScript for handling form submission
-     document.getElementById("add-to-comparison-form").addEventListener("submit", function (event) {
-        // Prevent the default form submission behavior
-        event.preventDefault();
+    // JavaScript for handling form submission
+    document.getElementById("add-to-comparison-form").addEventListener("submit", function (event) {
+       // Prevent the default form submission behavior
+       event.preventDefault();
 
-        // Show the comparison popup
-        document.getElementById("comparison-popup").style.display = "block";
+       // Show the comparison popup
+       document.getElementById("comparison-popup").style.display = "block";
 
-        // Set a timeout to hide the popup after 4 seconds
-        setTimeout(function () {
-            document.getElementById("comparison-popup").style.display = "none";
-        }, 4000);
-    });
+       // Set a timeout to hide the popup after 4 seconds
+       setTimeout(function () {
+           document.getElementById("comparison-popup").style.display = "none";
+       }, 4000);
+   });
 
-    // Listen for click on "See Comparison" button in the popup
-    document.getElementById("seeComparison").addEventListener("click", function () {
-        // Redirect to the compare.html file
-        window.location.href = '{% url "compare_products" %}';
-    });
+   // Listen for click on "See Comparison" button in the popup
+   document.getElementById("see-comparison").addEventListener("click", function () {
+       // Redirect to the compare.html file
+       window.location.href = '{% url "compare" %}';
+   });
 </script>
-
 
 {% endblock %}
